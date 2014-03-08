@@ -1,0 +1,13 @@
+Package: LDAvis
+Title: Interactive visualization of topics models using shiny and D3
+Version: 0.1
+Maintainer: Kenny Shirley <kshirley@research.att.com>
+Author: Carson Sievert <cpsievert1@gmail.com>
+Description: Interactive visualization of topics models using shiny and D3.
+Depends:
+    R (>= 2.15),
+    shiny,
+    proxy
+License: MIT
+Suggests:
+    topicmodels
