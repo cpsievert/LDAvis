@@ -29,24 +29,3 @@ createAPphi <- function() {
   # I have some code used to create phi we currently use from LDAviz::fitLDA. Should I include it?
   NULL
 }
-
-
-#' Grab phi matrix for AP data
-#' 
-#' This function is silly and mainly for reproducibility purposes.
-#' 
-#' @examples
-#' phi <- getAPphi()
-#' data("APphi", package = "LDAvis")
-#' identical(APphi, phi) #TRUE
-#' 
-
-getAPphi <- function() {
-  #Data files other than .rda should be put in the extdata folder -- http://stackoverflow.com/questions/13463103/inst-and-extdata-folders-in-r-packaging
-  phi.file <- paste(system.file("inst", "extdata", package = "LDAvis"), "APphi.txt", sep = "/")
-  phi <- read.table(phi.file, header = TRUE, sep = "\t")
-  #sanity check
-  data("APfreq", package = "LDAvis")
-  all(names(APfreq) == rownames(phi))
-  return(phi)
-}
