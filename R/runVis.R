@@ -11,34 +11,30 @@ sortPhi <- function(phi, ...) {
 
 
 #' Run shiny/D3 visualization
-#'
-#' @param phi numeric matrix where \code{rownames} contain tokens \code{colnames} contain topic labels
-#' @param freq integer vector with number of times each token appears in the corpus. 
-#' Note the ordering of the counts have to match the ordering of the rownames of the \code{phi} argument.
-#' @return Returns NULL, but will prompt browser to open a visualization driven by the argument values.
-#' @importFrom shiny runApp
+#' 
+#' The function assumes two objects named 'phi' and 'freq' exist in the global environment. The phi matrix have
+#' tokens as rownames and topics as colnames. The rows should be sorted in decreasing order based on overall frequency
+#' see \link{sortPhi}. 'freq' should be an integer vector with number of times each token appears in the corpus.
+#' Note the ordering of the counts have to match the ordering of the rownames of phi.
+#' 
+#' @param ... Arguments passed to \code{shiny::runApp}.
+#' @return Returns NULL, but will prompt browser to open a visualization based on the current value of 'phi' and 'freq'.
+#' @import shiny runApp
+#' @import shiny runGitHub
 #' @export
 #' @examples
 #' 
 #' # Example using AP documents from http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
+#' data("APphi", package = "LDAvis")
+#' phi <- APphi
+#' data("APfreq", package = "LDAvis")
+#' freq <- APfreq
 #' runVis()
 #' 
 #'
 
-runVis <- function(phi, freq, ...) {
-  if (missing(phi)) {
-    message("No phi matrix detected. Serving up an example instead.")
-    data("APphi", package = "LDAvis")
-    phi <<- APphi
-    data("APfreq", package = "LDAvis")
-    vocab <<- names(APfreq)
-    freq <<- as.integer(APfreq)
-  } else if (missing(vocab) || missing(freq)) {
-    stop("Both the vocab and freq arguments are required.")
-  }
-  # Obtain directory to the files required for the app
-  visDir <- system.file("inst", "shiny", package = "LDAvis")
-  runApp(appDir = visDir)
+runVis <- function(...) {
+  shinyDir <- system.file("inst", "shiny", package = "LDAvis")
+  runApp(appDir = shinyDir, ...)
 }
-
-
+  

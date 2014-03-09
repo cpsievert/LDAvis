@@ -23,9 +23,10 @@ save(APtopics, file="~/LDAtool/data/APtopics.rda")
 shinydat <- data.frame(tokens=tokens, topics=APtopics$topics, docs=doc.id)
 write.table(shinydat, file="~/LDAtool/inst/shiny/hover/ap30.txt", sep="\t", row.names=FALSE)
 
-#derive documents from ap datadet downloaded from http://www.cs.princeton.edu/~blei/lda-c/
-setwd("~/Downloads/ap")
-txt <- scan('ap.txt', sep="\n", what="character")
+# Derive vocab and frequency from AP dataset available here -- http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
+dataDir <- system.file("data", package = "LDAvis")
+apfile <- paste(dataDir, "ap.txt", sep="/")
+txt <- scan(apfile, sep="\n", what="character")
 idx1 <- substr(txt, 0, 1) == "<"
 idx2 <- substr(txt, 0, 2) == " <"
 APcorpus <- txt[!idx1 & !idx2]

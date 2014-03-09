@@ -1,3 +1,5 @@
 export(runVis)
 export(sortPhi)
-importFrom(shiny,runApp)
+import(runApp)
+import(runGitHub)
+import(shiny)

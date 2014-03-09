@@ -124,6 +124,8 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         barData.push( obj );
       }
 
+
+/*  No longer handling documents
       var docData = [];
       for (var i=0; i<data['docDat'].Category.length; i++)  { 
         var obj = {};
@@ -132,6 +134,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         }
         docData.push( obj );
       }
+*/
 
      //establish layout and vars for mdsPlot
       var color = d3.scale.category10();
@@ -365,6 +368,8 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       .attr("class", "x axis")
       .call(xAxis);
 
+
+/* No longer handling documents 
     //Unbind any documents that may be bound already (necessary when user uploads new data)
     d3.selectAll(".hidden-docs").remove();
 
@@ -378,6 +383,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .append("li")
         .attr("class", "hidden-docs")
         .style("display", "none");
+*/
 
   }
 
