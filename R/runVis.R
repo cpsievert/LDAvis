@@ -19,8 +19,7 @@ sortPhi <- function(phi, ...) {
 #' 
 #' @param ... Arguments passed to \code{shiny::runApp}.
 #' @return Returns NULL, but will prompt browser to open a visualization based on the current value of 'phi' and 'freq'.
-#' @import shiny runApp
-#' @import shiny runGitHub
+#' @importFrom shiny runApp
 #' @export
 #' @examples
 #' 
