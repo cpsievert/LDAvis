@@ -1,7 +1,7 @@
 library(shiny)
 library(LDAvis)
 #anytime a file under the assets folder is changed, LDAvis must be reinstalled (to reflect the change)!
-addResourcePath('assets', system.file('inst', 'shiny', 'assets', package='LDAvis'))
+addResourcePath('assets', system.file('shiny', 'assets', package='LDAvis'))
 
 # Thanks Winston! https://github.com/wch/testapp/blob/master/custom-style/ui.R
 widget_style <-
@@ -41,12 +41,12 @@ shinyUI(bootstrapPage(
   ),
 
   tabsetPanel(
-    tabPanel("Overview", 
+    tabPanel("LDA Visualization", 
              #the el parameter in the js code selects the outputIds
              HTML(paste0("<div id=\"mdsDat\" class=\"shiny-scatter-output\"><svg /></div>")),
              div(style=paste(side_margins, top_margin, sep="\n   "), class='doc-list')
              ), 
     #tabPanel("Dat", verbatimTextOutput(outputId = "dat")),
-    tabPanel("What's This?", div(style = side_margins, includeMarkdown("assets/index.md")))
+    tabPanel("Instructions", div(style = side_margins, includeMarkdown("assets/index.md")))
   )
 ))

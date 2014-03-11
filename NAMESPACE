@@ -1,3 +1,4 @@
+export(check.inputs)
 export(runVis)
 export(sortPhi)
 importFrom(shiny,runApp)

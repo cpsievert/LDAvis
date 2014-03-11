@@ -169,16 +169,23 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       svg.append("g").attr("id", "bar-freqs")
         .attr("transform", "translate(" + +(mdswidth + 2*margin.left) + "," + margin.top + ")"); //place bar chart to the right of the mds plot;
 
-      svg
-        .append("text")
-            .text("Clear selection")
-            .attr("x", 10)
-            .attr("y", -10)
-            .attr("cursor", "pointer")
-            .on("click", function() {
-                reset_state();
-            });
-      
+      // moved this before the circles are drawn, so that hovering over a circle doesn't get interrupted
+      // by hovering over one of the axis lines.      
+      svg.append("line") //draw x-axis
+        .attr("x1", 0)
+        .attr("x2", mdswidth)
+        .attr("y1", mdsheight/2) 
+        .attr("y2", mdsheight/2)
+        .attr("stroke", "gray")
+        .attr("opacity", 0.3);
+
+      svg.append("line") //draw y-axis
+        .attr("x1", mdswidth/2) 
+        .attr("x2", mdswidth/2)
+        .attr("y1", 0)
+        .attr("y2", mdsheight)
+        .attr("stroke", "gray")
+        .attr("opacity", 0.3);
 
       var points = svg.selectAll("points")
         .data(mdsData)
@@ -188,7 +195,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .append("text")
         .attr("class", "txt")
         .attr("x", function(d) { return(xScale(+d.x)); })
-        .attr("y", function(d) { return(yScale(+d.y)+4); })
+        .attr("y", function(d) { return(yScale(+d.y) + 4); })
         .text(function(d) { return d.topics; })
         .attr("text-anchor", "middle")        
         .attr("stroke", "black")
@@ -224,21 +231,19 @@ var scatterOutputBinding = new Shiny.OutputBinding();
             update_drawing();
         });
 
-      svg.append("line") //draw x-axis
-        .attr("x1", 0)
-        .attr("x2", mdswidth)
-        .attr("y1", mdsheight/2) 
-        .attr("y2", mdsheight/2)
-        .attr("stroke", "gray")
-        .attr("opacity", 0.3);
 
-      svg.append("line") //draw y-axis
-        .attr("x1", mdswidth/2) 
-        .attr("x2", mdswidth/2)
-        .attr("y1", 0)
-        .attr("y2", mdsheight)
-        .attr("stroke", "gray")
-        .attr("opacity", 0.3);
+
+      // moved this below the drawing of the circles so that if a circle occludes the 'clear selection' link, 
+      // the user can still click on the link to clear the selection.
+      svg.append("text")
+            .text("Clear selection")
+            .attr("x", 10)
+            .attr("y", -10)
+            .attr("cursor", "pointer")
+            .on("click", function() {
+                reset_state();
+            });
+
 
       //Draw voronio map around cluster centers (if # of clusters > 1)
       // adapted from http://bl.ocks.org/mbostock/4237768  
@@ -317,13 +322,13 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       var yAxis  = d3.svg.axis()
                          .scale(y);
 
-    // Add a group for the bar chart
+      // Add a group for the bar chart
       var chart = svg
         .append("g")
         .attr("transform", "translate(" + +(mdswidth + 2*margin.left) + "," + margin.top + ")");
 
-      //Bind all possible instances of bar chart so that we can access it upon interaction
-      //IS THERE A WAY TO DO THIS WITHOUT CREATING A SHIT LOAD OF ELEMENTS?
+      // Bind all possible instances of bar chart so that we can access it upon interaction
+      // IS THERE A WAY TO DO THIS WITHOUT CREATING A SHIT LOAD OF ELEMENTS?
       var chartDat = chart.selectAll(".bar-chart")
         .data(barData)
         .enter()
@@ -331,12 +336,12 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .attr("class", "bar-chart")
         .style("display", "none");
 
-      //Bind 'default' data to 'default' bar chart
+      // Bind 'default' data to 'default' bar chart
       var basebars = chart.selectAll(".bar-totals")
         .data(barDefault2)
         .enter();
       
-      //Draw the gray background bars defining the overall frequency of each word
+      // Draw the gray background bars defining the overall frequency of each word
       basebars    
         .append("rect")
         .attr("class", "bar-totals")
@@ -695,9 +700,9 @@ function text_on(d) {
         .style("font-weight", "bold");
 
     var Term = d.Term;
-    var dat = d3.select("svg").selectAll(".mds-data2").data().filter(function(d) { return d.Term == Term });
+    var dat2 = d3.select("svg").selectAll(".mds-data2").data().filter(function(d) { return d.Term == Term });
     //Make sure the topic ordering agrees with the ordering we used when the points were drawn
-    var dat2 = dat.sort(fancysort("Topic", decreasing = -1)); 
+    //var dat2 = dat.sort(fancysort("Topic", decreasing = -1)); 
     // # of topics
     var k = dat2.length  
 

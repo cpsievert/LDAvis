@@ -2,9 +2,9 @@
 \alias{createAPphi}
 \title{Create phi matrix for AP data}
 \usage{
-createAPphi()
+  createAPphi()
 }
 \description{
-Create phi matrix for AP data
+  Create phi matrix for AP data
 }
 

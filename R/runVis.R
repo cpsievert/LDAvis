@@ -33,7 +33,7 @@ sortPhi <- function(phi, ...) {
 #'
 
 runVis <- function(...) {
-  shinyDir <- system.file("inst", "shiny", package = "LDAvis")
+  shinyDir <- system.file("shiny", package = "LDAvis")
   runApp(appDir = shinyDir, ...)
 }
   

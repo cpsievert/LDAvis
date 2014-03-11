@@ -13,3 +13,6 @@ Depends:
 License: MIT
 Suggests:
     topicmodels
+Collate:
+    'dat.R'
+    'runVis.R'
