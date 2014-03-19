@@ -124,18 +124,6 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         barData.push( obj );
       }
 
-
-/*  No longer handling documents
-      var docData = [];
-      for (var i=0; i<data['docDat'].Category.length; i++)  { 
-        var obj = {};
-        for (var key in data['docDat']){
-          obj[key] = data['docDat'][key][i];
-        }
-        docData.push( obj );
-      }
-*/
-
      //establish layout and vars for mdsPlot
       var color = d3.scale.category10();
       //create linear scaling to pixels (and add some padding on outer region of scatterplot)
@@ -230,8 +218,6 @@ var scatterOutputBinding = new Shiny.OutputBinding();
             current_hover.object = undefined;
             update_drawing();
         });
-
-
 
       // moved this below the drawing of the circles so that if a circle occludes the 'clear selection' link, 
       // the user can still click on the link to clear the selection.
