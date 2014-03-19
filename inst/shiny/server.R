@@ -28,8 +28,8 @@ KL <- function(x, y) {
 
 # Set the values of a few parameters related to the size of the data set:
 K <- length(topic.proportion)  # number of topics
-W <- length(vocab)  # size of vocabulary
-N <- sum(token.frequency)  # total number of tokens in the data
+W <- length(vocab)             # size of vocabulary
+N <- sum(token.frequency)      # total number of tokens in the data
 
 # This is necessary for subsetting data upon selection in topicz.js
 colnames(phi) <- paste0("Topic", 1:K)

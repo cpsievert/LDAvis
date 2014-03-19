@@ -1,15 +1,3 @@
-#' Sort phi before uploading to runVis()
-#'
-#' @param phi numeric matrix where column names are tokens and rownames are topic labels
-#' @return A matrix with number of columns equal to the vocabulary and number of rows equal to the number of topics
-#' @export
-#'
-
-sortPhi <- function(phi, ...) {
-  NULL
-}
-
-
 #' Run shiny/D3 visualization
 #' 
 #' The function assumes two objects named 'phi' and 'freq' exist in the global environment. The phi matrix have
@@ -24,12 +12,25 @@ sortPhi <- function(phi, ...) {
 #' @examples
 #' 
 #' # Example using AP documents from http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
-#' data("APphi", package = "LDAvis")
-#' phi <- APphi
-#' data("APfreq", package = "LDAvis")
-#' freq <- APfreq
+#' data("APdata", package = "LDAvis")
+#' 
+#' # Check the coherence of the input data using the function 'check.inputs()'
+#' z <- check.inputs(K=40, W=10473, phi=APdata$phi, token.frequency=APdata$token.frequency,
+#'                  vocab=APdata$vocab, topic.proportion=APdata$topic.proportion)
+#'                  
+#' # Assign the six elements of z as variables in the global environment and remove their list versions:
+#' for (i in 1:length(z)) assign(names(z)[i], z[[i]])
+#' 
+#' # Now run the visualization app
 #' runVis()
 #' 
+#' # Example using Newsgroup documents from http://qwone.com/~jason/20Newsgroups/
+#' 
+#' data("Newsgroupdata", package = "LDAvis")
+#' z <- check.inputs(K=50, W=22524, phi=Newsgroupdata$phi, token.frequency=Newsgroupdata$token.frequency,
+#'                    vocab=Newsgroupdata$vocab, topic.proportion=Newsgroupdata$topic.proportion)
+#' for (i in 1:length(z)) assign(names(z)[i], z[[i]])
+#' runVis()
 #'
 
 runVis <- function(...) {

@@ -2,9 +2,9 @@
 \alias{check.inputs}
 \title{Check the coherence of the input objects, and sort tokens and topics in decreasing order of frequency}
 \usage{
-  check.inputs(K = integer(), W = integer(),
-    phi = matrix(), token.frequency = integer(),
-    vocab = character(), topic.proportion = numeric())
+check.inputs(K = integer(), W = integer(), phi = matrix(),
+  token.frequency = integer(), vocab = character(),
+  topic.proportion = numeric())
 }
 \arguments{
   \item{K}{the number of topics in the model}
@@ -28,27 +28,26 @@
   containing the proportion of each topic in the corpus.}
 }
 \value{
-  A list with the same six named components as the
-  arguments to the function, except sorted as described
-  above.
+A list with the same six named components as the arguments
+to the function, except sorted as described above.
 }
 \description{
-  This function performs a series of checks on the input
-  objects to make sure that they form a coherent set of
-  components of a topic model fit using LDA. The function
-  also sorts the vocabulary in decreasing order of token
-  frequency, and the topics in decreasing order of topic
-  proportion.
+This function performs a series of checks on the input
+objects to make sure that they form a coherent set of
+components of a topic model fit using LDA. The function
+also sorts the vocabulary in decreasing order of token
+frequency, and the topics in decreasing order of topic
+proportion.
 }
 \details{
-  The columns of \code{phi} must be in the same order as
-  \code{topic.proportion}, and the rows of \code{phi} must
-  be in the same order as \code{token.frequency} and
-  \code{vocab}. The vector \code{topic.proportion} can be
-  computed as a function of (1) the estimated topic
-  distribution for each document in the corpus, and the
-  number of tokens in each document. For details, see
-  Sievert and Shirley (2014).
+The columns of \code{phi} must be in the same order as
+\code{topic.proportion}, and the rows of \code{phi} must be
+in the same order as \code{token.frequency} and
+\code{vocab}. The vector \code{topic.proportion} can be
+computed as a function of (1) the estimated topic
+distribution for each document in the corpus, and the
+number of tokens in each document. For details, see Sievert
+and Shirley (2014).
 }
 \examples{
 # Example using AP documents from http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
