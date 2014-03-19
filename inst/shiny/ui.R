@@ -37,6 +37,10 @@ shinyUI(bootstrapPage(
     ), 
     div(style = widget_style,
         sliderInput("lambda", "Value of lambda", min=0, max=1, value=1/3)
+    ),
+    div(style = widget_style,
+        selectInput("distance", "Distance Calculation", choices = c("Jensen-Shannon" = "JS", 
+                                                                    "Symmetric Kullback-Leibler" = "KL"))
     )
   ),
 

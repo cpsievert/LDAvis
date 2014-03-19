@@ -8,7 +8,7 @@ var current_clicked = { what: "nothing", element: undefined, object: undefined }
 
 function show_state()
 {
-    console.log(current_clicked, current_hover);
+    console.log(current_clicked, current_hover, old_winning_state);
 }
 
 function reset_state()
@@ -205,18 +205,21 @@ var scatterOutputBinding = new Shiny.OutputBinding();
             current_hover.what = "topic";
             current_hover.object = d;
             update_drawing();
+            show_state();
         })  //highlight circle and print the relevant proportion within circle
         .on("click", function(d) {
             current_clicked.element = this;
             current_clicked.what = "topic";
             current_clicked.object = d;
             update_drawing();
+            show_state();
         })
         .on("mouseout", function(d) {
             current_hover.element = undefined;
             current_hover.what = "nothing";
             current_hover.object = undefined;
             update_drawing();
+            show_state();
         });
 
       // moved this below the drawing of the circles so that if a circle occludes the 'clear selection' link, 
@@ -359,22 +362,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       .attr("class", "x axis")
       .call(xAxis);
 
-
-/* No longer handling documents 
-    //Unbind any documents that may be bound already (necessary when user uploads new data)
-    d3.selectAll(".hidden-docs").remove();
-
-    //Remove any existing documents
-    d3.selectAll(".topdocs").remove();
-    console.log(docData);
-    //Bind all the document data to the document list (so they can be accessed upon topic click)
-    d3.select(".doc-list").selectAll("hidden-docs")
-      .data(docData)
-      .enter()
-        .append("li")
-        .attr("class", "hidden-docs")
-        .style("display", "none");
-*/
+    update_drawing();
 
   }
 

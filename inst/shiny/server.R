@@ -38,25 +38,38 @@ rel.freq <- token.frequency/N
 # compute the token-topic occurrence table:
 phi.freq <- t(t(phi) * topic.proportion * N)
 
-# Compute distance matrix between topics using Jensen-Shannon divergence:
-d <- dist(t(phi), method = jensen.shannon.divergence)
-
-# Another method was to only compute distances based on the most frequent overall tokens:
-# Set cutoff at cumulative marginal prob of 0.8 (aiming for a so-called "80-20 rule")... 
-# We *could* have an option to compute different distance measures (this would have to go inside shinyServer)
-#d <- dist(t(phi[1:min(which(cumsum(rel.freq) > 0.80)), ]), method = jensen.shannon.divergence)
-
-# Multidimensional scaling to project the distance matrix onto two dimensions for the vis:
-fit <- cmdscale(d, k = 2)
-x <- fit[, 1]
-y <- fit[, 2]
-
-# collect the (x, y) locations of the topics and their overall proportions in a data.frame:
-mds.df <- data.frame(topics=1:K, x=fit[, 1], y=fit[, 2], Freq=topic.proportion*100)
-
 shinyServer(function(input, output) {
   
+  # Compute distance matrix between topics 
+  # We wrap this in its own reactive function so that it isn't recomputed if say the value of lambda changes
+  computeDist <- reactive({
+    if (input$distance == "JS") { #using Jensen-Shannon divergence:
+      d <- dist(t(phi), method = jensen.shannon.divergence)
+    } else if (input$distance == "KL") { #using symmetric Kullback-Leibler
+      d <- dist(t(phi), method = KL)
+    }
+    # Another method was to only compute distances based on the most frequent overall tokens:
+    # Set cutoff at cumulative marginal prob of 0.8 (aiming for a so-called "80-20 rule")... 
+    # We *could* have an option to compute different distance measures (this would have to go inside shinyServer)
+    #d <- dist(t(phi[1:min(which(cumsum(rel.freq) > 0.80)), ]), method = jensen.shannon.divergence)
+    
+    # Multidimensional scaling to project the distance matrix onto two dimensions for the vis:
+    # Maybe we should explore including options for different scaling algorithms???
+    fit <- cmdscale(d, k = 2)
+    x <- fit[, 1]
+    y <- fit[, 2]
+    # collect the (x, y) locations of the topics and their overall proportions in a data.frame:
+    mds.df <- data.frame(topics=1:K, x=fit[, 1], y=fit[, 2], Freq=topic.proportion*100)
+    return(list(mds.df = mds.df, x = x, y = y))
+  })
+  
   output$mdsDat <- reactive({
+    
+    # Bring in the necessary clustering data
+    distDat <- computeDist()
+    mds.df <- distDat$mds.df
+    x <- distDat$x
+    y <- distDat$y
 
     # workaround errors if no clustering is done (ie, input$kmeans == 1)
     mds.df$cluster <- 1
