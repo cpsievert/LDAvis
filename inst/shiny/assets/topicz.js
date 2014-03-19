@@ -362,6 +362,8 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       .attr("class", "x axis")
       .call(xAxis);
 
+    // Have to update drawing in the case where shiny inputs have changed
+    // but no mouse hover/clicks have happened (on the plot itself)
     update_drawing();
 
   }
