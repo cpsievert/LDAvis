@@ -7,6 +7,7 @@ Description: Interactive visualization of topics models using shiny and D3.
 Depends:
     R (>= 2.15),
     shiny,
+    MASS,
     proxy,
     plyr,
     reshape2

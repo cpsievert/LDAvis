@@ -3,6 +3,9 @@ library(LDAvis)
 #anytime a file under the assets folder is changed, LDAvis must be reinstalled (to reflect the change)!
 addResourcePath('assets', system.file('shiny', 'assets', package='LDAvis'))
 
+topic.choices <- paste(0L:length(topic.proportion))
+names(topic.choices) <-  c("None Selected", topic.choices[-1])
+
 # Thanks Winston! https://github.com/wch/testapp/blob/master/custom-style/ui.R
 widget_style <-
   "display: inline-block;
@@ -41,6 +44,14 @@ shinyUI(bootstrapPage(
     div(style = widget_style,
         selectInput("distance", "Distance Calculation", choices = c("Jensen-Shannon" = "JS", 
                                                                     "Symmetric Kullback-Leibler" = "KL"))
+    ),
+    div(style = widget_style,
+        selectInput("scaling", "Multidimensional Scaling Method", choices = c("Classical (PCA)" = "PCA", 
+                                                                    "Kruskal's Non-Metric" = "kruskal",
+                                                                    "Sammon's Non-Linear Mapping" = "sammon"))
+    ),
+    div(style = widget_style,
+        selectInput("currentTopic", "Select a Topic", choices = topic.choices)
     )
   ),
 

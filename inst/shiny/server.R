@@ -1,5 +1,6 @@
 # load some libraries:
 library(shiny)
+library(MASS)
 library(proxy)
 library(plyr)
 library(reshape2)
@@ -43,11 +44,10 @@ shinyServer(function(input, output) {
   # Compute distance matrix between topics 
   # We wrap this in its own reactive function so that it isn't recomputed if say the value of lambda changes
   computeDist <- reactive({
-    if (input$distance == "JS") { #using Jensen-Shannon divergence:
-      d <- dist(t(phi), method = jensen.shannon.divergence)
-    } else if (input$distance == "KL") { #using symmetric Kullback-Leibler
-      d <- dist(t(phi), method = KL)
-    }
+    switch(input$distance,
+           JS = d <- dist(t(phi), method = jensen.shannon.divergence),
+           KL = d <- dist(t(phi), method = KL)
+    )
     # Another method was to only compute distances based on the most frequent overall tokens:
     # Set cutoff at cumulative marginal prob of 0.8 (aiming for a so-called "80-20 rule")... 
     # We *could* have an option to compute different distance measures (this would have to go inside shinyServer)
@@ -55,7 +55,11 @@ shinyServer(function(input, output) {
     
     # Multidimensional scaling to project the distance matrix onto two dimensions for the vis:
     # Maybe we should explore including options for different scaling algorithms???
-    fit <- cmdscale(d, k = 2)
+    switch(input$scaling,
+           PCA = fit <- cmdscale(d, k = 2),
+           kruskal = fit <- isoMDS(d, k = 2)$points,
+           sammon = fit <- sammon(d, k = 2)$points
+    )
     x <- fit[, 1]
     y <- fit[, 2]
     # collect the (x, y) locations of the topics and their overall proportions in a data.frame:
@@ -165,7 +169,7 @@ shinyServer(function(input, output) {
     topic.table <- reshape2::melt(t.w2, id.vars = "Term", variable.name = "Topic", value.name = "Freq")
     
     return(list(mdsDat = mds.df, mdsDat2 = topic.table, barDat = all.df, 
-                centers = centers, nClust = input$kmeans))
+                centers = centers, nClust = input$kmeans, currentTopic = input$currentTopic))
   })
   
 })

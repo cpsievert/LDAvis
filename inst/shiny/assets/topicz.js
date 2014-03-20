@@ -195,6 +195,8 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       points  //draw circles
         .append("circle")
         .attr("class", "dot")
+        // Setting the id will allow us to select points via the value of selectInput
+        .attr("id", function(d) { return "Topic"+d.topics; })
         .style("opacity", 0.3)
         .style("fill", function(d) { return color(d.cluster); })
         //circle sizes should get smaller as the # of topics increases
@@ -206,12 +208,14 @@ var scatterOutputBinding = new Shiny.OutputBinding();
             current_hover.what = "topic";
             current_hover.object = d;
             update_drawing();
+            show_state();
         })  //highlight circle and print the relevant proportion within circle
         .on("click", function(d) {
             current_clicked.element = this;
             current_clicked.what = "topic";
             current_clicked.object = d;
             update_drawing();
+            show_state();
         })
         .on("mouseout", function(d) {
             current_hover.element = undefined;
@@ -360,9 +364,18 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       .attr("class", "x axis")
       .call(xAxis);
 
-    // Have to update drawing in the case where shiny inputs have changed
-    // but no mouse hover/clicks have happened (on the plot itself)
-    update_drawing();
+    // update drawing based on a selected topic in selectInput
+    if (data['currentTopic'] !== 0) { //0 represents no topic selected
+      var currentTopic = d3.select("#Topic"+data['currentTopic'])[0][0];
+      console.log(currentTopic);
+      current_clicked.element = currentTopic;
+      current_clicked.what = "topic";
+      current_clicked.object = currentTopic.__data__;
+      update_drawing();
+    } else
+      // Have to update drawing in the case where shiny inputs have changed
+      // but no mouse hover/clicks have happened (on the plot itself)
+      update_drawing();
 
   }
 
