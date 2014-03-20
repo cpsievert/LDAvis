@@ -25,7 +25,6 @@
 #' runVis()
 #' 
 #' # Example using Newsgroup documents from http://qwone.com/~jason/20Newsgroups/
-#' 
 #' data("Newsgroupdata", package = "LDAvis")
 #' z <- check.inputs(K=50, W=22524, phi=Newsgroupdata$phi, token.frequency=Newsgroupdata$token.frequency,
 #'                    vocab=Newsgroupdata$vocab, topic.proportion=Newsgroupdata$topic.proportion)

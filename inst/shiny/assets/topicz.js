@@ -73,8 +73,8 @@ function fancysort(key_name, decreasing) {
 //////////////////////////////////////////////////////////////////////////////
 
 //global margins used for everything
-var margin = {top: 30, right: 60, bottom: 30, left: 30},
-    width = 1100,
+var margin = {top: 30, right: 120, bottom: 30, left: 30},
+    width = 1400,
     height = 1200,
     mdswidth = 600, 
     mdsheight = 600,
@@ -235,7 +235,6 @@ var scatterOutputBinding = new Shiny.OutputBinding();
                 reset_state();
             });
 
-
       //Draw voronio map around cluster centers (if # of clusters > 1)
       // adapted from http://bl.ocks.org/mbostock/4237768  
       if (data['centers'].x.length > 1) {
@@ -365,7 +364,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       .call(xAxis);
 
     // update drawing based on a selected topic in selectInput
-    if (data['currentTopic'] !== 0) { //0 represents no topic selected
+    if (data['currentTopic'] != 0) { //0 represents no topic selected
       var currentTopic = d3.select("#Topic"+data['currentTopic'])[0][0];
       console.log(currentTopic);
       current_clicked.element = currentTopic;
