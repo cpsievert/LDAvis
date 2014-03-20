@@ -362,7 +362,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
 
     // Have to update drawing in the case where shiny inputs have changed
     // but no mouse hover/clicks have happened (on the plot itself)
-    //update_drawing();
+    update_drawing();
 
   }
 
@@ -375,7 +375,7 @@ function cluster_on(d) {
   // increase opacity of circle that has mouseover event:
   var circle = d3.select(this);
   circle
-    .style("fill-opacity", 1); 
+    .style("fill-opacity", 0.6)
   var cluster = d;
 
    //filter the data bound to the mdsplot according to the clutser of interest
@@ -385,7 +385,7 @@ function cluster_on(d) {
   for (var i=0; i<clustDat.length; i++) {
       Freq = Freq + clustDat[i]['Freq'];
   }
-  var Freq = Math.round(100*Freq)
+  var Freq = Math.round(Freq)
 
   //append a 'title' to bar chart with data relevant to the cluster of interest
   d3.select("svg")
@@ -400,7 +400,6 @@ function cluster_on(d) {
 
   var dat2 = d3.select("svg").selectAll(".bar-chart").data().filter(function(d) { return d.Category == "Cluster"+cluster });
   //var dat2 = dat.sort(fancysort("Order"));
-  console.log(dat2);
 
   var y = d3.scale.ordinal()
               .domain(dat2.map(function(d) { return d.Term; }))
@@ -479,7 +478,6 @@ function topic_on(d) {
 
     var dat2 = d3.select("svg").selectAll(".bar-chart").data().filter(function(d) { return d.Category == "Topic"+topics });
     //var dat2 = dat.sort(fancysort("Order"));
-    console.log(dat2);
 
     var y = d3.scale.ordinal()
                 .domain(dat2.map(function(d) { return d.Term; }))
