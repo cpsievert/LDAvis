@@ -197,7 +197,8 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .attr("class", "dot")
         .style("opacity", 0.3)
         .style("fill", function(d) { return color(d.cluster); })
-        .attr("r", function(d) { return (200/k)*Math.sqrt(d.Freq) ; })  //circle sizes should get smaller as the # of topics increases
+        //circle sizes should get smaller as the # of topics increases
+        .attr("r", function(d) { return (400/k)*Math.sqrt(d.Freq) ; })  
         .attr("cx", function(d) { return (xScale(+d.x)); })
         .attr("cy", function(d) { return (yScale(+d.y)); })
         .on("mouseover", function(d) {
@@ -205,21 +206,18 @@ var scatterOutputBinding = new Shiny.OutputBinding();
             current_hover.what = "topic";
             current_hover.object = d;
             update_drawing();
-            show_state();
         })  //highlight circle and print the relevant proportion within circle
         .on("click", function(d) {
             current_clicked.element = this;
             current_clicked.what = "topic";
             current_clicked.object = d;
             update_drawing();
-            show_state();
         })
         .on("mouseout", function(d) {
             current_hover.element = undefined;
             current_hover.what = "nothing";
             current_hover.object = undefined;
             update_drawing();
-            show_state();
         });
 
       // moved this below the drawing of the circles so that if a circle occludes the 'clear selection' link, 
@@ -364,7 +362,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
 
     // Have to update drawing in the case where shiny inputs have changed
     // but no mouse hover/clicks have happened (on the plot itself)
-    update_drawing();
+    //update_drawing();
 
   }
 
@@ -380,14 +378,14 @@ function cluster_on(d) {
     .style("fill-opacity", 1); 
   var cluster = d;
 
-  //filter the data bound to the mdsplot according to the clutser of interest
+   //filter the data bound to the mdsplot according to the clutser of interest
   var clustDat = d3.select("svg").selectAll(".dot").data().filter(function(d) { return d.cluster == cluster });
-
+    
   var Freq = 0
   for (var i=0; i<clustDat.length; i++) {
       Freq = Freq + clustDat[i]['Freq'];
   }
-  var Freq = Math.round(Freq)
+  var Freq = Math.round(100*Freq)
 
   //append a 'title' to bar chart with data relevant to the cluster of interest
   d3.select("svg")
@@ -402,6 +400,7 @@ function cluster_on(d) {
 
   var dat2 = d3.select("svg").selectAll(".bar-chart").data().filter(function(d) { return d.Category == "Cluster"+cluster });
   //var dat2 = dat.sort(fancysort("Order"));
+  console.log(dat2);
 
   var y = d3.scale.ordinal()
               .domain(dat2.map(function(d) { return d.Term; }))
@@ -480,7 +479,7 @@ function topic_on(d) {
 
     var dat2 = d3.select("svg").selectAll(".bar-chart").data().filter(function(d) { return d.Category == "Topic"+topics });
     //var dat2 = dat.sort(fancysort("Order"));
-    //console.log(dat2);
+    console.log(dat2);
 
     var y = d3.scale.ordinal()
                 .domain(dat2.map(function(d) { return d.Term; }))
@@ -686,7 +685,7 @@ function text_on(d) {
     d3.selectAll(".dot")
       .data(dat2)
       .transition()
-        .attr("r", function(d) { return (200/k)*Math.sqrt(d.Freq); });
+        .attr("r", function(d) { return (400/k)*Math.sqrt(d.Freq); });
 }
 
 function text_off() {
@@ -700,7 +699,7 @@ function text_off() {
     d3.selectAll(".dot")
       .data(dat)
       .transition()
-        .attr("r", function(d) { return (200/k)*Math.sqrt(d.Freq); });
+        .attr("r", function(d) { return (400/k)*Math.sqrt(d.Freq); });
 }
 
 

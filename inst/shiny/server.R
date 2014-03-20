@@ -6,7 +6,7 @@ library(reshape2)
 
 # If you'd like to debug outside of shiny...
 #input <- NULL
-#input$kmeans <- 1
+#input$kmeans <- 5
 #input$lambda <- 1/3
 #input$nTerms <- 35
 
@@ -148,7 +148,7 @@ shinyServer(function(input, output) {
     all.df <- merge(all.df, t.phi, all.x = TRUE, sort = FALSE)
 
     # Collect P(w|Cluster) for each possible word
-    c.phi <- merge(t.phi, data.frame(Category = mds.df$topics, cluster = paste0("Cluster", mds.df$cluster)), 
+    c.phi <- merge(t.phi, data.frame(Category = paste0("Topic", mds.df$topics), cluster = paste0("Cluster", mds.df$cluster)), 
                    all.x = TRUE, sort = FALSE)
     c.phi <- ddply(c.phi, c("Term", "cluster") , summarise, Freq3 = sum(Freq2))
     names(c.phi) <- sub("cluster", "Category", names(c.phi))
