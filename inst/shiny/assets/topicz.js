@@ -273,7 +273,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .on("mouseout", function(d) {
             current_hover.element = undefined;
             current_hover.what = "nothing";
-            current_hover.object = undefined;
+            current_hover.object = d;
             update_drawing();
         });
 
@@ -385,10 +385,10 @@ Shiny.outputBindings.register(scatterOutputBinding, 'cpsievert.scatterbinding');
 
 function cluster_on(d) {
     
-  // increase opacity of circle that has mouseover event:
+  // increase opacity of Voronoi region
   var circle = d3.select(this);
   circle
-    .style("fill-opacity", 0.6)
+    .style("fill-opacity", 0.5)
   var cluster = d;
 
    //filter the data bound to the mdsplot according to the clutser of interest
@@ -469,9 +469,11 @@ function cluster_on(d) {
 
 
 function topic_on(d) {
-    var circle = d3.select(this);
+    // Increase opacity of currently selected circle
+    var circle = d3.select("#Topic"+d.topics);
     circle
       .style("opacity", 0.8); 
+
     var Freq = Math.round(d.Freq), topics = d.topics, cluster = d.cluster;
 
     //remove the title with cluster proportion
@@ -548,10 +550,11 @@ function topic_on(d) {
 
 }
 
-function cluster_off() {
+function cluster_off(d) {
+
     var circle = d3.select(this);
     circle
-      .style("fill-opacity", 0.5);  //go back to original opacity
+      .style("fill-opacity", 0.4);  //go back to original opacity
 
     //remove the tool-tip
     //d3.selectAll(".bubble-tool").remove();
@@ -605,7 +608,7 @@ function cluster_off() {
         
 }
 
-function topic_off() {
+function topic_off(d) {
     var circle = d3.select(this);
     circle
       .style("opacity", 0.4);  //go back to original opacity
