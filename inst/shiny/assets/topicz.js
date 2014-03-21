@@ -153,7 +153,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .attr("class", "points")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); 
 
-      svg.append("g").attr("id", "voronoi-group");
+      
       svg.append("g").attr("id", "bar-freqs")
         .attr("transform", "translate(" + +(mdswidth + 2*margin.left) + "," + margin.top + ")"); //place bar chart to the right of the mds plot;
 
@@ -191,8 +191,62 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .attr("font-size", 11)
         .attr("font-weight", 100);
 
-        
-      points  //draw circles
+      //Draw voronio map around cluster centers (if # of clusters > 1)
+      // adapted from http://bl.ocks.org/mbostock/4237768  
+      if (data['centers'].x.length > 1) {
+        var centers = [];
+        for (var i=0; i<data['centers'].x.length; i++)  { 
+          centers[i] = [ xScale(data['centers'].x[i]), yScale(data['centers'].y[i]) ];
+        }
+             
+        var voronoi = d3.geom.voronoi()
+              .clipExtent([[0, 0], [mdswidth, mdsheight]])
+              .x(function(d) { return(xScale(+d.x)); })
+              .y(function(d) { return(yScale(+d.y)); });
+                //.clipExtent([[margin.left, margin.top], [mdswidth - margin.right, mdsheight - margin.bottom]]);
+
+        var vdat = voronoi(mdsData);
+
+        var cluster_paths = [];
+        for (i=0; i<data['centers'].x.length; ++i) {
+            cluster_paths[i] = "";
+        }
+        for (i=0; i<mdsData.length; ++i) {
+            var cluster = Number(mdsData[i].cluster) - 1;
+            cluster_paths[cluster] = cluster_paths[cluster] + "M" + vdat[i].join("L") + "Z";
+        }
+
+        svg.append("g").attr("id", "voronoi-group");
+          
+        svg.select("#voronoi-group")
+            .selectAll("path")
+            .data(cluster_paths)
+            .enter().append("path")
+            .style("fill", function(d, i) { return d3.rgb(color(String(i+1))).brighter(1.5); })
+            // .style("stroke", function(d, i) { return d3.rgb(color(String(i+1))).brighter(1.5); })
+            .style("fill-opacity", 0.5)
+            .attr("d", function(d) { return d; })
+              .on("mouseover", function(d, i) {
+                  current_hover.element = this;
+                  current_hover.what = "cluster";
+                  current_hover.object = String(i+1);
+                  update_drawing();
+              })
+              .on("mouseout", function(d, i) {
+                  current_hover.element = undefined;
+                  current_hover.what = "nothing";
+                  current_hover.object = undefined;
+                  update_drawing();
+              })
+            .on("click", function(d, i) {
+                  current_clicked.element = this;
+                  current_clicked.what = "cluster";
+                  current_clicked.object = String(i+1);
+                  update_drawing();
+            });
+      }
+
+            points  //draw circles
         .append("circle")
         .attr("class", "dot")
         // Setting the id will allow us to select points via the value of selectInput
@@ -234,59 +288,6 @@ var scatterOutputBinding = new Shiny.OutputBinding();
             .on("click", function() {
                 reset_state();
             });
-
-      //Draw voronio map around cluster centers (if # of clusters > 1)
-      // adapted from http://bl.ocks.org/mbostock/4237768  
-      if (data['centers'].x.length > 1) {
-        var centers = [];
-        for (var i=0; i<data['centers'].x.length; i++)  { 
-          centers[i] = [ xScale(data['centers'].x[i]), yScale(data['centers'].y[i]) ];
-        }
-             
-        var voronoi = d3.geom.voronoi()
-              .clipExtent([[0, 0], [mdswidth, mdsheight]])
-              .x(function(d) { return(xScale(+d.x)); })
-              .y(function(d) { return(yScale(+d.y)); });
-                //.clipExtent([[margin.left, margin.top], [mdswidth - margin.right, mdsheight - margin.bottom]]);
-
-        var vdat = voronoi(mdsData);
-
-        var cluster_paths = [];
-        for (i=0; i<data['centers'].x.length; ++i) {
-            cluster_paths[i] = "";
-        }
-        for (i=0; i<mdsData.length; ++i) {
-            var cluster = Number(mdsData[i].cluster) - 1;
-            cluster_paths[cluster] = cluster_paths[cluster] + "M" + vdat[i].join("L") + "Z";
-        }
-          
-        svg.select("#voronoi-group")
-            .selectAll("path")
-            .data(cluster_paths)
-            .enter().append("path")
-            .style("fill", function(d, i) { return d3.rgb(color(String(i+1))).brighter(1.5); })
-            // .style("stroke", function(d, i) { return d3.rgb(color(String(i+1))).brighter(1.5); })
-            .style("fill-opacity", 0.5)
-            .attr("d", function(d) { return d; })
-              .on("mouseover", function(d, i) {
-                  current_hover.element = this;
-                  current_hover.what = "cluster";
-                  current_hover.object = String(i+1);
-                  update_drawing();
-              })
-              .on("mouseout", function(d, i) {
-                  current_hover.element = undefined;
-                  current_hover.what = "nothing";
-                  current_hover.object = undefined;
-                  update_drawing();
-              })
-            .on("click", function(d, i) {
-                  current_clicked.element = this;
-                  current_clicked.what = "cluster";
-                  current_clicked.object = String(i+1);
-                  update_drawing();
-            });
-      }
       
       //attach term-topic frequencies for access upon activating a word (this data will resize the bubbles)
       var mds = svg.selectAll("mds-data2")
