@@ -40,7 +40,6 @@ rel.freq <- token.frequency/N
 phi.freq <- t(t(phi) * topic.proportion * N)
 
 shinyServer(function(input, output) {
-  
   # Compute distance matrix between topics 
   # We wrap this in its own reactive function so that it isn't recomputed if say the value of lambda changes
   computeDist <- reactive({
@@ -67,29 +66,32 @@ shinyServer(function(input, output) {
     return(list(mds.df = mds.df, x = x, y = y))
   })
   
-  output$mdsDat <- reactive({
-    
+  fitCluster <- reactive({
     # Bring in the necessary clustering data
     distDat <- computeDist()
-    mds.df <- distDat$mds.df
-    x <- distDat$x
-    y <- distDat$y
-
     # workaround errors if no clustering is done (ie, input$kmeans == 1)
-    mds.df$cluster <- 1
+    distDat$mds.df$cluster <- 1
     centers <- data.frame(x = 0, y = 0)
     if (input$kmeans > 1) { # and clustering info (if relevant)
-      cl <- kmeans(cbind(x, y), input$kmeans)
-      mds.df$cluster <- factor(cl$cluster)
+      cl <- kmeans(cbind(x=distDat$x, y=distDat$y), input$kmeans)
+      distDat$mds.df$cluster <- factor(cl$cluster)
       centers <- data.frame(cl$centers)
     }
-    
+    return(list(mds.df = distDat$mds.df, x = distDat$x, y = distDat$y, centers=centers))
+  })
+  
+  output$mdsDat <- reactive({
     ##############################################################################
     ### Create a df with the info neccessary to make the default OR new bar chart when selecting a topic or cluster.
     ### This functionality requires that we keep track of the top input$nTerms within each cluster and topic (as well as overall).
     ### The ranking of words under a topic is done via a weighted average of the lift and probability of the word given the topic.
     ### The ranking of words under a cluster is done via a similar weighted average (summing over the relevant topics)
     
+    dat <- fitCluster()
+    mds.df <- dat$mds.df
+    x <- dat$x
+    y <- dat$y 
+    centers <- dat$centers
     #get the top terms for each topic
     nTermseq <- 1:input$nTerms
     weight <- input$lambda*log(phi) + (1 - input$lambda)*log(phi/rel.freq) 
@@ -133,7 +135,7 @@ shinyServer(function(input, output) {
     t.w.t <- t(t.w)           # Change dimensions from W x K to K x W
     kernel <- t.w.t * log(t.w.t/topic.proportion)
     saliency <- token.frequency * colSums(kernel)
-
+    
     # By default, order the terms by saliency:
     top.df <- data.frame(Term = vocab[order(saliency, decreasing = TRUE)][nTermseq], Category = "Default")
     
@@ -150,7 +152,7 @@ shinyServer(function(input, output) {
     phi2 <- data.frame(phi.freq[keep, ], Term = vocab[keep])    
     t.phi <- reshape2::melt(phi2, id.vars = "Term", variable.name = "Category", value.name = "Freq2")
     all.df <- merge(all.df, t.phi, all.x = TRUE, sort = FALSE)
-
+    
     # Collect P(w|Cluster) for each possible word
     c.phi <- merge(t.phi, data.frame(Category = paste0("Topic", mds.df$topics), cluster = paste0("Cluster", mds.df$cluster)), 
                    all.x = TRUE, sort = FALSE)
@@ -160,7 +162,7 @@ shinyServer(function(input, output) {
     all.df$Freq[!is.na(all.df$Freq2)] <- all.df$Freq2[!is.na(all.df$Freq2)]
     all.df$Freq[!is.na(all.df$Freq3)] <- all.df$Freq3[!is.na(all.df$Freq3)]
     all.df <- all.df[, -grep("Freq[0-9]", names(all.df))]
-
+    
     # Infer the occurences within topic/cluster
     #all.df$Freq <- all.df$Total * all.df$Freq
     
@@ -169,7 +171,9 @@ shinyServer(function(input, output) {
     topic.table <- reshape2::melt(t.w2, id.vars = "Term", variable.name = "Topic", value.name = "Freq")
     
     return(list(mdsDat = mds.df, mdsDat2 = topic.table, barDat = all.df, 
-                centers = centers, nClust = input$kmeans, currentTopic = input$currentTopic))
+                centers = centers, nClust = input$kmeans))
   })
+  
+  
   
 })

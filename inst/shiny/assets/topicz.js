@@ -362,7 +362,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
     chart
       .attr("class", "x axis")
       .call(xAxis);
-
+/*
     // update drawing based on a selected topic in selectInput
     if (data['currentTopic'] != 0) { //0 represents no topic selected
       var currentTopic = d3.select("#Topic"+data['currentTopic'])[0][0];
@@ -374,6 +374,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
     } else
       // Have to update drawing in the case where shiny inputs have changed
       // but no mouse hover/clicks have happened (on the plot itself)
+*/
       update_drawing();
 
   }

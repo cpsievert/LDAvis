@@ -36,10 +36,10 @@ shinyUI(bootstrapPage(
   wellPanel(
     div(style = widget_style, sliderInput("kmeans", "Number of clusters", min=1, max=10, value=1)),
     div(style = widget_style,
-        sliderInput("nTerms", "Number of terms", min=1, max=50, value=35)
+        sliderInput("nTerms", "Number of terms", min=1, max=50, value=30)
     ), 
     div(style = widget_style,
-        sliderInput("lambda", "Value of lambda", min=0, max=1, value=1/3)
+        sliderInput("lambda", "Value of lambda", min=0, max=1, value=0.6)
     ),
     div(style = widget_style,
         selectInput("distance", "Distance Calculation", choices = c("Jensen-Shannon" = "JS", 
