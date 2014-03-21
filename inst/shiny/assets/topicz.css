@@ -33,18 +33,18 @@ this is the major grid line
 }
 */
 
-.x.axis .tick.major {
+.xaxis .tick.major {
   fill: black;
-  stroke: lightgrey;
+  stroke: black;
   stroke-width: 0.1;
-  opacity: 0.4;
+  opacity: 0.7;
 }
 
-.x.axis .tick.minor {
+.xaxis .tick.minor {
   display: none;
 }
 
-.x.axis path {
+.xaxis path {
   display: none;
 }
 

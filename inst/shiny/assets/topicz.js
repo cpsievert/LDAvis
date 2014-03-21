@@ -153,9 +153,8 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .attr("class", "points")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); 
 
-      
-      svg.append("g").attr("id", "bar-freqs")
-        .attr("transform", "translate(" + +(mdswidth + 2*margin.left) + "," + margin.top + ")"); //place bar chart to the right of the mds plot;
+      svg.append("g").attr("id", "bar-freqs") //place bar chart to the right of the mds plot;
+        .attr("transform", "translate(" + +(mdswidth + 2*margin.left) + "," + margin.top + ")"); 
 
       // moved this before the circles are drawn, so that hovering over a circle doesn't get interrupted
       // by hovering over one of the axis lines.      
@@ -246,7 +245,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
             });
       }
 
-            points  //draw circles
+      points  //draw circles
         .append("circle")
         .attr("class", "dot")
         // Setting the id will allow us to select points via the value of selectInput
@@ -361,7 +360,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
                     .tickSubdivide(true);
 
     chart
-      .attr("class", "x axis")
+      .attr("class", "xaxis")
       .call(xAxis);
 /*
     // update drawing based on a selected topic in selectInput
@@ -462,8 +461,8 @@ function cluster_on(d) {
                   .tickSize(-barheight)
                   .tickSubdivide(true);
     //redraw x-axis
-    d3.selectAll(".x.axis")
-      .attr("class", "x axis")
+    d3.selectAll(".xaxis")
+      .attr("class", "xaxis")
       .call(xAxis);
 
 }
@@ -543,8 +542,8 @@ function topic_on(d) {
                   .tickSize(-barheight)
                   .tickSubdivide(true);
 
-    d3.selectAll(".x.axis")
-      .attr("class", "x axis")
+    d3.selectAll(".xaxis")
+      .attr("class", "xaxis")
       .call(xAxis);
 
     var docDat = d3.select(".doc-list").selectAll(".hidden-docs").data().filter(function(d) { return d.Category == "Topic"+topics });
@@ -616,8 +615,8 @@ function cluster_off() {
                   .tickSize(-barheight)
                   .tickSubdivide(true);
     //redraw x-axis
-    d3.selectAll(".x.axis")
-      .attr("class", "x axis")
+    d3.selectAll(".xaxis")
+      .attr("class", "xaxis")
       .call(xAxis);
         
 }
@@ -675,8 +674,8 @@ function topic_off() {
                   .tickSize(-barheight)
                   .tickSubdivide(true);
     //redraw x-axis
-    d3.selectAll(".x.axis")
-      .attr("class", "x axis")
+    d3.selectAll(".xaxis")
+      .attr("class", "xaxis")
       .call(xAxis);
         
 }
