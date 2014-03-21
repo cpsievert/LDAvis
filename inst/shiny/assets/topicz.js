@@ -223,7 +223,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
             .enter().append("path")
             .style("fill", function(d, i) { return d3.rgb(color(String(i+1))).brighter(1.5); })
             // .style("stroke", function(d, i) { return d3.rgb(color(String(i+1))).brighter(1.5); })
-            .style("fill-opacity", 0.5)
+            .style("fill-opacity", 0.3)
             .attr("d", function(d) { return d; })
               .on("mouseover", function(d, i) {
                   current_hover.element = this;
@@ -546,19 +546,6 @@ function topic_on(d) {
       .attr("class", "xaxis")
       .call(xAxis);
 
-    var docDat = d3.select(".doc-list").selectAll(".hidden-docs").data().filter(function(d) { return d.Category == "Topic"+topics });
-    
-    //remove any shown documents
-    d3.selectAll(".topdocs").remove();
-    //console.log(docDat);
-    //Draw the default documents
-    d3.select(".doc-list").selectAll("topdocs")
-      .data(docDat)
-      .enter()
-        .append("li")
-        .attr("class", "topdocs")
-        .text(function(d) { return d.Document; });
-
 }
 
 function cluster_off() {
@@ -567,13 +554,10 @@ function cluster_off() {
       .style("fill-opacity", 0.5);  //go back to original opacity
 
     //remove the tool-tip
-    d3.selectAll(".bubble-tool").remove();
+    //d3.selectAll(".bubble-tool").remove();
 
     //remove the blue bars of cluster frequencies
     d3.selectAll(".overlay").remove();
-
-    //remove any shown documents
-    d3.selectAll(".topdocs").remove();
 
     //go back to 'default' bar chart
     //Is there a better way to do this with .exit()?
@@ -631,9 +615,6 @@ function topic_off() {
 
     //remove the blue bars of cluster frequencies
     d3.selectAll(".overlay").remove();
-
-    //remove any shown documents
-    d3.selectAll(".topdocs").remove();
 
     //go back to 'default' bar chart
     //Is there a better way to do this with .exit()?

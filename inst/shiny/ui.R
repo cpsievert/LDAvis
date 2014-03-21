@@ -27,7 +27,6 @@ top_margin <-
 shinyUI(bootstrapPage(
   
   tags$head(
-    tags$script(src = "https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"),
     tags$script(src = "assets/d3.v3.js"),
     tags$script(src ="assets/topicz.js"),
     tags$link(rel = 'stylesheet', type = 'text/css', href = 'assets/topicz.css')
@@ -55,13 +54,7 @@ shinyUI(bootstrapPage(
     )
   ),
 
-  tabsetPanel(
-    tabPanel("LDA Visualization", 
-             #the el parameter in the js code selects the outputIds
-             HTML(paste0("<div id=\"mdsDat\" class=\"shiny-scatter-output\"><svg /></div>")),
-             div(style=paste(side_margins, top_margin, sep="\n   "), class='doc-list')
-             ), 
-    #tabPanel("Dat", verbatimTextOutput(outputId = "dat")),
-    tabPanel("Instructions", div(style = side_margins, includeMarkdown("assets/index.md")))
+  mainPanel(#the el parameter in the js code selects the outputIds
+             HTML(paste0("<div id=\"mdsDat\" class=\"shiny-scatter-output\"><svg /></div>"))
   )
 ))
