@@ -261,14 +261,12 @@ var scatterOutputBinding = new Shiny.OutputBinding();
             current_hover.what = "topic";
             current_hover.object = d;
             update_drawing();
-            show_state();
         })  //highlight circle and print the relevant proportion within circle
         .on("click", function(d) {
             current_clicked.element = this;
             current_clicked.what = "topic";
             current_clicked.object = d;
             update_drawing();
-            show_state();
         })
         .on("mouseout", function(d) {
             current_hover.element = undefined;
@@ -557,7 +555,7 @@ function cluster_off(d) {
       .style("fill-opacity", 0.4);  //go back to original opacity
 
     //remove the tool-tip
-    //d3.selectAll(".bubble-tool").remove();
+    d3.selectAll(".bubble-tool").remove();
 
     //remove the blue bars of cluster frequencies
     d3.selectAll(".overlay").remove();
@@ -609,7 +607,7 @@ function cluster_off(d) {
 }
 
 function topic_off(d) {
-    var circle = d3.select(this);
+    var circle = d3.select("#Topic"+d.topics);
     circle
       .style("opacity", 0.4);  //go back to original opacity
 
