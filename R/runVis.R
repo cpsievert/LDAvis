@@ -1,12 +1,11 @@
 #' Run shiny/D3 visualization
 #' 
-#' The function assumes two objects named 'phi' and 'freq' exist in the global environment. The phi matrix have
-#' tokens as rownames and topics as colnames. The rows should be sorted in decreasing order based on overall frequency
-#' see \link{sortPhi}. 'freq' should be an integer vector with number of times each token appears in the corpus.
-#' Note the ordering of the counts have to match the ordering of the rownames of phi.
+#' This function is a very small wrapper around \link{shiny::runApp}. Before calling this function, make sure
+#' you have four objects named 'phi', 'token.frequency', 'vocab', and 'topic.proportion' exist in the global environment
+#' and you also \link{check.inputs}.
 #' 
-#' @param ... Arguments passed to \code{shiny::runApp}.
-#' @return Returns NULL, but will prompt browser to open a visualization based on the current value of 'phi' and 'freq'.
+#' @param ... Arguments passed to \link{shiny::runApp}.
+#' @seealso \link{check.inputs}
 #' @importFrom shiny runApp
 #' @export
 #' @examples

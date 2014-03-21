@@ -5,22 +5,14 @@
 runVis(...)
 }
 \arguments{
-  \item{...}{Arguments passed to \code{shiny::runApp}.}
-}
-\value{
-Returns NULL, but will prompt browser to open a
-visualization based on the current value of 'phi' and
-'freq'.
+  \item{...}{Arguments passed to \link{shiny::runApp}.}
 }
 \description{
-The function assumes two objects named 'phi' and 'freq'
-exist in the global environment. The phi matrix have tokens
-as rownames and topics as colnames. The rows should be
-sorted in decreasing order based on overall frequency see
-\link{sortPhi}. 'freq' should be an integer vector with
-number of times each token appears in the corpus. Note the
-ordering of the counts have to match the ordering of the
-rownames of phi.
+This function is a very small wrapper around
+\link{shiny::runApp}. Before calling this function, make
+sure you have four objects named 'phi', 'token.frequency',
+'vocab', and 'topic.proportion' exist in the global
+environment and you also \link{check.inputs}.
 }
 \examples{
 # Example using AP documents from http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
@@ -37,11 +29,13 @@ for (i in 1:length(z)) assign(names(z)[i], z[[i]])
 runVis()
 
 # Example using Newsgroup documents from http://qwone.com/~jason/20Newsgroups/
-
 data("Newsgroupdata", package = "LDAvis")
 z <- check.inputs(K=50, W=22524, phi=Newsgroupdata$phi, token.frequency=Newsgroupdata$token.frequency,
                    vocab=Newsgroupdata$vocab, topic.proportion=Newsgroupdata$topic.proportion)
 for (i in 1:length(z)) assign(names(z)[i], z[[i]])
 runVis()
+}
+\seealso{
+\link{check.inputs}
 }
 
