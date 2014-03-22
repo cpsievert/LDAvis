@@ -354,7 +354,7 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .attr("class", "terms")
         .attr("y", function(d) { return y(d.Term)+10; })
         .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
-        .attr("dominant-baseline", "middle")
+        .attr("dominant-baseline", "middle") //vertical alignment
         .text(function(d) { return d.Term; })
         .on("mouseover", text_on)
         .on("mouseout", text_off);
@@ -446,6 +446,7 @@ function cluster_on(d) {
       .attr("x", -5)
       .attr("y", function(d) { return y(d.Term)+5; })
       .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
+      .attr("dominant-baseline", "middle") //vertical alignment
       .text(function(d) { return d.Term; });
 
  //Create blue bars (drawn over the gray ones) to signify the frequency under the selected cluster
@@ -529,6 +530,7 @@ function topic_on(d) {
         .attr("x", -5)
         .attr("y", function(d) { return y(d.Term)+5; })
         .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
+        .attr("dominant-baseline", "middle") //vertical alignment
         .text(function(d) { return d.Term; });
 
     //Create red bars (drawn over the gray ones) to signify the frequency under the selected topic
@@ -600,6 +602,7 @@ function cluster_off(d) {
         .attr("x", -5)
         .attr("y", function(d) { return y(d.Term)+5; })
         .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
+        .attr("dominant-baseline", "middle") //vertical alignment
         .text(function(d) { return d.Term; });
 
       // adapted from http://bl.ocks.org/mbostock/1166403
@@ -656,6 +659,7 @@ function topic_off(d) {
         .attr("x", -5)
         .attr("y", function(d) { return y(d.Term)+5; })
         .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
+        .attr("dominant-baseline", "middle") //vertical alignment
         .text(function(d) { return d.Term; });
 
      // adapted from http://bl.ocks.org/mbostock/1166403
