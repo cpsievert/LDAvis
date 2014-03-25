@@ -42,6 +42,7 @@ check.inputs <- function(K=integer(), W=integer(), phi=matrix(), token.frequency
   stopifnot(W == length(token.frequency))
   stopifnot(W == length(vocab))
   stopifnot(K == length(topic.proportion))
+  message("Your inputs look good! Go ahead and runVis()")
 
   # order rows of phi, token.frequency, and vocabulary in decreasing order of token.frequency:
   token.order <- order(token.frequency, decreasing=TRUE)

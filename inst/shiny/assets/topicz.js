@@ -278,13 +278,20 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       // moved this below the drawing of the circles so that if a circle occludes the 'clear selection' link, 
       // the user can still click on the link to clear the selection.
       svg.append("text")
-            .text("Clear selection")
-            .attr("x", 10)
+            .text("Click here to clear selection")
+            .attr("x", mdswidth-150)
             .attr("y", -10)
+            .attr("font-weight", "bold")
             .attr("cursor", "pointer")
             .on("click", function() {
                 reset_state();
             });
+
+      // Basic text to tell user to click on stuff!!!
+      svg.append("text")
+          .text("Click elements below to freeze selection")
+          .attr("x", 10)
+          .attr("y", -10)
       
       //attach term-topic frequencies for access upon activating a word (this data will resize the bubbles)
       var mds = svg.selectAll("mds-data2")
@@ -340,13 +347,14 @@ var scatterOutputBinding = new Shiny.OutputBinding();
         .style("fill", "gray")  
         .attr("opacity", 0.4);  
 
-      //Add word labels to the top of each bar
+      //Add word labels
       basebars
         .append("text")
         .attr("x", -5)
         .attr("class", "terms")
         .attr("y", function(d) { return y(d.Term)+10; })
         .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
+        .attr("dominant-baseline", "middle") //vertical alignment
         .text(function(d) { return d.Term; })
         .on("mouseover", text_on)
         .on("mouseout", text_off);
@@ -396,7 +404,7 @@ function cluster_on(d) {
   for (var i=0; i<clustDat.length; i++) {
       Freq = Freq + clustDat[i]['Freq'];
   }
-  var Freq = Math.round(Freq)
+  var Freq = Freq.toFixed(1); //round to one decimal place
 
   //append a 'title' to bar chart with data relevant to the cluster of interest
   d3.select("svg")
@@ -407,7 +415,7 @@ function cluster_on(d) {
     .attr("class", "bubble-tool")       //set class so we can remove it when highlight_off is called  
     .style("font-size", "16px") 
     .style("text-decoration", "underline")  
-    .text(Freq + "% of tokens fall under cluster " + cluster);
+    .text(Freq + "% of the corpus comes from cluster " + cluster);
 
   var dat2 = d3.select("svg").selectAll(".bar-chart").data().filter(function(d) { return d.Category == "Cluster"+cluster });
   //var dat2 = dat.sort(fancysort("Order"));
@@ -435,9 +443,6 @@ function cluster_on(d) {
   d3.selectAll(".terms")
     .data(dat2)
     .transition()
-      .attr("x", -5)
-      .attr("y", function(d) { return y(d.Term)+5; })
-      .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
       .text(function(d) { return d.Term; });
 
  //Create blue bars (drawn over the gray ones) to signify the frequency under the selected cluster
@@ -472,7 +477,7 @@ function topic_on(d) {
     circle
       .style("opacity", 0.8); 
 
-    var Freq = Math.round(d.Freq), topics = d.topics, cluster = d.cluster;
+    var Freq = d.Freq.toFixed(1), topics = d.topics, cluster = d.cluster;
 
     //remove the title with cluster proportion
     var text = d3.select(".bubble-tool");
@@ -487,7 +492,7 @@ function topic_on(d) {
       .attr("class", "bubble-tool")       //set class so we can remove it when highlight_off is called  
       .style("font-size", "16px") 
       .style("text-decoration", "underline")  
-      .text(Freq + "% of tokens fall under topic " + topics);
+      .text(Freq + "% of the corpus comes from topic " + topics);
 
     var dat2 = d3.select("svg").selectAll(".bar-chart").data().filter(function(d) { return d.Category == "Topic"+topics });
     //var dat2 = dat.sort(fancysort("Order"));
@@ -518,9 +523,6 @@ function topic_on(d) {
     d3.selectAll(".terms")
       .data(dat2)
       .transition()
-        .attr("x", -5)
-        .attr("y", function(d) { return y(d.Term)+5; })
-        .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
         .text(function(d) { return d.Term; });
 
     //Create red bars (drawn over the gray ones) to signify the frequency under the selected topic
@@ -589,9 +591,6 @@ function cluster_off(d) {
     d3.selectAll(".terms")
       .data(dat2)
       .transition()
-        .attr("x", -5)
-        .attr("y", function(d) { return y(d.Term)+5; })
-        .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
         .text(function(d) { return d.Term; });
 
       // adapted from http://bl.ocks.org/mbostock/1166403
@@ -645,9 +644,6 @@ function topic_off(d) {
     d3.selectAll(".terms")
       .data(dat2)
       .transition()
-        .attr("x", -5)
-        .attr("y", function(d) { return y(d.Term)+5; })
-        .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
         .text(function(d) { return d.Term; });
 
      // adapted from http://bl.ocks.org/mbostock/1166403
