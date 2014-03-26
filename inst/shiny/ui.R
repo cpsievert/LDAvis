@@ -48,7 +48,14 @@ shinyUI(bootstrapPage(
     )
   ),
   
-  #the el parameter in the js code selects the outputIds
-  mainPanel(HTML(paste0("<div id=\"mdsDat\" class=\"shiny-scatter-output\"><svg /></div>"))
+  tabsetPanel(
+    tabPanel("Overview",
+             HTML("<div id=\"mdsDat\" class=\"shiny-scatter-output\"><svg /></div>"), #the el parameter in the js code selects the outputIds
+             div(style=paste(side_margins, top_margin, sep="\n "), class='doc-list')
+    ),
+    tabPanel("Dat", verbatimTextOutput(outputId = "dat"))
   )
+  
+  #the el parameter in the js code selects the outputIds
+  #mainPanel(HTML("<div id=\"mdsDat\" class=\"shiny-scatter-output\"><svg /></div>"))
 ))

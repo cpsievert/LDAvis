@@ -317,6 +317,17 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       var yAxis  = d3.svg.axis()
                          .scale(y);
 
+      //append a 'title' to bar chart with data relevant to the cluster of interest
+      svg
+        .append("text")
+        .attr("x", mdswidth + 2*margin.left + barwidth/2)             
+        .attr("y", 0)
+        .attr("text-anchor", "middle")
+        .attr("class", "bubble-tool")       //set class so we can remove it when highlight_off is called  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Most salient tokens");
+
       // Add a group for the bar chart
       var chart = svg
         .append("g")
@@ -412,7 +423,7 @@ function cluster_on(d) {
     .attr("x", mdswidth + 2*margin.left + barwidth/2)             
     .attr("y", margin.top/2)
     .attr("text-anchor", "middle")
-    .attr("class", "bubble-tool")       //set class so we can remove it when highlight_off is called  
+    .attr("class", "bubble-tool")     
     .style("font-size", "16px") 
     .style("text-decoration", "underline")  
     .text(Freq + "% of the corpus comes from cluster " + cluster);

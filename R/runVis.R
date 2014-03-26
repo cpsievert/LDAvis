@@ -28,6 +28,9 @@
 #' z <- check.inputs(K=50, W=22524, phi=Newsgroupdata$phi, token.frequency=Newsgroupdata$token.frequency,
 #'                    vocab=Newsgroupdata$vocab, topic.proportion=Newsgroupdata$topic.proportion)
 #' for (i in 1:length(z)) assign(names(z)[i], z[[i]])
+#' 
+#' # Set a seed to ensure k-means produces the same clusters everytime you runVis()
+#' set.seed(333)
 #' runVis()
 #'
 
