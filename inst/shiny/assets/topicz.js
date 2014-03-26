@@ -408,6 +408,10 @@ function cluster_on(d) {
     .style("fill-opacity", 0.5)
   var cluster = d;
 
+      //remove the title 
+    var text = d3.select(".bubble-tool");
+      text.remove();
+
    //filter the data bound to the mdsplot according to the clutser of interest
   var clustDat = d3.select("svg").selectAll(".dot").data().filter(function(d) { return d.cluster == cluster });
     
