@@ -9,7 +9,7 @@ Depends:
     shiny,
     MASS,
     proxy,
-    plyr,
+    plyr (>= 1.8.1),
     reshape2
 License: MIT
 Suggests:
