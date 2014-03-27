@@ -317,21 +317,21 @@ var scatterOutputBinding = new Shiny.OutputBinding();
       var yAxis  = d3.svg.axis()
                          .scale(y);
 
-      //append a 'title' to bar chart with data relevant to the cluster of interest
+      // Add a group for the bar chart
+      var chart = svg
+        .append("g")
+        .attr("transform", "translate(" + +(mdswidth + 2*margin.left) + "," + margin.top + ")");
+
+            //add a 'title' to bar chart 
       svg
         .append("text")
-        .attr("x", mdswidth + 2*margin.left + barwidth/2)             
-        .attr("y", 0)
+        .attr("x", mdswidth + 2*margin.left + barwidth/2)
+        .attr("y", -margin.top/2)
         .attr("text-anchor", "middle")
         .attr("class", "bubble-tool")       //set class so we can remove it when highlight_off is called  
         .style("font-size", "16px") 
         .style("text-decoration", "underline")  
         .text("Most salient tokens");
-
-      // Add a group for the bar chart
-      var chart = svg
-        .append("g")
-        .attr("transform", "translate(" + +(mdswidth + 2*margin.left) + "," + margin.top + ")");
 
       // Bind all possible instances of bar chart so that we can access it upon interaction
       // IS THERE A WAY TO DO THIS WITHOUT CREATING A SHIT LOAD OF ELEMENTS?
@@ -571,8 +571,8 @@ function cluster_off(d) {
     circle
       .style("fill-opacity", 0.4);  //go back to original opacity
 
-    //remove the tool-tip
-    d3.selectAll(".bubble-tool").remove();
+    //change to default title
+    d3.selectAll(".bubble-tool").text("Most salient tokens");
 
     //remove the blue bars of cluster frequencies
     d3.selectAll(".overlay").remove();
@@ -625,9 +625,9 @@ function topic_off(d) {
     circle
       .style("opacity", 0.4);  //go back to original opacity
 
-    //remove the tool-tip
-    d3.selectAll(".bubble-tool").remove();
-
+    //change to default title
+    d3.selectAll(".bubble-tool").text("Most salient tokens");
+      
     //remove the blue bars of cluster frequencies
     d3.selectAll(".overlay").remove();
 
