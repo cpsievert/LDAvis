@@ -2,8 +2,10 @@
 
 ## Installing the package
 
-`library(devtoools); install_github("cpsievert/LDAvis")`
+Currently there isn't a release on [CRAN](http://cran.r-project.org/).
+
+You can, however, decompress the zip ball or tar ball and run `R CMD INSTALL` on it or use `library(devtools); install("/path/to/package")`.
 
 ## Using the package
 
-Enter `runVis()` to see an example. See the help page `?runVis` for details on how to create your own visualization.
+Once installed, load `library(LDAvis)`. See the help page `?runVis` for examples and details on how to create your own visualization.
