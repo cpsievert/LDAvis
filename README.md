@@ -4,7 +4,7 @@
 
 Currently there isn't a release on [CRAN](http://cran.r-project.org/).
 
-If you are familiar with [devtools](http://cran.r-project.org/web/packages/devtools/index.html), you can install with this line:
+If you are familiar with [devtools](http://cran.r-project.org/web/packages/devtools/index.html), you can install `LDAvis` with this line:
 
 `devtools::install_github("cpsievert/LDAvis")`
 
