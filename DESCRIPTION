@@ -16,3 +16,7 @@ Depends:
 License: MIT
 Suggests:
     topicmodels
+Collate:
+    'createjson.R'
+    'dat.R'
+    'runVis.R'

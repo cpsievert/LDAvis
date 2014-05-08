@@ -2,8 +2,9 @@
 \alias{createJSON}
 \title{Create the JSON object to read into the javascript visualization}
 \usage{
-createJSON(K = integer(), phi = matrix(), term.frequency = integer(),
-  vocab = character(), topic.proportion, n.terms = 30)
+  createJSON(K = integer(), phi = matrix(),
+    term.frequency = integer(), vocab = character(),
+    topic.proportion, n.terms = 30)
 }
 \arguments{
   \item{K}{integer, number of topics in the fitted LDA
@@ -29,11 +30,36 @@ createJSON(K = integer(), phi = matrix(), term.frequency = integer(),
   Recommended to be between 10 and 50.}
 }
 \description{
-This function creates the JSON object that feeds the
-javascript visualization
+  This function creates the JSON object that feeds the
+  javascript visualization that is currently stored in
+  inst/html/
 }
 \examples{
-# Example using AP documents from
-# http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
+# Example using Newsgroup documents from
+# http://qwone.com/~jason/20Newsgroups/
+
+data("Newsgroupdata", package = "LDAvis")
+
+# Check the inputs and sort topics by frequency:
+z <- check.inputs(K=50, W=22524, phi=Newsgroupdata$phi,
+                  term.frequency=Newsgroupdata$term.frequency,
+                  vocab=Newsgroupdata$vocab,
+                  topic.proportion=Newsgroupdata$topic.proportion)
+
+# Assign the elements of Newsgroupdata to global variables
+# and note that the topics have been re-ordered
+for (i in 1:length(z)) assign(names(z)[i], z[[i]])
+colnames(phi) <- 1:K
+
+# This function takes 1-2 minutes to set up the data:
+json <- createJSON(K=K, phi=phi, term.frequency=term.frequency, vocab=vocab,
+                   topic.proportion=topic.proportion, n.terms=30)
+
+# Save the object to a .json file in the LDAvis/inst/html/ directory
+cat(json, file="~/LDAvis/inst/html/lda.json")
+
+# From LDAvis/inst/html/ serve the page locally
+# by typing 'python -m SimpleHTTPServer' into the terminal
+# and enter 'localhost:8000' into your browser
 }
 
