@@ -12,6 +12,7 @@ Depends:
     proxy,
     plyr (>= 1.8.1),
     reshape2
+    RJSONIO
 License: MIT
 Suggests:
     topicmodels
