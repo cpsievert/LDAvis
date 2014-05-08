@@ -29,10 +29,14 @@
   the barcharts of the interactive viz. Default is 30.
   Recommended to be between 10 and 50.}
 }
+\value{
+  an JSON object in R that can be written to a file to feed
+  the interactive visualization
+}
 \description{
   This function creates the JSON object that feeds the
   javascript visualization that is currently stored in
-  inst/html/
+  'path-to-LDAvis/LDAvis/inst/html/'
 }
 \examples{
 # Example using Newsgroup documents from
@@ -56,9 +60,9 @@ json <- createJSON(K=K, phi=phi, term.frequency=term.frequency, vocab=vocab,
                    topic.proportion=topic.proportion, n.terms=30)
 
 # Save the object to a .json file in the LDAvis/inst/html/ directory
-cat(json, file="~/LDAvis/inst/html/lda.json")
+cat(json, file="path-to-LDAvis/LDAvis/inst/html/lda.json")
 
-# From LDAvis/inst/html/ serve the page locally
+# From 'path-to-LDAvis/LDAvis/inst/html/' serve the page locally
 # by typing 'python -m SimpleHTTPServer' into the terminal
 # and enter 'localhost:8000' into your browser
 }

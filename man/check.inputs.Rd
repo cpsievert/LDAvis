@@ -1,6 +1,7 @@
 \name{check.inputs}
 \alias{check.inputs}
-\title{Check the coherence of the input objects, and sort terms and topics in decreasing order of frequency}
+\title{Check the coherence of the input objects, and sort terms and topics in
+decreasing order of frequency}
 \usage{
   check.inputs(K = integer(), W = integer(),
     phi = matrix(), term.frequency = integer(),
@@ -49,9 +50,11 @@
   number of tokens in each document.
 }
 \examples{
-# Example using AP documents from http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
+# Example using AP documents from
+# http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
 data("APdata", package = "LDAvis")
-x <- check.inputs(K=40, W=10473, phi=APdata$phi, term.frequency=APdata$term.frequency,
+x <- check.inputs(K=40, W=10473, phi=APdata$phi,
+                  term.frequency=APdata$term.frequency,
                   vocab=APdata$vocab, topic.proportion=APdata$topic.proportion)
 }
 

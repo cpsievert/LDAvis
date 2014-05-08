@@ -1,7 +1,7 @@
 #' Create the JSON object to read into the javascript visualization
 #' 
 #' This function creates the JSON object that feeds the javascript visualization
-#' that is currently stored in inst/html/
+#' that is currently stored in 'path-to-LDAvis/LDAvis/inst/html/'
 #' 
 #' @param K integer, number of topics in the fitted LDA model
 #'
@@ -20,6 +20,9 @@
 #' @param n.terms integer, the number of terms to display in the barcharts
 #' of the interactive viz. Default is 30. Recommended to be between 10 and 50.
 #'
+#' @return an JSON object in R that can be written to a file to feed the
+#' interactive visualization
+#' 
 #' @export
 #' @examples
 #' 
@@ -44,9 +47,9 @@
 #'                    topic.proportion=topic.proportion, n.terms=30)
 #'
 #' # Save the object to a .json file in the LDAvis/inst/html/ directory
-#' cat(json, file="~/LDAvis/inst/html/lda.json")
+#' cat(json, file="path-to-LDAvis/LDAvis/inst/html/lda.json")
 #'
-#' # From LDAvis/inst/html/ serve the page locally
+#' # From 'path-to-LDAvis/LDAvis/inst/html/' serve the page locally
 #' # by typing 'python -m SimpleHTTPServer' into the terminal
 #' # and enter 'localhost:8000' into your browser
 

@@ -337,7 +337,7 @@ function topic_on(d) {
     var circle = d3.select(this);
     circle.style("opacity", 0.8); 
 
-    var Freq = Math.round(d.Freq), topics = d.topics, cluster = d.cluster;
+    var Freq = Math.round(d.Freq*10)/10, topics = d.topics, cluster = d.cluster;
     current_topic = +topics;
 
     // remove the title with cluster proportion
