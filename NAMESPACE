@@ -1,3 +1,4 @@
 export(check.inputs)
+export(createJSON)
 export(runVis)
 importFrom(shiny,runApp)
