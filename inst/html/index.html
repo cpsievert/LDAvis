@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="lda.css">
+  <title>LDA Interactive Viz</title>
+</head>
+
+<body>
+
+<script src="d3.v3.js"></script>
+
+<!--div to enter a value to select a specific topic-->
+<div id="topicentry" style="float: left; margin-left: 30px; padding-bottom: 10px; font: 14px sans-serif; background-color:white">
+<form onSubmit="return change_topic()">
+Selected Topic: 
+<input type="text" id="topic" size="25">
+<input type="submit" value="Submit">
+<a href="#" id="decrease_topic"> Previous Topic </a>
+&nbsp
+<a href="#" id="increase_topic"> Next Topic </a>
+</form>
+</div>
+
+<!--Div to input value of lambda using text box-->
+<div id="lambdaentry" style="float: left; margin-left: 30px; padding-bottom: 10px; font: 14px sans-serif; background-color:white">
+<form onSubmit="return change_lambda()">
+Lambda = 
+<input type="text" id="lambda" size="25">
+<input type="submit" value="Submit">
+<a href="#" id="decrease_lambda"> Lambda - 0.1 </a>
+&nbsp
+<a href="#" id="increase_lambda"> Lambda + 0.1 </a>
+</form>
+</div>
+
+
+<div id="errorMsg"></div>
+
+<div id="lda" style="clear: left; background-color: white"></div>
+
+<script src="ldaviz-lambdatransition.js"></script>
+
+</body>
+
+</html>
