@@ -82,6 +82,8 @@ createJSON <- function(K = integer(), phi = matrix(),
   lambda.seq <- seq(0, 1, 0.01)
   ll <- length(lambda.seq)
   term.vectors <- as.list(rep(0, K))
+  print(paste0("Looping through topics to compute top-", n.terms, 
+               "most relevant terms for grid of lambda values"))
   for (k in 1:K) {
     print(k)
     lift <- phi[, k]/marginal
