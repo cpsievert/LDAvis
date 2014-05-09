@@ -81,7 +81,7 @@ createJSON <- function(K = integer(), phi = matrix(),
   fit.cmd <- cmdscale(d, k=2)
   x <- fit.cmd[, 1]
   y <- fit.cmd[, 2]
-  lab <- gsub("Topic", "", names(x))
+  lab <- 1:K
   loc.df <- data.frame(x, y, topics=lab, stringsAsFactors=FALSE)
 
   # create the topics data.frame:
@@ -147,7 +147,7 @@ createJSON <- function(K = integer(), phi = matrix(),
   tinfo <- rbind(tinfo, default)
 
   # unique terms across all topics and all values of lambda
-  ut <- su(tinfo[, 1])
+  ut <- sort(unique(tinfo[, 1]))
   # indices of unique terms in the vocab
   m <- sort(match(ut, vocab))
   # term-topic frequency table

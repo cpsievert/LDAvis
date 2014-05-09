@@ -25,18 +25,18 @@ KL <- function(x, y) {
   0.5*sum(x*log(x/y)) + 0.5*sum(y*log(y/x))
 }
 
-# This app assumes that 'phi', 'token.frequency', 'vocab', and 'topic.proportion' exist in the global environment.
+# This app assumes that 'phi', 'term.frequency', 'vocab', and 'topic.proportion' exist in the global environment.
 # This is not optimal, but it will have to do for now
 # See this discussion on passing arguments to shiny apps -- https://groups.google.com/forum/#!topic/shiny-discuss/y0MTpt5I_DE
 
 # Set the values of a few parameters related to the size of the data set:
 K <- length(topic.proportion)  # number of topics
 W <- length(vocab)             # size of vocabulary
-N <- sum(token.frequency)      # total number of tokens in the data
+N <- sum(term.frequency)      # total number of tokens in the data
 
 # This is necessary for subsetting data upon selection in topicz.js
 colnames(phi) <- paste0("Topic", 1:K)
-rel.freq <- token.frequency/N
+rel.freq <- term.frequency/N
 
 # compute the token-topic occurrence table:
 phi.freq <- t(t(phi) * topic.proportion * N)
@@ -135,7 +135,7 @@ shinyServer(function(input, output) {
     t.w <- phi/apply(phi, 1, sum)
     t.w.t <- t(t.w)           # Change dimensions from W x K to K x W
     kernel <- t.w.t * log(t.w.t/topic.proportion)
-    saliency <- token.frequency * colSums(kernel)
+    saliency <- term.frequency * colSums(kernel)
     
     # By default, order the terms by saliency:
     salient <- vocab[order(saliency, decreasing = TRUE)][nTermseq]
@@ -144,7 +144,7 @@ shinyServer(function(input, output) {
     # put together the most salient words with the top words for each topic/cluster
     all.df <- rbind(topic.df, clust.df, top.df)
     # Overall frequency for each possible word
-    all.df$Total <- token.frequency[match(all.df$Term, vocab)]
+    all.df$Total <- term.frequency[match(all.df$Term, vocab)]
     # Initiate topic/cluster specific frequencies with 0 since that is used for the 'default' category
     all.df$Freq <- 0
     
