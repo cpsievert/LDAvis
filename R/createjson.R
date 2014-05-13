@@ -26,7 +26,7 @@
 #' @export
 #' @examples
 #' 
-#' # Example using Newsgroup documents from 
+#' # This example uses Newsgroup documents from 
 #' # http://qwone.com/~jason/20Newsgroups/
 #'
 #' data("Newsgroupdata", package = "LDAvis")
@@ -49,25 +49,28 @@
 #' # Save the object to a .json file in the LDAvis/inst/html/ directory
 #' cat(json, file="path-to-LDAvis/LDAvis/inst/html/lda.json")
 #'
-#' # From 'path-to-LDAvis/LDAvis/inst/html/' serve the page locally
-#' # by typing 'python -m SimpleHTTPServer' into the terminal
-#' # and enter 'localhost:8000' into your browser
+#' # Directory to 'smooth' lambda transition example
+#' example.dir <- system.file("html", package = "LDAvis")
+#' # You *could* run `python -m SimpleHTTPServer` under this directory or simply run
+#' library(servr)
+#' servr::httd(example.dir) # prompts browser to serve the vis
+#' 
+#'
+
 
 createJSON <- function(K = integer(), phi = matrix(), 
                        term.frequency = integer(), vocab = character(), 
-                       topic.proportion, n.terms = 30) {
+                       topic.proportion = numeric(), n.terms = 30) {
 
-  # function to compute jensen-shannon divergence:
-  jensen.shannon.divergence <- function(p, q) {
-    m <- 0.5*(p + q)
-    0.5*sum(p*log(p/m)) + 0.5*sum(q*log(q/m))
-  }
+  if (length(vocab) == 0) vocab <- row.names(phi)
   
   # Set some relevant local variables and run a few basic checks:
   N <- sum(term.frequency)
   W <- length(vocab)
   rel.freq <- term.frequency/N
   phi.freq <- t(t(phi) * topic.proportion * N)
+  
+  #Should we `check.inputs()` here?
 
   # compute the distinctiveness and saliency of the tokens:
   t.w <- phi/apply(phi, 1, sum)
@@ -76,8 +79,8 @@ createJSON <- function(K = integer(), phi = matrix(),
   distinct <- colSums(kernel)
   saliency <- rel.freq * colSums(kernel)
 
-  # compute distance between topics (using only the first 2000 tokens):
-  d <- dist(t(phi), jensen.shannon.divergence)
+  # compute distance between topics (using only the first 2000 terms):
+  d <- dist(t(phi), method = distance(measure = "JS")) 
   fit.cmd <- cmdscale(d, k=2)
   x <- fit.cmd[, 1]
   y <- fit.cmd[, 2]
@@ -127,15 +130,11 @@ createJSON <- function(K = integer(), phi = matrix(),
       term.vectors[[k]][rows, 3] <- round(log(lift[o[1:n.terms]]), 4)
     }
   }
-  topic.info <- as.list(rep(NA, K))
-  for (k in 1:K) topic.info[[k]] <- unique(term.vectors[[k]])
+  
+  topic.info <- lapply(term.vectors, function(x) unique(x))
+  tinfo <- do.call("rbind", topic.info)
+  n.topic <- sapply(topic.info, nrow)  
 
-  # add the topic info to zz:
-  n.topic <- unlist(lapply(topic.info, dim))[seq(1, by=2, length=K)]
-  tinfo <- topic.info[[1]]
-  for (k in 2:K) {
-    tinfo <- rbind(tinfo, topic.info[[k]])
-  }
   tinfo$Freq <- exp(tinfo$logprob)*N*topic.proportion[rep(1:K, n.topic)]
   tinfo$Total <- term.frequency[match(tinfo[, "term"], vocab)]
   tinfo$Category <- paste0("Topic", rep(1:K, n.topic))

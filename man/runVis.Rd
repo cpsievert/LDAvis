@@ -2,17 +2,17 @@
 \alias{runVis}
 \title{Run shiny/D3 visualization}
 \usage{
-  runVis(...)
+runVis(...)
 }
 \arguments{
   \item{...}{Arguments passed to \link{shiny::runApp}.}
 }
 \description{
-  This function is a very small wrapper around
-  \link{shiny::runApp}. Before calling this function, make
-  sure you have four objects named 'phi', 'term.frequency',
-  'vocab', and 'topic.proportion' exist in the global
-  environment and you also \link{check.inputs}.
+This function is a very small wrapper around
+\link{shiny::runApp}. Before calling this function, make
+sure you have four objects named 'phi', 'term.frequency',
+'vocab', and 'topic.proportion' exist in the global
+environment and you also \link{check.inputs}.
 }
 \examples{
 # Example using AP documents from
@@ -46,6 +46,6 @@ set.seed(333)
 runVis()
 }
 \seealso{
-  \link{check.inputs}
+\link{check.inputs}
 }
 

@@ -13,18 +13,6 @@ library(reshape2)
 # input$distance <- "JS"
 # input$scaling <- "PCA"
 
-# Function to compute Jensen-Shannon divergence between two distributions
-# (This is slightly more standard than the 'symmetric Kullback-Leibler divergence' computed below_
-jensen.shannon.divergence <- function(p, q) {
-  m <- 0.5*(p + q)
-  0.5*sum(p*log(p/m)) + 0.5*sum(q*log(q/m))
-}
-
-# Symmetric version of Kullback-Leibler divergence:
-KL <- function(x, y) {
-  0.5*sum(x*log(x/y)) + 0.5*sum(y*log(y/x))
-}
-
 # This app assumes that 'phi', 'term.frequency', 'vocab', and 'topic.proportion' exist in the global environment.
 # This is not optimal, but it will have to do for now
 # See this discussion on passing arguments to shiny apps -- https://groups.google.com/forum/#!topic/shiny-discuss/y0MTpt5I_DE
@@ -45,15 +33,8 @@ shinyServer(function(input, output) {
   # Compute distance matrix between topics 
   # We wrap this in its own reactive function so that it isn't recomputed if say the value of lambda changes
   computeDist <- reactive({
-    switch(input$distance,
-           JS = d <- dist(t(phi), method = jensen.shannon.divergence),
-           KL = d <- dist(t(phi), method = KL)
-    )
-    # Another method was to only compute distances based on the most frequent overall tokens:
-    # Set cutoff at cumulative marginal prob of 0.8 (aiming for a so-called "80-20 rule")... 
-    # We *could* have an option to compute different distance measures (this would have to go inside shinyServer)
-    #d <- dist(t(phi[1:min(which(cumsum(rel.freq) > 0.80)), ]), method = jensen.shannon.divergence)
     
+    d <- dist(t(phi), method = distance(measure = input$distance))
     # Multidimensional scaling to project the distance matrix onto two dimensions for the vis:
     # Maybe we should explore including options for different scaling algorithms???
     switch(input$scaling,

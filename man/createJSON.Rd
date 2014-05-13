@@ -2,9 +2,8 @@
 \alias{createJSON}
 \title{Create the JSON object to read into the javascript visualization}
 \usage{
-  createJSON(K = integer(), phi = matrix(),
-    term.frequency = integer(), vocab = character(),
-    topic.proportion, n.terms = 30)
+createJSON(K = integer(), phi = matrix(), term.frequency = integer(),
+  vocab = character(), topic.proportion = numeric(), n.terms = 30)
 }
 \arguments{
   \item{K}{integer, number of topics in the fitted LDA
@@ -30,16 +29,16 @@
   Recommended to be between 10 and 50.}
 }
 \value{
-  an JSON object in R that can be written to a file to feed
-  the interactive visualization
+an JSON object in R that can be written to a file to feed
+the interactive visualization
 }
 \description{
-  This function creates the JSON object that feeds the
-  javascript visualization that is currently stored in
-  'path-to-LDAvis/LDAvis/inst/html/'
+This function creates the JSON object that feeds the
+javascript visualization that is currently stored in
+'path-to-LDAvis/LDAvis/inst/html/'
 }
 \examples{
-# Example using Newsgroup documents from
+# This example uses Newsgroup documents from
 # http://qwone.com/~jason/20Newsgroups/
 
 data("Newsgroupdata", package = "LDAvis")
@@ -62,8 +61,10 @@ json <- createJSON(K=K, phi=phi, term.frequency=term.frequency, vocab=vocab,
 # Save the object to a .json file in the LDAvis/inst/html/ directory
 cat(json, file="path-to-LDAvis/LDAvis/inst/html/lda.json")
 
-# From 'path-to-LDAvis/LDAvis/inst/html/' serve the page locally
-# by typing 'python -m SimpleHTTPServer' into the terminal
-# and enter 'localhost:8000' into your browser
+# Directory to 'smooth' lambda transition example
+example.dir <- system.file("html", package = "LDAvis")
+# You *could* run `python -m SimpleHTTPServer` under this directory or simply run
+library(servr)
+servr::httd(example.dir) # prompts browser to serve the vis
 }
 
