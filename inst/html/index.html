@@ -12,25 +12,31 @@
 
 <!--div to enter a value to select a specific topic-->
 <div id="topicentry" style="float: left; margin-left: 30px; padding-bottom: 10px; font: 14px sans-serif; background-color:white">
-<form onSubmit="return change_topic()">
+<form class="inlineForm" onSubmit="return change_topic()">
 Selected Topic: 
-<input type="text" id="topic" size="25">
+<input type="text" id="topic" size="10">
 <input type="submit" value="Submit">
-<a href="#" id="decrease_topic"> Previous Topic </a>
-&nbsp
-<a href="#" id="increase_topic"> Next Topic </a>
+</form>
+<form class="inlineForm" onSubmit="return decrement_topic()">
+<input type="submit" value="Previous Topic">
+</form>
+<form class="inlineForm" onSubmit="return increment_topic()">
+<input type="submit" value="Next Topic">
 </form>
 </div>
 
 <!--Div to input value of lambda using text box-->
 <div id="lambdaentry" style="float: left; margin-left: 30px; padding-bottom: 10px; font: 14px sans-serif; background-color:white">
-<form onSubmit="return change_lambda()">
+<form class="inlineForm" onSubmit="return change_lambda()">
 Lambda = 
-<input type="text" id="lambda" size="25">
+<input type="text" id="lambda" size="10">
 <input type="submit" value="Submit">
-<a href="#" id="decrease_lambda"> Lambda - 0.1 </a>
-&nbsp
-<a href="#" id="increase_lambda"> Lambda + 0.1 </a>
+</form>
+<form class="inlineForm" onSubmit="return decrement_lambda()">
+<input type="submit" value="&#955 - 0.1">
+</form>
+<form class="inlineForm" onSubmit="return increment_lambda()">
+<input type="submit" value="&#955 + 0.1">
 </form>
 </div>
 

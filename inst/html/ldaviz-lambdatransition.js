@@ -56,6 +56,42 @@ function change_topic(event) {
     return false;
 }
 
+// function to click a topic based on input from the html form:
+function decrement_topic(event) {
+
+    var new_topic = Math.max(1, Math.min(50, Math.floor(current_topic - 1)));
+    if (isNaN(new_topic)) {
+	current_clicked = { what: "nothing", element: undefined, object: undefined };
+	document.getElementById("topic").value = current_topic;
+    } else {
+	current_topic = new_topic;
+	current_clicked.element = d3.select("#topic".concat(current_topic))[0][0];
+	current_clicked.what = "topic";
+	current_clicked.object = d3.select("#topic".concat(current_topic))[0][0].__data__;
+	document.getElementById("topic").value = current_topic;
+	update_drawing();
+    }
+    return false;
+}
+
+// function to click a topic based on input from the html form:
+function increment_topic(event) {
+
+    var new_topic = Math.max(1, Math.min(50, Math.floor(current_topic + 1)));
+    if (isNaN(new_topic)) {
+	current_clicked = { what: "nothing", element: undefined, object: undefined };
+	document.getElementById("topic").value = current_topic;
+    } else {
+	current_topic = new_topic;
+	current_clicked.element = d3.select("#topic".concat(current_topic))[0][0];
+	current_clicked.what = "topic";
+	current_clicked.object = d3.select("#topic".concat(current_topic))[0][0].__data__;
+	document.getElementById("topic").value = current_topic;
+	update_drawing();
+    }
+    return false;
+}
+
 
 // function to read in a new lambda value from an html form and transition barchart:
 function change_lambda(event) {
@@ -75,6 +111,31 @@ function change_lambda(event) {
     }
     return false;
 }
+
+// function to read in a new lambda value from an html form and transition barchart:
+function decrement_lambda(event) {
+    // read in the new value of lambda from the html button:
+    var new_lambda = Math.max(0, Math.min(100, Math.floor((current_lambda - 0.1) * 100)))/100;
+    //var new_lambda = current_lambda - 0.1;
+    old_lambda = current_lambda;    
+    current_lambda = new_lambda;
+    document.getElementById("lambda").value = current_lambda;
+    reorder_bars();
+    return false;
+}
+
+// function to read in a new lambda value from an html form and transition barchart:
+function increment_lambda(event) {
+    // read in the new value of lambda from the html button:
+    var new_lambda = Math.max(0, Math.min(100, Math.floor((current_lambda + 0.1) * 100)))/100;
+    //var new_lambda = current_lambda + 0.1;
+    old_lambda = current_lambda;    
+    current_lambda = new_lambda;
+    document.getElementById("lambda").value = current_lambda;
+    reorder_bars();
+    return false;
+}
+
 
 
 // function to re-order the bars (gray and red), and terms:
@@ -727,6 +788,10 @@ d3.json("lda.json", function(error, data) {
 });
 
 
+
+// Can remove functions below when buttons replace links
+
+/*
 // increment topic button/link:
 d3.select("#increase_topic").on("click", function() {
     var new_topic = Math.max(1, Math.min(50, Math.floor(current_topic + 1)));
@@ -797,4 +862,5 @@ d3.select("#decrease_lambda").on("click", function() {
     return false;
 });
 
+*/
 

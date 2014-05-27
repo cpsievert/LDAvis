@@ -50,3 +50,7 @@ text {
     display: none;
 }
 
+.inlineForm {
+    display: inline-block;
+}
+
