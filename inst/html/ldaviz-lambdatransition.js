@@ -17,13 +17,13 @@ current_lambda = 1;
 var duration = 750;
 
 // Set global margins used for everything
-var margin = {top: 30, right: 40, bottom: 30, left: 30},
-width = 1000,
+var margin = {top: 30, right: 30, bottom: 30, left: 30},
 height = 550,
 mdswidth = 550, 
 mdsheight = 550,
-barwidth = width - mdswidth - margin.left, // width for histogram
-barheight = mdsheight;
+barwidth = 550,
+barheight = 550,
+termwidth = 90; // width to add between two panels to display terms
 
 function show_state()
 {
@@ -635,7 +635,7 @@ d3.json("lda.json", function(error, data) {
 
     //Create new svg element (that will contain everything):
     var svg = d3.select("#lda").append("svg")
-        .attr("width", width + margin.left + margin.right)
+        .attr("width", mdswidth  + barwidth + margin.left + termwidth + margin.right)
         .attr("height", height + margin.top + margin.bottom);
         
     // Create a group for the mds plot
@@ -732,7 +732,7 @@ d3.json("lda.json", function(error, data) {
 
     // Add a group for the bar chart
     var chart = svg.append("g")
-        .attr("transform", "translate(" + +(mdswidth + 2*margin.left + 60) + "," + 2*margin.top + ")")
+        .attr("transform", "translate(" + +(mdswidth + margin.left + termwidth) + "," + 2*margin.top + ")")
         .attr("id", "bar-freqs");
 
     // Bind 'default' data to 'default' bar chart

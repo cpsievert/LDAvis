@@ -51,7 +51,8 @@
 #'
 #' # Directory to 'smooth' lambda transition example
 #' example.dir <- system.file("html", package = "LDAvis")
-#' # You *could* run `python -m SimpleHTTPServer` under this directory or simply run
+#' # You *could* run `python -m SimpleHTTPServer` under this directory or 
+#' # simply run
 #' library(servr)
 #' servr::httd(example.dir) # prompts browser to serve the vis
 #' 
