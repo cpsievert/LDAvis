@@ -172,4 +172,6 @@ createJSON <- function(K = integer(), phi = matrix(),
   json.data <- toJSON(list(mdsDat=mds.df, tinfo=tinfo, token.table=token.table))
   return(json.data)
 }
+
+
   
