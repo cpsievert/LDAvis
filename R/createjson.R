@@ -23,6 +23,7 @@
 #' @return an JSON object in R that can be written to a file to feed the
 #' interactive visualization
 #' 
+#' @seealso \link{serVis}
 #' @export
 #' @examples
 #' 
@@ -36,25 +37,30 @@
 #'                   term.frequency=Newsgroupdata$term.frequency, 
 #'                   vocab=Newsgroupdata$vocab, 
 #'                   topic.proportion=Newsgroupdata$topic.proportion)
-#'
-#' # Assign the elements of Newsgroupdata to global variables
-#' # and note that the topics have been re-ordered
-#' for (i in 1:length(z)) assign(names(z)[i], z[[i]])
-#' colnames(phi) <- 1:K
-#'
-#' # This function takes 1-2 minutes to set up the data:
-#' json <- createJSON(K=K, phi=phi, term.frequency=term.frequency, vocab=vocab, 
-#'                    topic.proportion=topic.proportion, n.terms=30)
-#'
-#' # Save the object to a .json file in the LDAvis/inst/html/ directory
-#' cat(json, file="path-to-LDAvis/LDAvis/inst/html/lda.json")
-#'
-#' # Directory to 'smooth' lambda transition example
-#' example.dir <- system.file("html", package = "LDAvis")
-#' # You *could* run `python -m SimpleHTTPServer` under this directory or simply run
-#' library(servr)
-#' servr::httd(example.dir) # prompts browser to serve the vis
+#'                   
+#' # Note that the topics have been re-ordered by check.inputs
+#' with(Newsgroupdata, colnames(phi))
+#' with(z, colnames(phi))
+#' # So has topic.proportion
+#' with(Newsgroupdata, order(topic.proportion))
+#' with(z, order(topic.proportion))
 #' 
+#' # Relabel topics so that topic "1" has highest topic proportion.
+#' colnames(z$phi) <- seq_len(z$K)
+#' \dontrun{
+#' # Takes 1-2 minutes to set up the data:
+#' json <- with(z, createJSON(K=K, phi=phi, 
+#'                  term.frequency=term.frequency, vocab=vocab, 
+#'                  topic.proportion=topic.proportion, n.terms=30))
+#'                  
+#'  # Open vis in a browser!
+#'  serVis(json)
+#'  # By default serVis uses a temporary directory
+#'  # Instead, we could write files to current working directory
+#'  serVis(json, out.dir = '.', open.browser = FALSE)
+#'  # If you have a GitHub account and want to quickly share with others!
+#'  serVis(json, as.gist = TRUE)
+#' }
 #'
 
 
@@ -166,6 +172,4 @@ createJSON <- function(K = integer(), phi = matrix(),
   json.data <- toJSON(list(mdsDat=mds.df, tinfo=tinfo, token.table=token.table))
   return(json.data)
 }
-
-
   

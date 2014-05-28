@@ -1,5 +1,5 @@
 Package: LDAvis
-Title: Interactive visualization of topics models using shiny and D3
+Title: Interactive visualization of topics models
 Version: 0.1
 Authors@R: c(person("Carson", "Sievert", role = "aut", email =
     "cpsievert1@gmail.com"), person("Kenny", "Shirley", role = c("aut", "cre"),
@@ -15,4 +15,7 @@ Depends:
     RJSONIO
 License: MIT
 Suggests:
-    topicmodels
+    topicmodels,
+    servr,
+    gistr
+Roxygen: list(wrap = TRUE)
