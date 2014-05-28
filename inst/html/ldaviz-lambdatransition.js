@@ -17,12 +17,11 @@ current_lambda = 1;
 var duration = 750;
 
 // Set global margins used for everything
-var margin = {top: 30, right: 30, bottom: 30, left: 30},
-height = 550,
-mdswidth = 550, 
-mdsheight = 550,
-barwidth = 550,
-barheight = 550,
+var margin = {top: 30, right: 30, bottom: 70, left: 30},
+mdswidth = 530, 
+mdsheight = 530,
+barwidth = 530,
+barheight = 530,
 termwidth = 90; // width to add between two panels to display terms
 
 function show_state()
@@ -205,7 +204,7 @@ function reorder_bars() {
         var graybarsEnter = graybars.enter().append("rect")
 	    .attr("class", "bar-totals")
 	    .attr("x", 0)  
-	    .attr("y", function(d) { return y(d.Term) + 580; })
+	    .attr("y", function(d) { return y(d.Term) + barheight + margin.bottom; })
 	    .attr("height", y.rangeBand()) 
 	    .style("fill", "gray")   
 	    .attr("opacity", 0.4)
@@ -214,7 +213,7 @@ function reorder_bars() {
 	    .append("text")
 	    .attr("x", -5)
 	    .attr("class", "terms")
-	    .attr("y", function(d) { return y(d.Term) + 12 + 580; })
+	    .attr("y", function(d) { return y(d.Term) + 12 + barheight + margin.bottom; })
 	    .attr("text-anchor", "end")
 	    .text(function(d) { return d.Term; })
 	    .on("mouseover", text_on)
@@ -223,7 +222,7 @@ function reorder_bars() {
         var redbarsEnter = redbars.enter().append("rect")
 	    .attr("class", "overlay")
 	    .attr("x", 0)  
-	    .attr("y", function(d) { return y(d.Term) + 580; })
+	    .attr("y", function(d) { return y(d.Term) + barheight + margin.bottom; })
 	    .attr("height", y.rangeBand()) 
 	    .style("fill", "red")   
 	    .attr("opacity", 0.4);
@@ -262,18 +261,18 @@ function reorder_bars() {
 		.transition().duration(duration)
 		.attr("width", function(d) { return x(d.Total); } )
 		.transition().duration(duration)
-		.attr("y", function(d, i) { return 580 + 6 + i * 18; } )
+		.attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
 		.remove();
 	    labels.exit()
 		.transition().duration(duration)
 		.delay(duration)
-		.attr("y", function(d, i) { return 580 + 18 + i * 18; })
+		.attr("y", function(d, i) { return barheight + margin.bottom + 18 + i * 18; })
 		.remove();
 	    redbars.exit()
 		.transition().duration(duration)
 		.attr("width", function(d) { return x(d.Freq); } )
 		.transition().duration(duration)
-		.attr("y", function(d, i) { return 580 + 6 + i * 18; } )
+		.attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
 		.remove();
 	    
 	    // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
@@ -313,15 +312,15 @@ function reorder_bars() {
 	    // Transition exiting rectangles to the bottom of the barchart:
 	    graybars.exit()
 		.transition().duration(duration)
-		.attr("y", function(d, i) { return 580 + 6 + i * 18; } )
+		.attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
 		.remove();
 	    labels.exit()
 		.transition().duration(duration)
-		.attr("y", function(d, i) { return 580 + 18 + i * 18; })
+		.attr("y", function(d, i) { return barheight + margin.bottom + 18 + i * 18; })
 		.remove();
 	    redbars.exit()
 		.transition().duration(duration)
-		.attr("y", function(d, i) { return 580 + 6 + i * 18; } )
+		.attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
 		.remove();
 
 	    // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
@@ -636,7 +635,7 @@ d3.json("lda.json", function(error, data) {
     //Create new svg element (that will contain everything):
     var svg = d3.select("#lda").append("svg")
         .attr("width", mdswidth  + barwidth + margin.left + termwidth + margin.right)
-        .attr("height", height + margin.top + margin.bottom);
+        .attr("height", mdsheight + 2*margin.top + margin.bottom);
         
     // Create a group for the mds plot
     var mdsplot = svg.append("g")
