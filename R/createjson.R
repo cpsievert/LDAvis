@@ -19,6 +19,10 @@
 #'
 #' @param n.terms integer, the number of terms to display in the barcharts
 #' of the interactive viz. Default is 30. Recommended to be between 10 and 50.
+#' 
+#' @param dist.measure the measure used to determine the distance between topics. 
+#' Curent options are "JS" for Jensen-Shannon divergence and "KL" for symmetric
+#' Kullback-Leibler divergence.
 #'
 #' @return an JSON object in R that can be written to a file to feed the
 #' interactive visualization
@@ -66,7 +70,7 @@
 
 createJSON <- function(K = integer(), phi = matrix(), 
                        term.frequency = integer(), vocab = character(), 
-                       topic.proportion = numeric(), n.terms = 30) {
+                       topic.proportion = numeric(), n.terms = 30, dist.measure = "JS") {
 
   if (length(vocab) == 0) vocab <- row.names(phi)
   
@@ -86,7 +90,7 @@ createJSON <- function(K = integer(), phi = matrix(),
   saliency <- rel.freq * colSums(kernel)
 
   # compute distance between topics (using only the first 2000 terms):
-  d <- dist(t(phi), method = distance(measure = "JS")) 
+  d <- dist(t(phi), method = distance(measure = dist.measure)) 
   fit.cmd <- cmdscale(d, k=2)
   x <- fit.cmd[, 1]
   y <- fit.cmd[, 2]

@@ -43,4 +43,7 @@ help(createJSON, package = "LDAvis")
 \author{
 Carson Sievert
 }
+\seealso{
+\link{createJSON}
+}
 

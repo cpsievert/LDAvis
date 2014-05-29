@@ -29,7 +29,7 @@
 serVis <- function(json, out.dir = tempfile(), open.browser = interactive(), as.gist = FALSE, ...) {
   ## Copy html/js/css files to out.dir.
   dir.create(out.dir)
-  src.dir <- system.file("html", package = "LDAvis")
+  src.dir <- system.file("htmljs", package = "LDAvis")
   to.copy <- Sys.glob(file.path(src.dir, "*"))
   file.copy(to.copy, out.dir, overwrite = TRUE, recursive = TRUE)
   

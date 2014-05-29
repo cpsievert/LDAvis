@@ -4,7 +4,8 @@
 \title{Create the JSON object to read into the javascript visualization}
 \usage{
 createJSON(K = integer(), phi = matrix(), term.frequency = integer(),
-  vocab = character(), topic.proportion = numeric(), n.terms = 30)
+  vocab = character(), topic.proportion = numeric(), n.terms = 30,
+  dist.measure = "JS")
 }
 \arguments{
   \item{K}{integer, number of topics in the fitted LDA
@@ -28,6 +29,11 @@ createJSON(K = integer(), phi = matrix(), term.frequency = integer(),
   \item{n.terms}{integer, the number of terms to display in
   the barcharts of the interactive viz. Default is 30.
   Recommended to be between 10 and 50.}
+
+  \item{dist.measure}{the measure used to determine the
+  distance between topics. Curent options are "JS" for
+  Jensen-Shannon divergence and "KL" for symmetric
+  Kullback-Leibler divergence.}
 }
 \value{
 an JSON object in R that can be written to a file to feed
@@ -73,5 +79,8 @@ json <- with(z, createJSON(K=K, phi=phi,
  # If you have a GitHub account and want to quickly share with others!
  serVis(json, as.gist = TRUE)
 }
+}
+\seealso{
+\link{serVis}
 }
 
