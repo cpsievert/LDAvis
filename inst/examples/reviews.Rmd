@@ -1,0 +1,73 @@
+Movie Review Data
+========================================================
+
+This document runs through an entire analysis of movie review data.
+
+```{r setup, echo = FALSE, message = FALSE}
+library(knitr)
+opts_chunk$set(message = FALSE)
+```
+
+### Obtain reviews
+
+```{r read}
+# devtools::install_github("cpsievert/moviereviews")
+library(moviereviews)
+data(reviews, package = "moviereviews")
+reviews <- sapply(reviews, function(x) paste(x, collapse = ""))
+```
+
+### Pre-processing
+
+```{r preprocess}
+library(tm) # just for the stopwords()
+library(mallet) # for the model fitting
+writeLines(stopwords(), "stopwords.txt")
+doc.ids <- as.character(seq_along(reviews))
+mallet.instances <- mallet.import(doc.ids, reviews, "stopwords.txt")
+topic.model <- MalletLDA(num.topics = 20)
+topic.model$loadDocuments(mallet.instances)
+word.freqs <- mallet.word.freqs(topic.model)
+# Eliminate infrequent words
+stopwordz <- as.character(subset(word.freqs, term.freq <= 10)$words)
+# QUESTION -- Why does 's' and 't' show up so frequently?
+writeLines(c(stopwords(), stopwordz, "s", "t"),  "stopwords.txt")
+```
+
+### Model training
+
+```{r fit}
+# Re-'initiate' topic model without the infrequent words
+mallet.instances <- mallet.import(doc.ids, reviews, "stopwords.txt")
+topic.model <- MalletLDA(num.topics = 20)
+topic.model$loadDocuments(mallet.instances)
+word.freqs <- mallet.word.freqs(topic.model)
+topic.model$train(200) 
+# You'll need normalized = FALSE to get the topic.proportions necessary for LDAvis
+topic.words <- mallet.topic.words(topic.model, smoothed = TRUE, normalized = FALSE)
+# 'count' of the number of tokens per topic
+topic.counts <- rowSums(topic.words)
+topic.proportions <- topic.counts/sum(topic.counts)
+vocab <- topic.model$getVocabulary()
+```
+
+Note that `topic.words` is the $\phi$ matrix that drives **LDAvis**
+
+### Vis
+
+```{r vis, results='hide'}
+library(LDAvis)
+# 'Normalize' topic.words so we have the desired phi matrix
+phi <- sweep(t(topic.words), MARGIN = 2, FUN = "/", topic.counts)
+#test <- mallet.topic.words(topic.model, smoothed = TRUE, normalized = TRUE)
+#all(phi == t(test))
+json <- createJSON(K = 20, phi = phi, term.frequency = word.freqs$term.freq, 
+                   vocab = vocab, topic.proportion = topic.proportions)
+```
+
+```{r serVis}
+serVis(json, out.dir = 'vis', open.browser = FALSE)
+```
+
+<iframe src = "vis/index.html" width = "1400" height = "800"></iframe> 
+
