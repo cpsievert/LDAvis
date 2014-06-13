@@ -4,7 +4,7 @@ R package for interactive topic model visualization.
 
 ### Installing the package
 
-If you are familiar with [devtools](http://cran.r-project.org/web/packages/devtools/index.html), it is easiest to install LDAvis this way:
+If you are familiar with <a href='http://cran.r-project.org/web/packages/devtools/index.html' target='_blank'>devtools</a>, it is easiest to install LDAvis this way:
 
 `devtools::install_github("cpsievert/LDAvis")`
 
@@ -14,7 +14,7 @@ Alternatively, you can decompress the zip ball or tar ball and run `R CMD INSTAL
 
 Once installed and loaded, there are two 'main' help pages that implement the two main approaches of LDAvis:
 
-* `?runVis`: demonstrates some [shiny](http://shiny.rstudio.com/)-based examples.
+* `?runVis`: demonstrates some <a href='http://shiny.rstudio.com/' target='_blank'>shiny</a>-based examples.
 
 * `?createJSON`: demonstrates some static web page examples.
 
@@ -30,4 +30,4 @@ Once installed and loaded, there are two 'main' help pages that implement the tw
 
 ### Explanation and documentation:
 
-To read about the methodology behind LDAvis, please see [our paper](http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf), which will be presented at the [2014 ACL Workshop on Interactive Language Learning, Visualization, and Interfaces](http://nlp.stanford.edu/events/illvi2014/) in Baltimore on June 27, 2014.
+To read about the methodology behind LDAvis, please see <a href='http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf' target='_blank'>our paper</a>, which will be presented at the <a href='http://nlp.stanford.edu/events/illvi2014/' target='_blank'>2014 ACL Workshop on Interactive Language Learning, Visualization, and Interfaces</a> in Baltimore on June 27, 2014.
