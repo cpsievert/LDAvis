@@ -17,7 +17,7 @@ data("Newsgroupdata", package = "LDAvis")
 str(Newsgroupdata)
 ```
 
-The first element of this list - "phi" - is a matrix and is one of the main outputs from an [LDA topic model](http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation). Each column of this $\phi$ matrix defines a probability mass function over terms for a given topic. Consequently, the columns of the $\phi$ matrix should sum to 1 (roughly).
+The first element of this list - "phi" - is a matrix and is one of the main outputs from an [LDA topic model](http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation). Each column of this $\phi$ matrix defines a probability mass function over terms for a given topic. Consequently, the columns of the $\phi$ matrix must sum to 1.
 
 ```{r sum}
 with(Newsgroupdata, colSums(phi))
