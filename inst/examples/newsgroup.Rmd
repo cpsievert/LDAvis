@@ -63,7 +63,7 @@ Now that we have `json`, we can use `serVis` function to spit out files required
 serVis(json, out.dir = "newsgroup", open.browser = FALSE)
 ```
 
-Now, to embed the resulting webpage [/newsgroup/index.html](/LDAvis/newsgroup/index.html) within this page, we can make use of the HTML `iframe` tag.
+Now, to embed the resulting [/newsgroup/index.html](/LDAvis/newsgroup/index.html) webpage within this page, we can make use of the HTML `iframe`.
 
 <iframe src = "newsgroup/index.html" width=1250 height=750></iframe>
 
