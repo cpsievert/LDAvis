@@ -22,9 +22,10 @@ Once installed and loaded, there are two 'main' help pages that implement the tw
 
 * <a href='http://www2.research.att.com/~kshirley/lda/index.html' target='_blank'>Associated Press demo</a>: This webpage contains the raw html version of LDAvis, and shows a 40-topic model of news articles from the Associated Press.
 
+* <a href='http://cpsievert.github.io/LDAvis/newsgroup/newsgroup.html' target='_blank'>Embed multiple visualizations into a static HTML page</a> via [knitr](https://github.com/yihui/knitr/) and [rmarkdown](https://github.com/rstudio/rmarkdown). See the [examples folder](https://github.com/cpsievert/LDAvis/tree/master/inst/examples) to see the source code.
+
 * <a href='http://ropensci.org/blog/2014/04/16/topic-modeling-in-R/' target='_blank'>Elife abstracts</a>: A blog post by Carson about fitting a topic model to abstract from the open-access journal eLife. The Shiny version of LDAvis is embedded into this webpage.
 
-* [Embed multiple visualizations into a static HTML page](http://cpsievert.github.io/LDAvis/newsgroup/newsgroup.html) via [knitr](https://github.com/yihui/knitr/) and [rmarkdown](https://github.com/rstudio/rmarkdown). See the [examples folder](https://github.com/cpsievert/LDAvis/tree/master/inst/examples) to see the source code.
 
 
 ### Explanation and documentation:
