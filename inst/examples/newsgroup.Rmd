@@ -65,7 +65,7 @@ serVis(json, out.dir = "newsgroup", open.browser = FALSE)
 
 Now, to embed the resulting webpage [/newsgroup/index.html](/LDAvis/newsgroup/index.html) within this page, we can make use of the HTML `iframe` tag.
 
-<iframe src = "newsgroup/index.html" width=1200 height=700></iframe>
+<iframe src = "newsgroup/index.html" width=1250 height=750></iframe>
 
 The `createJSON` function also takes an argument allowing us to change how the distance between topics is measured. Notice how using symmetric Kullback-Leibler (as opposed to Jensen-Shannon) divergence alters the locations of points on the left-hand side of the visualization.
 
@@ -79,6 +79,6 @@ json2 <- with(z, createJSON(K, phi, term.frequency, vocab,
 serVis(json2, out.dir = "newsgroup2", open.browser = FALSE)
 ```
 
-<iframe src = "newsgroup2/index.html" width=1200 height=700></iframe>
+<iframe src = "newsgroup2/index.html" width=1250 height=750></iframe>
 
 
