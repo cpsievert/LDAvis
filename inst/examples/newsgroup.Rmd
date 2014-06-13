@@ -17,7 +17,7 @@ data("Newsgroupdata", package = "LDAvis")
 str(Newsgroupdata)
 ```
 
-The first element of this list - "phi" - is a matrix and is one of the main outputs from an [LDA topic model](http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation). Each column of this $\phi$ matrix defines a probability mass function over terms for a given topic. Consequently, the columns of the $\phi$ matrix should sum to 1 (roughly).
+The first element of this list - "phi" - is a matrix and is one of the main outputs from an [LDA topic model](http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation). Each column of this $\phi$ matrix defines a probability mass function over terms for a given topic. Consequently, the columns of the $\phi$ matrix must sum to 1.
 
 ```{r sum}
 with(Newsgroupdata, colSums(phi))
@@ -63,9 +63,9 @@ Now that we have `json`, we can use `serVis` function to spit out files required
 serVis(json, out.dir = "newsgroup", open.browser = FALSE)
 ```
 
-Now, to embed the resulting [/newsgroup/index.html](/newsgroup/index.html) webpage within this page, we can make use of the HTML `iframe`s.
+Now, to embed the resulting webpage [/newsgroup/index.html](/LDAvis/newsgroup/index.html) within this page, we can make use of the HTML `iframe` tag.
 
-<iframe src = "newsgroup/index.html" width=1200 height=700></iframe>
+<iframe src = "newsgroup/index.html" width=1250 height=750></iframe>
 
 The `createJSON` function also takes an argument allowing us to change how the distance between topics is measured. Notice how using symmetric Kullback-Leibler (as opposed to Jensen-Shannon) divergence alters the locations of points on the left-hand side of the visualization.
 
@@ -79,6 +79,6 @@ json2 <- with(z, createJSON(K, phi, term.frequency, vocab,
 serVis(json2, out.dir = "newsgroup2", open.browser = FALSE)
 ```
 
-<iframe src = "newsgroup2/index.html" width=1200 height=700></iframe>
+<iframe src = "newsgroup2/index.html" width=1250 height=750></iframe>
 
 
