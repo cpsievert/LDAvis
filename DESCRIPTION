@@ -6,8 +6,9 @@ Authors@R: c(person("Carson", "Sievert", role = "aut", email =
     email = "kshirley@research.att.com"))
 Description: Interactive visualization of topics models using shiny and D3.
 Depends:
-    R (>= 2.15),
-    shiny,
+    R (>= 2.15)
+Imports:
+    shiny (>= 0.10),
     MASS,
     proxy,
     plyr (>= 1.8.1),
@@ -15,7 +16,10 @@ Depends:
     RJSONIO
 License: MIT
 Suggests:
+    mallet,
     topicmodels,
     servr,
-    gistr
+    gistr,
+    knitr,
+    rmarkdown
 Roxygen: list(wrap = TRUE)
