@@ -173,7 +173,7 @@ createJSON <- function(K = integer(), phi = matrix(),
   dd[, "Freq"] <- dd[, "Freq"]/m.sum[r]
   token.table <- dd[order(dd[, 1], dd[, 2]), ]
 
-  json.data <- toJSON(list(mdsDat=mds.df, tinfo=tinfo, token.table=token.table))
+  json.data <- RJSONIO::toJSON(list(mdsDat=mds.df, tinfo=tinfo, token.table=token.table))
   return(json.data)
 }
 
