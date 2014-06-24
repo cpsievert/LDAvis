@@ -90,7 +90,7 @@ createJSON <- function(K = integer(), phi = matrix(),
   saliency <- rel.freq * colSums(kernel)
 
   # compute distance between topics (using only the first 2000 terms):
-  d <- dist(t(phi), method = distance(measure = dist.measure)) 
+  d <- proxy::dist(t(phi), method = distance(measure = dist.measure)) 
   fit.cmd <- cmdscale(d, k=2)
   x <- fit.cmd[, 1]
   y <- fit.cmd[, 2]
