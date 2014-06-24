@@ -5,11 +5,11 @@ old_winning_state = { what: "nothing", element: undefined, object: undefined };
 
 // global margins used for everything
 var margin = {top: 30, right: 120, bottom: 30, left: 30},
-width = 1400,
-height = 1200,
-mdswidth = 600, 
-mdsheight = 600,
-barwidth = width - mdswidth - 2*(margin.left + margin.right), //width for histogram
+mdswidth = 500, 
+barwidth = 400, 
+width = mdswidth + barwidth + margin.right + 2*margin.left,
+height = 500,
+mdsheight = height,
 barheight = mdsheight;
 
 // A few big global variables:
@@ -88,6 +88,7 @@ function fancysort(key_name, decreasing) {
 //////////////////////////////////////////////////////////////////////////////
 // Bind onto data that is passed from shiny
 var scatterOutputBinding = new Shiny.OutputBinding();
+
 $.extend(scatterOutputBinding, {
     find: function(scope) {
 	return $(scope).find('.shiny-scatter-output');
@@ -127,8 +128,6 @@ $.extend(scatterOutputBinding, {
             }
             barData.push( obj );
 	}
-
-	// debugger;
 	
 	// establish layout and vars for mdsPlot
 	var color = d3.scale.category10();

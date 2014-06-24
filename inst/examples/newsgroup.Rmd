@@ -9,7 +9,7 @@ output:
     highlight: tango
 ---
 
-[LDAvis](https://github.com/cpsievert/LDAvis/) comes prepackaged with some data sets to help quickly demonstrate how to use it. This document visualizes a topic model fit to Newsgroup documents^[See http://qwone.com/~jason/20Newsgroups] created with **LDAvis** and **knitr** ([see here]() for source code). There are four essential components to this data structure:
+[LDAvis](https://github.com/cpsievert/LDAvis/) comes prepackaged with some data sets to help quickly demonstrate how to use it. This document visualizes a topic model fit to Newsgroup documents^[See http://qwone.com/~jason/20Newsgroups] created with **LDAvis** and **knitr** ([see here](https://github.com/cpsievert/LDAvis/blob/master/inst/examples/newsgroup.Rmd) for source code). There are four essential components to this data structure:
 
 ```{r data, message = FALSE}
 library(LDAvis)
@@ -50,7 +50,7 @@ For this reason, it's a good idea to relabel the column names of $\phi$
 colnames(z$phi) <- seq_len(z$K)
 ``` 
 
-At this point, we have an option to create a [shiny](http://shiny.rstudio.com/) based visualization with `runVis` or we can `createJSON` to derive a JSON object that will feed a standalone webpage. Although the shiny based visualization has a few more controls, the standalone page allows us to browse relevant terms for different topics while preserving [object constancy](http://bost.ocks.org/mike/constancy/) (try clicking on one of the circles below then decreasing the value of $\lambda$). `createJSON` fosters this approach by recomputing the top 30 most relevant terms for each topic (over a grid of values for $\lambda$).^[See [here](http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf) for the definition and discussion of relevance.]
+At this point, we have an option to create a [shiny](http://shiny.rstudio.com/) based visualization with `runShiny` or we can `createJSON` to derive a JSON object that will feed a standalone webpage. Although the shiny based visualization has a few more controls, the standalone page allows us to browse relevant terms for different topics while preserving [object constancy](http://bost.ocks.org/mike/constancy/) (try clicking on one of the circles below then decreasing the value of $\lambda$). `createJSON` fosters this approach by recomputing the top 30 most relevant terms for each topic (over a grid of values for $\lambda$).^[See [here](http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf) for the definition and discussion of relevance.]
 
 ```{r json, results = 'hide', cache = TRUE}
 json <- with(z, createJSON(K, phi, term.frequency, vocab,
