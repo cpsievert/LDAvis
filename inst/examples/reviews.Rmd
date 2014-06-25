@@ -25,8 +25,7 @@ reviews <- sapply(reviews, function(x) paste(x, collapse = ""))
 Anytime we fit a topic model, it's a good idea to do some pre-processing (cleaning of text). This dataset is already fairly clean, so we only remove some common [stop words](http://en.wikipedia.org/wiki/Stop_words). In particular, we use the english stopwords from the [SMART information retrieval system](http://en.wikipedia.org/wiki/SMART_Information_Retrieval_System).
 
 ```{r collect_stops}
-download.file("http://jmlr.org/papers/volume5/lewis04a/a11-smart-stop-list/english.stop", 
-              destfile = "stopwords.txt")
+download.file("http://jmlr.org/papers/volume5/lewis04a/a11-smart-stop-list/english.stop", "stopwords.txt")
 ```
 
 ### Using mallet for model fitting
@@ -46,15 +45,14 @@ model$loadDocuments(instance)
 freqs <- mallet.word.freqs(model)
 ```
 
-It's generally a good idea to remove really infrequent words from the model's vocabulary before actually training the model. In this case, we add terms that appear 10 or less times to our list of stopwords and re-import the model instance.
-
+It's generally a good idea to remove really infrequent words from the model's vocabulary before actually training the model. In this case, we add terms that appear less than 10 times to our list of stopwords and re-import the model instance.
 
 ```{r stops}
-stopwords <- as.character(subset(freqs, term.freq <= 10)$words)
+stopwords <- as.character(subset(freqs, term.freq <= 9)$words)
 # 's' and 't' show up frequently and aren't very informative, so they are also included as stopwords
-writeLines(c(readLines("stopwords.txt"), stopwords, "s", "t"),  "stopwords.txt")
+writeLines(c(readLines("stopwords.txt"), stopwords, "s", "t"),  "stopwords2.txt")
 # Re-'initiate' topic model without the infrequent words
-instance2 <- mallet.import(names(reviews), reviews, "stopwords.txt")
+instance2 <- mallet.import(names(reviews), reviews, "stopwords2.txt")
 model2 <- MalletLDA(num.topics = 25)
 model2$loadDocuments(instance2)
 freqs2 <- mallet.word.freqs(model2)
@@ -62,8 +60,11 @@ freqs2 <- mallet.word.freqs(model2)
 
 ### Model fitting/training
 
+Now we're in position to use mallet's train method to fit the topic model. From the fitted model, we'll need a number of things to serve our visualization. Most important of all is the entire $\phi$ matrix where each column corresponds to a probability mass function over terms.
+
 ```{r fit}
 model2$train(200) 
+phi <- t(mallet.topic.words(model2, smoothed = TRUE, normalized = TRUE))
 # You'll need normalized = FALSE to get the topic.proportions necessary for LDAvis
 topic.words <- mallet.topic.words(model2, smoothed = TRUE, normalized = FALSE)
 # 'count' of the number of tokens per topic
@@ -72,21 +73,28 @@ topic.proportions <- topic.counts/sum(topic.counts)
 vocab <- model2$getVocabulary()
 ```
 
-Note that `topic.words` is the $\phi$ matrix that drives **LDAvis**
+### LDAvis
 
-### Vis
+LDAvis comes with a `check.inputs` function to ensure the model output won't break the visualization. In addition, `check.inputs` reorders the columns of the $\phi$ matrix according to the `topic.proportions`. Here we label these columns so that '1' stands for the topic that is responsible for the highest share of the corpus.
 
 ```{r vis, results='hide'}
 # LDAvis can be installed from GitHub via `devtools::install_github("cpsievert/LDAvis")`
 library(LDAvis)
-# 'Normalize' topic.words so we have the desired phi matrix
-phi <- sweep(t(topic.words), MARGIN = 2, FUN = "/", topic.counts)
-#test <- mallet.topic.words(topic.model, smoothed = TRUE, normalized = TRUE)
-#all(phi == t(test))
-json <- createJSON(K = 25, phi = phi, term.frequency = freqs2$term.freq, 
-                   vocab = vocab, topic.proportion = topic.proportions)
+out <- check.inputs(K = 25, W = length(vocab), phi = phi, 
+                    term.frequency = freqs2$term.freq, 
+                    vocab = vocab, topic.proportion = topic.proportions)
+# Relabel topics so that topic "1" has highest topic proportion.
+colnames(out$phi) <- seq_len(out$K)
 ```
 
+Now that the "inputs" look OK, `createJSON` converts them into a JSON object that will be used to drive the visualization.
+
+```{r createJSON}
+json <- with(out, createJSON(K = 25, phi, term.frequency, 
+                   vocab, topic.proportion))
+```
+
+Lastly, the `serVis` function will write a number of files including index.html which can be viewed in a web browser or embeded within other pages via an HTML `<iframe>`. See [here](http://www2.research.att.com/~kshirley/lda/index.html) for more info regarding reading the using the visualization. 
 
 ```{r serVis}
 serVis(json, out.dir = 'vis', open.browser = FALSE)
