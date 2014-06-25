@@ -1,54 +1,75 @@
 Movie Review Data
 ========================================================
 
-This document runs through an entire analysis of movie review data.
+In this document, we fit an [LDA topic model](http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation) to [Cornell's movie review polarity dataset](http://www.cs.cornell.edu/people/pabo/movie-review-data/) using the R package [mallet](http://cran.r-project.org/web/packages/mallet/) and visualize the output using [LDAvis](https://github.com/cpsievert/LDAvis).
 
 ```{r setup, echo = FALSE, message = FALSE}
 library(knitr)
 opts_chunk$set(message = FALSE)
 ```
 
-### Obtain reviews
+### Movie review data
+
+The R package [moviereviews](https://github.com/cpsievert/moviereviews) provides the movie reviews data as an R object so that it's easy to load and start an analysis. The object `reviews` is a list of character vectors where each character vector corresponds to a review. The elements of a given character vector corresponds to sentences in that particular review. Therefore, we can collapse these character vectors so that each review is contained in a single string.
 
 ```{r read}
-# devtools::install_github("cpsievert/moviereviews")
+# moviereviews can be installed from GitHub via `devtools::install_github("cpsievert/moviereviews")`
 library(moviereviews)
 data(reviews, package = "moviereviews")
+str(reviews[1:2])
 reviews <- sapply(reviews, function(x) paste(x, collapse = ""))
 ```
 
 ### Pre-processing
 
-```{r preprocess}
-library(tm) # just for the stopwords()
-library(mallet) # for the model fitting
-writeLines(stopwords(), "stopwords.txt")
-doc.ids <- as.character(seq_along(reviews))
-mallet.instances <- mallet.import(doc.ids, reviews, "stopwords.txt")
-topic.model <- MalletLDA(num.topics = 20)
-topic.model$loadDocuments(mallet.instances)
-word.freqs <- mallet.word.freqs(topic.model)
-# Eliminate infrequent words
-stopwordz <- as.character(subset(word.freqs, term.freq <= 10)$words)
-# QUESTION -- Why does 's' and 't' show up so frequently?
-writeLines(c(stopwords(), stopwordz, "s", "t"),  "stopwords.txt")
+Anytime we fit a topic model, it's a good idea to do some pre-processing (cleaning of text). This dataset is already fairly clean, so we only remove some common [stop words](http://en.wikipedia.org/wiki/Stop_words). In particular, we use the english stopwords from the [SMART information retrieval system](http://en.wikipedia.org/wiki/SMART_Information_Retrieval_System).
+
+```{r collect_stops}
+download.file("http://jmlr.org/papers/volume5/lewis04a/a11-smart-stop-list/english.stop", 
+              destfile = "stopwords.txt")
 ```
 
-### Model training
+### Using mallet for model fitting
+
+The R package mallet provides an interface to the java-based [MAchine Learning for LanguagE Toolkit](http://mallet.cs.umass.edu/). To get started, we need to import our reviews along with our stop words and document names into mallet.
+
+```{r import}
+library(mallet)
+instance <- mallet.import(names(reviews), reviews, "stopwords.txt")
+```
+
+Next, we initiate a topic model with 25 topics, load documents into that model instance amd extract the frequency of words that appears in the corpus.
+
+```{r freqs}
+model <- MalletLDA(num.topics = 25)
+model$loadDocuments(instance)
+freqs <- mallet.word.freqs(model)
+```
+
+It's generally a good idea to remove really infrequent words from the model's vocabulary before actually training the model. In this case, we add terms that appear 10 or less times to our list of stopwords and re-import the model instance.
+
+
+```{r stops}
+stopwords <- as.character(subset(freqs, term.freq <= 10)$words)
+# 's' and 't' show up frequently and aren't very informative, so they are also included as stopwords
+writeLines(c(readLines("stopwords.txt"), stopwords, "s", "t"),  "stopwords.txt")
+# Re-'initiate' topic model without the infrequent words
+instance2 <- mallet.import(names(reviews), reviews, "stopwords.txt")
+model2 <- MalletLDA(num.topics = 25)
+model2$loadDocuments(instance2)
+freqs2 <- mallet.word.freqs(model2)
+```
+
+### Model fitting/training
 
 ```{r fit}
-# Re-'initiate' topic model without the infrequent words
-mallet.instances <- mallet.import(doc.ids, reviews, "stopwords.txt")
-topic.model <- MalletLDA(num.topics = 20)
-topic.model$loadDocuments(mallet.instances)
-word.freqs <- mallet.word.freqs(topic.model)
-topic.model$train(200) 
+model2$train(200) 
 # You'll need normalized = FALSE to get the topic.proportions necessary for LDAvis
-topic.words <- mallet.topic.words(topic.model, smoothed = TRUE, normalized = FALSE)
+topic.words <- mallet.topic.words(model2, smoothed = TRUE, normalized = FALSE)
 # 'count' of the number of tokens per topic
 topic.counts <- rowSums(topic.words)
 topic.proportions <- topic.counts/sum(topic.counts)
-vocab <- topic.model$getVocabulary()
+vocab <- model2$getVocabulary()
 ```
 
 Note that `topic.words` is the $\phi$ matrix that drives **LDAvis**
@@ -56,14 +77,16 @@ Note that `topic.words` is the $\phi$ matrix that drives **LDAvis**
 ### Vis
 
 ```{r vis, results='hide'}
+# LDAvis can be installed from GitHub via `devtools::install_github("cpsievert/LDAvis")`
 library(LDAvis)
 # 'Normalize' topic.words so we have the desired phi matrix
 phi <- sweep(t(topic.words), MARGIN = 2, FUN = "/", topic.counts)
 #test <- mallet.topic.words(topic.model, smoothed = TRUE, normalized = TRUE)
 #all(phi == t(test))
-json <- createJSON(K = 20, phi = phi, term.frequency = word.freqs$term.freq, 
+json <- createJSON(K = 25, phi = phi, term.frequency = freqs2$term.freq, 
                    vocab = vocab, topic.proportion = topic.proportions)
 ```
+
 
 ```{r serVis}
 serVis(json, out.dir = 'vis', open.browser = FALSE)

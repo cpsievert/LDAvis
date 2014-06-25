@@ -125,20 +125,22 @@ createJSON <- function(K = integer(), phi = matrix(),
                " most relevant terms for grid of lambda values"))
   for (k in 1:K) {
     print(k)
-    lift <- phi[, k]/marginal
+    phi.k <- phi[, k]
+    lift <- phi.k/marginal
     term.vectors[[k]] <- data.frame(term=rep("", n.terms*ll), 
                                     logprob=numeric(n.terms*ll), 
                                     loglift=numeric(n.terms*ll), 
                                     stringsAsFactors=FALSE)
     # loop through values of lambda:
     for (l in 1:ll) {
-      relevance <- lambda.seq[l]*log(phi[, k]) + (1 - lambda.seq[l])*log(lift)
-      o <- order(relevance, phi[, k], decreasing=TRUE) # break ties with phi
+      relevance <- lambda.seq[l]*log(phi.k) + (1 - lambda.seq[l])*log(lift)
+      o <- order(relevance, phi.k, decreasing=TRUE) # break ties with phi
       rows <- 1:n.terms + (l - 1)*n.terms
       term.vectors[[k]][rows, 1] <- vocab[o[1:n.terms]]
       term.vectors[[k]][rows, 2] <- round(log(phi[o[1:n.terms], k]), 4)
       term.vectors[[k]][rows, 3] <- round(log(lift[o[1:n.terms]]), 4)
     }
+    
   }
   
   topic.info <- lapply(term.vectors, function(x) unique(x))
