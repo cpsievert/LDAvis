@@ -5,7 +5,7 @@ In this document, we fit an [LDA topic model](http://en.wikipedia.org/wiki/Laten
 
 ```{r setup, echo = FALSE, message = FALSE}
 library(knitr)
-opts_chunk$set(message = FALSE)
+opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
 ### Movie review data
@@ -75,7 +75,7 @@ vocab <- model2$getVocabulary()
 
 ### LDAvis
 
-LDAvis comes with a `check.inputs` function to ensure the model output won't break the visualization. In addition, `check.inputs` reorders the columns of the $\phi$ matrix according to the `topic.proportions`. Here we label these columns so that '1' stands for the topic that is responsible for the highest share of the corpus.
+LDAvis comes with a `check.inputs` function that ensures visualization inputs are valid. In addition, `check.inputs` also reorders the columns of the $\phi$ matrix according to the `topic.proportions`. Here we label these columns so that '1' stands for the topic that is responsible for the highest share of the corpus.
 
 ```{r vis, results='hide'}
 # LDAvis can be installed from GitHub via `devtools::install_github("cpsievert/LDAvis")`
@@ -87,9 +87,9 @@ out <- check.inputs(K = 25, W = length(vocab), phi = phi,
 colnames(out$phi) <- seq_len(out$K)
 ```
 
-Now that the "inputs" look OK, `createJSON` converts them into a JSON object that will be used to drive the visualization.
+Now that the "inputs" look OK, `createJSON` converts them into a JSON object that is used to drive the interactive visualization.
 
-```{r createJSON}
+```{r createJSON, results='hide'}
 json <- with(out, createJSON(K = 25, phi, term.frequency, 
                    vocab, topic.proportion))
 ```
@@ -100,5 +100,5 @@ Lastly, the `serVis` function will write a number of files including index.html 
 serVis(json, out.dir = 'vis', open.browser = FALSE)
 ```
 
-<iframe src = "vis/index.html" width = "1400" height = "800"></iframe> 
+<iframe src = "vis/index.html" width = "1200" height = "700"></iframe> 
 
