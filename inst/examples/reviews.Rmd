@@ -1,7 +1,7 @@
 Movie Review Data
 ========================================================
 
-In this document, we fit an [LDA topic model](http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation) to [Cornell's movie review polarity dataset](http://www.cs.cornell.edu/people/pabo/movie-review-data/) using the R package [mallet](http://cran.r-project.org/web/packages/mallet/) and visualize the output using [LDAvis](https://github.com/cpsievert/LDAvis).
+In this document, we fit an <a href='http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation' target='_blank'>LDA topic model</a> to the <a href='http://www.cs.cornell.edu/people/pabo/movie-review-data/' target='_blank'>movie review polarity dataset</a> shared by Pang, Lee, and Vaithyanathan (EMNLP, 2002, where we use 'polarity dataset version 2.0'). To fit the model, we used the R package <a href='http://cran.r-project.org/web/packages/mallet/' target='_blank'>mallet</a> and we visualize the output using <a href='https://github.com/cpsievert/LDAvis' target='_blank'>LDAvis</a>.
 
 ```{r setup, echo = FALSE, message = FALSE}
 library(knitr)
@@ -10,7 +10,7 @@ opts_chunk$set(message = FALSE, warning = FALSE)
 
 ### Movie review data
 
-The R package [moviereviews](https://github.com/cpsievert/moviereviews) provides the movie reviews data as an R object so that it's easy to load and start an analysis. The object `reviews` is a list of character vectors where each character vector corresponds to a review. The elements of a given character vector corresponds to sentences in that particular review. Therefore, we can collapse these character vectors so that each review is contained in a single string.
+We created an R package, <a href='https://github.com/cpsievert/moviereviews' target='_blank'>moviereviews</a>, to provide the movie reviews data as an R object so that it's easy to load and start an analysis. The object `reviews` is a list of character vectors where each character vector corresponds to a review. The elements of a given character vector corresponds to sentences in that particular review. Therefore, we can collapse these character vectors so that each review is contained in a single string.
 
 ```{r read}
 # moviereviews can be installed from GitHub via `devtools::install_github("cpsievert/moviereviews")`
@@ -22,7 +22,7 @@ reviews <- sapply(reviews, function(x) paste(x, collapse = ""))
 
 ### Pre-processing
 
-Anytime we fit a topic model, it's a good idea to do some pre-processing (cleaning of text). This dataset is already fairly clean, so we only remove some common [stop words](http://en.wikipedia.org/wiki/Stop_words). In particular, we use the english stopwords from the [SMART information retrieval system](http://en.wikipedia.org/wiki/SMART_Information_Retrieval_System).
+Anytime we fit a topic model, it's a good idea to do some pre-processing (cleaning of text). This dataset is already fairly clean, so we only remove punctuation and some common <a href='http://en.wikipedia.org/wiki/Stop_words' target='_blank'>stop words</a>. In particular, we use the english stop words from the <a href='http://en.wikipedia.org/wiki/SMART_Information_Retrieval_System' target= '_blank'>SMART information retrieval system</a>.
 
 ```{r collect_stops}
 download.file("http://jmlr.org/papers/volume5/lewis04a/a11-smart-stop-list/english.stop", "stopwords.txt")
@@ -30,14 +30,14 @@ download.file("http://jmlr.org/papers/volume5/lewis04a/a11-smart-stop-list/engli
 
 ### Using mallet for model fitting
 
-The R package mallet provides an interface to the java-based [MAchine Learning for LanguagE Toolkit](http://mallet.cs.umass.edu/). To get started, we need to import our reviews along with our stop words and document names into mallet.
+The R package mallet provides an interface to the java-based <a href='http://mallet.cs.umass.edu/' target='_blank'>MAchine Learning for LanguagE Toolkit</a>. To get started, we need to import our reviews along with our stop words and document names into mallet.
 
 ```{r import}
 library(mallet)
 instance <- mallet.import(names(reviews), reviews, "stopwords.txt")
 ```
 
-Next, we initiate a topic model with 25 topics, load documents into that model instance amd extract the frequency of words that appears in the corpus.
+Next, we initiate a topic model with 25 topics (a reasonable number of topics for a data set of this size, in our experience), load documents into that model instance amd extract the frequency of words that appears in the corpus.
 
 ```{r freqs}
 model <- MalletLDA(num.topics = 25)
@@ -63,11 +63,16 @@ freqs2 <- mallet.word.freqs(model2)
 Now we're in position to use mallet's train method to fit the topic model. From the fitted model, we'll need a number of things to serve our visualization. Most important of all is the entire $\phi$ matrix where each column corresponds to a probability mass function over terms.
 
 ```{r fit}
-model2$train(200) 
+# this takes about 4.5 minutes on a macbook pro laptop with 2GB RAM and a 2.26GHz processor 
+model2$train(2000)
+# Here, we compute the estimated topic-term distribution, incorporating the effect
+# of the prior using 'smoothed = TRUE'.
 phi <- t(mallet.topic.words(model2, smoothed = TRUE, normalized = TRUE))
-# You'll need normalized = FALSE to get the topic.proportions necessary for LDAvis
+# Let's look at the table of topics and terms by setting 'normalized = FALSE'
+phi.count <- t(mallet.topic.words(model2, smoothed = TRUE, normalized = FALSE))
+# Now get the smoothed estimates of the document-topic distributions:
 topic.words <- mallet.topic.words(model2, smoothed = TRUE, normalized = FALSE)
-# 'count' of the number of tokens per topic
+# 'count' of the number of tokens per topic (including pseudo-tokens from the priors)
 topic.counts <- rowSums(topic.words)
 topic.proportions <- topic.counts/sum(topic.counts)
 vocab <- model2$getVocabulary()
@@ -81,9 +86,9 @@ LDAvis comes with a `check.inputs` function that ensures visualization inputs ar
 # LDAvis can be installed from GitHub via `devtools::install_github("cpsievert/LDAvis")`
 library(LDAvis)
 out <- check.inputs(K = 25, W = length(vocab), phi = phi, 
-                    term.frequency = freqs2$term.freq, 
+                    term.frequency = apply(phi.count, 1, sum), 
                     vocab = vocab, topic.proportion = topic.proportions)
-# Relabel topics so that topic "1" has highest topic proportion.
+# Relabel topics so that topics are numbered in decreasing order of frequency.
 colnames(out$phi) <- seq_len(out$K)
 ```
 
