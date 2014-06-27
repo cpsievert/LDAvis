@@ -1,6 +1,8 @@
 Movie Review Data
 ========================================================
 
+[Update 6/27: We re-ran the model using more iterations (2,000 instead of 200) and we corrected the computation of the term frequencies.]
+
 In this document, we fit an <a href='http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation' target='_blank'>LDA topic model</a> to the <a href='http://www.cs.cornell.edu/people/pabo/movie-review-data/' target='_blank'>movie review polarity dataset</a> shared by Pang, Lee, and Vaithyanathan (EMNLP, 2002, where we use 'polarity dataset version 2.0'). To fit the model, we used the R package <a href='http://cran.r-project.org/web/packages/mallet/' target='_blank'>mallet</a> and we visualize the output using <a href='https://github.com/cpsievert/LDAvis' target='_blank'>LDAvis</a>.
 
 ```{r setup, echo = FALSE, message = FALSE}
