@@ -5,7 +5,7 @@
 \usage{
 createJSON(K = integer(), phi = matrix(), term.frequency = integer(),
   vocab = character(), topic.proportion = numeric(), n.terms = 30,
-  dist.measure = "JS")
+  dist.measure = "JS", print.progress = FALSE)
 }
 \arguments{
   \item{K}{integer, number of topics in the fitted LDA
