@@ -70,7 +70,8 @@
 
 createJSON <- function(K = integer(), phi = matrix(), 
                        term.frequency = integer(), vocab = character(), 
-                       topic.proportion = numeric(), n.terms = 30, dist.measure = "JS") {
+                       topic.proportion = numeric(), n.terms = 30, dist.measure = "JS",
+                       print.progress = FALSE) {
 
   if (length(vocab) == 0) vocab <- row.names(phi)
   
@@ -121,10 +122,12 @@ createJSON <- function(K = integer(), phi = matrix(),
   lambda.seq <- seq(0, 1, 0.01)
   ll <- length(lambda.seq)
   term.vectors <- as.list(rep(0, K))
-  print(paste0("Looping through topics to compute top-", n.terms, 
-               " most relevant terms for grid of lambda values"))
+  if (print.progress) {
+    print(paste0("Looping through topics to compute top-", n.terms, 
+                 " most relevant terms for grid of lambda values"))
+  }
   for (k in 1:K) {
-    print(k)
+    if (print.progress) print(k)
     phi.k <- phi[, k]
     lift <- phi.k/marginal
     term.vectors[[k]] <- data.frame(term=rep("", n.terms*ll), 
