@@ -68,10 +68,10 @@
 #'
 
 
-createJSON <- function(K = integer(), phi = matrix(), 
-                       term.frequency = integer(), vocab = character(), 
-                       topic.proportion = numeric(), n.terms = 30, dist.measure = "JS",
-                       print.progress = FALSE) {
+newJSON <- function(K = integer(), phi = matrix(), 
+                    term.frequency = integer(), vocab = character(), 
+                    topic.proportion = numeric(), n.terms = 30, dist.measure = "JS",
+                    print.progress = FALSE) {
 
   if (length(vocab) == 0) vocab <- row.names(phi)
   

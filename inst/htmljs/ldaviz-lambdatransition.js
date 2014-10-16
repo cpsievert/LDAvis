@@ -1,5 +1,6 @@
 // This section sets up the logic for event handling
-var current_clicked = { what: "nothing", element: undefined, object: undefined },
+var current_clicked = { what: "nothing", element: undefined, 
+			object: undefined },
 current_hover = { what: "nothing", element: undefined, object: undefined },
 old_winning_state = { what: "nothing", element: undefined, object: undefined };
 
@@ -10,8 +11,8 @@ mdsData3,
 lamData,
 current_topic = 0,
 old_lambda = 1,
-current_lambda = 1;
-
+current_lambda = 1,
+R;
 
 // Set the duration of each half of the transition:
 var duration = 750;
@@ -31,8 +32,10 @@ function show_state()
 
 function reset_state()
 {
-    current_clicked = { what: "nothing", element: undefined, object: undefined },
-    current_hover = { what: "nothing", element: undefined, object: undefined },
+    current_clicked = { what: "nothing", element: undefined, 
+			object: undefined },
+    current_hover = { what: "nothing", element: undefined, 
+		      object: undefined },
     document.getElementById("topic").value = "";
     update_drawing();    
 }
@@ -40,7 +43,7 @@ function reset_state()
 // function to click a topic based on input from the html form:
 function change_topic(event) {
 
-    var new_topic = Math.max(1, Math.min(50, Math.floor(+document.getElementById("topic").value)));
+    var new_topic = Math.max(1, Math.min(K, Math.floor(+document.getElementById("topic").value)));
     if (isNaN(new_topic)) {
 	current_clicked = { what: "nothing", element: undefined, object: undefined };
 	document.getElementById("topic").value = current_topic;
@@ -58,7 +61,7 @@ function change_topic(event) {
 // function to click a topic based on input from the html form:
 function decrement_topic(event) {
 
-    var new_topic = Math.max(1, Math.min(50, Math.floor(current_topic - 1)));
+    var new_topic = Math.max(1, Math.min(K, Math.floor(current_topic - 1)));
     if (isNaN(new_topic)) {
 	current_clicked = { what: "nothing", element: undefined, object: undefined };
 	document.getElementById("topic").value = current_topic;
@@ -76,7 +79,7 @@ function decrement_topic(event) {
 // function to click a topic based on input from the html form:
 function increment_topic(event) {
 
-    var new_topic = Math.max(1, Math.min(50, Math.floor(current_topic + 1)));
+    var new_topic = Math.max(1, Math.min(K, Math.floor(current_topic + 1)));
     if (isNaN(new_topic)) {
 	current_clicked = { what: "nothing", element: undefined, object: undefined };
 	document.getElementById("topic").value = current_topic;
@@ -164,8 +167,8 @@ function reorder_bars() {
         // sort by relevance:
         dat2.sort(fancysort("relevance"));
 	
-        // truncate to the top 30 tokens:
-        var dat3 = dat2.slice(0, 30); 
+        // truncate to the top R tokens:
+        var dat3 = dat2.slice(0, R); 
 	
         var y = d3.scale.ordinal()
             .domain(dat3.map(function(d) { return d.Term; }))
@@ -426,10 +429,10 @@ function topic_on(d) {
     // sort by relevance:
     dat2.sort(fancysort("relevance"));
 
-    // truncate to the top 30 tokens:
-    var dat3 = dat2.slice(0, 30); 
+    // truncate to the top R tokens:
+    var dat3 = dat2.slice(0, R); 
 
-    // scale the bars to the top 30 terms:
+    // scale the bars to the top R terms:
     var y = d3.scale.ordinal()
         .domain(dat3.map(function(d) { return d.Term; }))
         .rangeRoundBands([0, barheight], 0.15);
@@ -564,8 +567,9 @@ function text_on(d) {
     d3.selectAll(".dot")
 	.data(radius)
 	.transition()
-        .attr("r", function(d) { return (400/K)*Math.sqrt(100*d); });
+        .attr("r", function(d) { return Math.sqrt(d*280900*0.25/Math.PI); });
 }
+
 
 function text_off() {
     var text = d3.select(this);
@@ -574,7 +578,7 @@ function text_off() {
     d3.selectAll(".dot")
 	.data(mdsData)
 	.transition()
-        .attr("r", function(d) { return (400/K)*Math.sqrt(d.Freq); });
+        .attr("r", function(d) { return Math.sqrt((d.Freq/100)*280900*0.25/Math.PI); });
 }
 
 
@@ -583,6 +587,7 @@ d3.json("lda.json", function(error, data) {
 
     // set the number of topics to global variable k:
     K = data['mdsDat'].x.length;
+    R = data['R'];
 
     // a (K x 5) matrix with columns x, y, topics, Freq, cluster (where x and y are locations for left panel)
     mdsData = [];
@@ -616,10 +621,10 @@ d3.json("lda.json", function(error, data) {
         lamData.push( obj );
     }
     
-    //establish layout and vars for mdsPlot
+    // establish layout and vars for mdsPlot
     var color = d3.scale.category10();
 
-    //create linear scaling to pixels (and add some padding on outer region of scatterplot)
+    // create linear scaling to pixels (and add some padding on outer region of scatterplot)
     var xrange = d3.extent(mdsData, function(d){ return d.x; }); //d3.extent returns min and max of an array
     var xdiff = xrange[1] - xrange[0], xpad = 0.10;
     var xScale = d3.scale.linear()
@@ -632,7 +637,7 @@ d3.json("lda.json", function(error, data) {
         .range([mdsheight, 0])
         .domain([yrange[0] - ypad*ydiff, yrange[1] + ypad*ydiff]);
 
-    //Create new svg element (that will contain everything):
+    // Create new svg element (that will contain everything):
     var svg = d3.select("#lda").append("svg")
         .attr("width", mdswidth  + barwidth + margin.left + termwidth + margin.right)
         .attr("height", mdsheight + 2*margin.top + margin.bottom);
@@ -681,7 +686,8 @@ d3.json("lda.json", function(error, data) {
         .attr("class", "dot")
         .style("opacity", 0.3)
         .style("fill", function(d) { return color(d.cluster); })
-        .attr("r", function(d) { return (400/K)*Math.sqrt(d.Freq) ; })  // circle sizes should get smaller as the # of topics increases
+        //.attr("r", function(d) { return (400/K)*Math.sqrt(d.Freq) ; })  // circle sizes should get smaller as the # of topics increases
+        .attr("r", function(d) { return Math.sqrt((d.Freq/100)*280900*0.25/Math.PI) ; })  // circle sizes should get smaller as the # of topics increases
         .attr("cx", function(d) { return (xScale(+d.x)); })
         .attr("cy", function(d) { return (yScale(+d.y)); })
         .attr("id", function(d) { return ('topic' + d.topics) })
