@@ -27,7 +27,7 @@ termwidth = 90; // width to add between two panels to display terms
 
 function show_state()
 {
-    console.log(current_clicked, current_hover);
+    console.log(current_clicked, current_hover, current_topic);
 }
 
 function reset_state()
@@ -36,7 +36,8 @@ function reset_state()
 			object: undefined },
     current_hover = { what: "nothing", element: undefined, 
 		      object: undefined },
-    document.getElementById("topic").value = "";
+    document.getElementById("topic").value = 0;
+    current_topic = 0;
     update_drawing();    
 }
 
@@ -373,6 +374,7 @@ function update_drawing()
     old_winning_state.element = winning_state.element;
     old_winning_state.object = winning_state.object;
     console.log(winning_state);
+    show_state();
 }
 
 
