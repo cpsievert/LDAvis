@@ -42,7 +42,7 @@ the interactive visualization
 \description{
 This function creates the JSON object that feeds the
 javascript visualization that is currently stored in
-'path-to-LDAvis/LDAvis/inst/html/'
+'path-to-LDAvis/LDAvis/inst/htmljs/'
 }
 \examples{
 # This example uses Newsgroup documents from

@@ -3,6 +3,7 @@
 export(check.inputs)
 export(createJSON)
 export(distance)
+export(newJSON)
 export(runShiny)
 export(runVis)
 export(serVis)

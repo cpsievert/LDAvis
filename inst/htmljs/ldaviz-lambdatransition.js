@@ -25,6 +25,17 @@ barwidth = 530,
 barheight = 530,
 termwidth = 90; // width to add between two panels to display terms
 
+
+// opacity of topic circles:
+var base_opacity = 0.2,
+highlight_opacity = 0.6;
+
+// the proportion of the left panel area to cover with the circles under default topic circles
+var circle_prop = 0.25;
+
+// the proportion of the left panel area to cover with circles when a word is highlighted
+var word_prop = 0.25;
+
 function show_state()
 {
     console.log(current_clicked, current_hover, current_topic);
@@ -119,7 +130,6 @@ function change_lambda(event) {
 function decrement_lambda(event) {
     // read in the new value of lambda from the html button:
     var new_lambda = Math.max(0, Math.min(100, Math.floor((current_lambda - 0.1) * 100)))/100;
-    //var new_lambda = current_lambda - 0.1;
     old_lambda = current_lambda;    
     current_lambda = new_lambda;
     document.getElementById("lambda").value = current_lambda;
@@ -131,7 +141,6 @@ function decrement_lambda(event) {
 function increment_lambda(event) {
     // read in the new value of lambda from the html button:
     var new_lambda = Math.max(0, Math.min(100, Math.floor((current_lambda + 0.1) * 100)))/100;
-    //var new_lambda = current_lambda + 0.1;
     old_lambda = current_lambda;    
     current_lambda = new_lambda;
     document.getElementById("lambda").value = current_lambda;
@@ -400,7 +409,8 @@ function fancysort(key_name, decreasing) {
 function topic_on(d) {
 
     var circle = d3.select(this);
-    circle.style("opacity", 0.8); 
+    circle.style("opacity", highlight_opacity)
+	.style("fill", "#FFA500" );
 
     var Freq = Math.round(d.Freq*10)/10, topics = d.topics, cluster = d.cluster;
     current_topic = +topics;
@@ -496,7 +506,13 @@ function topic_on(d) {
 
 function topic_off() {
     var circle = d3.select(this);
-    circle.style("opacity", 0.4);  // go back to original opacity
+    circle.style("opacity", base_opacity)  // go back to original opacity
+	.style("fill", "#1F77B4" );
+
+    // change the topic label to bold:
+    var z = d3.selectAll(".txt")
+	.style("font-weight", "normal")
+	.style("font-size", 11);
 
     // remove the tool-tip
     d3.selectAll(".bubble-tool").text("Most Salient Terms");
@@ -518,7 +534,6 @@ function topic_off() {
     // Change Total Frequency bars
     d3.selectAll(".bar-totals")
 	.data(dat2)
-	//.transition()
         .attr("x", 0)  
         .attr("y", function(d) { return y(d.Term); })
         .attr("height", y.rangeBand()) 
@@ -529,7 +544,6 @@ function topic_off() {
     //Change word labels
     d3.selectAll(".terms")
 	.data(dat2)
-	//.transition()
         .attr("x", -5)
         .attr("y", function(d) { return y(d.Term) + 12; })
         .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
@@ -565,11 +579,29 @@ function text_on(d) {
 	radius[dat2[i].Topic - 1] = dat2[i].Freq;
     }
 
+    var size = [];
+    for (var i = 0; i < K; ++i) {
+	size[i] = 0;
+    }
+    for (i = 0; i < k; i++) {
+	size[dat2[i].Topic - 1] = 11;
+    }
+
     // Change size of bubbles according to the word's distribution over topics
     d3.selectAll(".dot")
 	.data(radius)
 	.transition()
-        .attr("r", function(d) { return Math.sqrt(d*280900*0.25/Math.PI); });
+        .attr("r", function(d) { 
+	    return Math.sqrt(d*mdswidth*mdsheight*word_prop/Math.PI); 
+	});
+
+    // Change sizes of topic numbers:
+    d3.selectAll(".txt")
+	.data(size)
+	.transition()
+        .style("font-size", function(d) { 
+	    return +d;
+	});
 }
 
 
@@ -580,15 +612,22 @@ function text_off() {
     d3.selectAll(".dot")
 	.data(mdsData)
 	.transition()
-        .attr("r", function(d) { return Math.sqrt((d.Freq/100)*280900*0.25/Math.PI); });
+        .attr("r", function(d) { return Math.sqrt((d.Freq/100)*mdswidth*mdsheight*circle_prop/Math.PI); });
+
+    // Change sizes of topic numbers:
+    d3.selectAll(".txt")
+	.transition()
+        .style("font-size", 11);
 }
 
 
 // The actual read-in of the data and main code:
 d3.json("lda.json", function(error, data) {
 
-    // set the number of topics to global variable k:
+    // set the number of topics to global variable K:
     K = data['mdsDat'].x.length;
+
+    // R is the number of top relevant (or salient) words whose bars we display
     R = data['R'];
 
     // a (K x 5) matrix with columns x, y, topics, Freq, cluster (where x and y are locations for left panel)
@@ -686,12 +725,13 @@ d3.json("lda.json", function(error, data) {
     // draw circles
     points.append("circle")
         .attr("class", "dot")
-        .style("opacity", 0.3)
+        .style("opacity", 0.2)
         .style("fill", function(d) { return color(d.cluster); })
-        //.attr("r", function(d) { return (400/K)*Math.sqrt(d.Freq) ; })  // circle sizes should get smaller as the # of topics increases
-        .attr("r", function(d) { return Math.sqrt((d.Freq/100)*280900*0.25/Math.PI) ; })  // circle sizes should get smaller as the # of topics increases
+        // circle sizes should get smaller as the # of topics increases:
+        .attr("r", function(d) { return Math.sqrt((d.Freq/100)*mdswidth*mdsheight*circle_prop/Math.PI) ; })
         .attr("cx", function(d) { return (xScale(+d.x)); })
         .attr("cy", function(d) { return (yScale(+d.y)); })
+	.attr("stroke", "black")
         .attr("id", function(d) { return ('topic' + d.topics) })
         .on("mouseover", function(d) {
             current_hover.element = this;
