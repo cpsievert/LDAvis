@@ -228,6 +228,7 @@ function reorder_bars() {
 	    .attr("class", "terms")
 	    .attr("y", function(d) { return y(d.Term) + 12 + barheight + margin.bottom; })
 	    .attr("text-anchor", "end")
+            .attr("cursor", "pointer")
 	    .text(function(d) { return d.Term; })
 	    .on("mouseover", text_on)
 	    .on("mouseout", text_off);
@@ -578,6 +579,8 @@ function text_on(d) {
 	size[i] = 0;
     }
     for (i = 0; i < k; i++) {
+	// If we want to also re-size the topic number labels, do it here
+	// 11 is the default, so leaving this as 11 won't change anything.
 	size[dat2[i].Topic - 1] = 11;
     }
 
