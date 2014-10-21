@@ -40,7 +40,7 @@
 #' corpus), and then it reorders the topics in decreasing order of 
 #' frequency. The main computation is to loop through the topics and through
 #' 101 values of lambda (0, 0.01, 0.02, .., 1) to compute the R most relevant
-#' terms for each topic and value of lambda. If \code{}print.progress = TRUE}
+#' terms for each topic and value of lambda. If \code{print.progress = TRUE}
 #' progress in this loop (which can take a minute or two) will print to the
 #' screen. For more details, see Sievert and Shirley, 2014, ACL Workshop.
 #'

@@ -413,7 +413,7 @@ function topic_on(d) {
 	.style("fill", "#FFA500" );
 
     var Freq = Math.round(d.Freq*10)/10, topics = d.topics, cluster = d.cluster;
-    current_topic = +topics;
+    //current_topic = +topics;
 
     // remove the title with cluster proportion
     var text = d3.select(".bubble-tool");
@@ -743,6 +743,7 @@ d3.json("lda.json", function(error, data) {
             current_clicked.element = this;
             current_clicked.what = "topic";
             current_clicked.object = d;
+	    current_topic = +d.topics;
             document.getElementById("topic").value = d.topics;
             update_drawing();
         })
