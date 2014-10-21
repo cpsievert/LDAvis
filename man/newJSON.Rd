@@ -33,10 +33,10 @@ newJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
 
   \item{vocab}{character vector of the terms in the
   vocabulary (in the same order as the columns of
-  \code{phi} and the elements of \code{beta})}
+  \code{phi} and the elements of \code{beta}).}
 
   \item{term.frequency}{integer vector containing the
-  frequency of each term in the vocabulary}
+  frequency of each term in the vocabulary.}
 
   \item{R}{integer, the number of terms to display in the
   barcharts of the interactive viz. Default is 30.
@@ -59,22 +59,30 @@ The function first computes the topic frequencies (across
 the whole corpus), and then it reorders the topics in
 decreasing order of frequency. The main computation is to
 loop through the topics and through 101 values of lambda
-(0, 0.01, 0.02, .., 1) to compute the R most relevant terms
-for each topic and value of lambda. If \code{print.progress
-= TRUE} progress in this loop (which can take a minute or
-two) will print to the screen. For more details, see
-Sievert and Shirley, 2014, ACL Workshop.
+(0, 0.01, 0.02, .., 1) to compute the R most
+\emph{relevant} terms for each topic and value of lambda.
+If \code{print.progress = TRUE} progress in this loop
+(which can take a minute or two) will print to the screen.
 }
 \examples{
-# This example uses Newsgroup documents from
-# http://qwone.com/~jason/20Newsgroups/
+\dontrun{
+# This example uses news article data from D = 2246 Associated Press
+articles tokenized and shared by David Blei:
+# http://www.cs.princeton.edu/~blei/lda-c/index.html
 
-#data("Newsgroupdata", package = "LDAvis")
+# load the AP data:
+data(AP, package="LDAvis")
 
-# K = 50 topics
-# W = 22524 terms in the vocabulary
+# create the json object:
+json <- newJSON(phi = AP$phi, theta = AP$theta, alpha = AP$alpha,
+               beta = AP$beta, doc.length = AP$doc.length,
+               vocab = AP$vocab, term.frequency = AP$term.frequency,
+               R = 30, print.progress = TRUE)
 
-#json <- newJSON(...)
+
+# To serve it locally:
+#cat(json, file="path-to-LDAvis/LDAvis/inst/htmljs/lda.json")
+# from path-to-LDAvis/LDAvis/inst/htmljs/ python -m SimpleHTTPServer
 
 # Open vis in a browser!
 #serVis(json)
@@ -85,6 +93,14 @@ Sievert and Shirley, 2014, ACL Workshop.
 
 # If you have a GitHub account and want to quickly share with others!
 serVis(json, as.gist = TRUE)
+}
+}
+\references{
+Sievert, C. and Shirley, K. (2014) \emph{LDAvis: A Method
+for Visualizing and Interpreting Topics}, ACL Workshop on
+Interactive Language Learning, Visualization, and
+Interfaces.
+\url{http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf}
 }
 \seealso{
 \link{serVis}

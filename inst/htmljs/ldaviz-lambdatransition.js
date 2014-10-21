@@ -348,8 +348,7 @@ function reorder_bars() {
     old_winning_state.what = winning_state.what;
     old_winning_state.element = winning_state.element;
     old_winning_state.object = winning_state.object;
-    console.log(winning_state);
-    
+    //console.log(winning_state);    
 }
 
 // Main function to update the drawing:
@@ -382,8 +381,8 @@ function update_drawing()
     old_winning_state.what = winning_state.what;
     old_winning_state.element = winning_state.element;
     old_winning_state.object = winning_state.object;
-    console.log(winning_state);
-    show_state();
+    //console.log(winning_state);
+    //show_state();
 }
 
 
@@ -411,9 +410,7 @@ function topic_on(d) {
     var circle = d3.select(this);
     circle.style("opacity", highlight_opacity)
 	.style("fill", "#FFA500" );
-
     var Freq = Math.round(d.Freq*10)/10, topics = d.topics, cluster = d.cluster;
-    //current_topic = +topics;
 
     // remove the title with cluster proportion
     var text = d3.select(".bubble-tool");
@@ -459,7 +456,6 @@ function topic_on(d) {
     // Change Total Frequency bars
     d3.selectAll(".bar-totals")
 	.data(dat3)
-	//.transition()
         .attr("x", 0)  
         .attr("y", function(d) { return y(d.Term); })
         .attr("height", y.rangeBand()) 
@@ -470,7 +466,6 @@ function topic_on(d) {
     // Change word labels
     d3.selectAll(".terms")
 	.data(dat3)
-	//.transition()
         .attr("x", -5)
         .attr("y", function(d) { return y(d.Term) + 12; })
         .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
@@ -500,7 +495,6 @@ function topic_on(d) {
     d3.selectAll(".xaxis")
 	.attr("class", "xaxis")
 	.call(xAxis);
- 
 }
 
 
@@ -756,7 +750,7 @@ d3.json("lda.json", function(error, data) {
     
     // Add the clear selection clickable text:
     svg.append("text")
-        .text("Clear selection")
+        .text("Clear Selected Topic")
         .attr("x", 40)
         .attr("y", 20)
         .attr("cursor", "pointer")
@@ -805,6 +799,7 @@ d3.json("lda.json", function(error, data) {
         .attr("x", -5)
         .attr("class", "terms")
         .attr("y", function(d) { return y(d.Term) + 12; })
+        .attr("cursor", "pointer")
         .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
         .text(function(d) { return d.Term; })
         .on("mouseover", text_on)

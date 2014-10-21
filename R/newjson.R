@@ -1,4 +1,3 @@
-#1234567890123456789012345678901234567890123456789012345678901234567890123456789
 #' Create the JSON object to read into the javascript visualization
 #' 
 #' This function creates the JSON object that feeds the javascript visualization
@@ -24,10 +23,10 @@
 #' document in the corpus.
 #'
 #' @param vocab character vector of the terms in the vocabulary (in the same
-#' order as the columns of \code{phi} and the elements of \code{beta})
+#' order as the columns of \code{phi} and the elements of \code{beta}).
 #'
 #' @param term.frequency integer vector containing the frequency of each term 
-#' in the vocabulary
+#' in the vocabulary.
 #'
 #' @param R integer, the number of terms to display in the barcharts
 #' of the interactive viz. Default is 30. Recommended to be roughly
@@ -39,10 +38,16 @@
 #' @details The function first computes the topic frequencies (across the whole
 #' corpus), and then it reorders the topics in decreasing order of 
 #' frequency. The main computation is to loop through the topics and through
-#' 101 values of lambda (0, 0.01, 0.02, .., 1) to compute the R most relevant
-#' terms for each topic and value of lambda. If \code{print.progress = TRUE}
+#' 101 values of lambda (0, 0.01, 0.02, .., 1) to compute the R most 
+#' \emph{relevant} terms for each topic and value of lambda.
+#' If \code{print.progress = TRUE}
 #' progress in this loop (which can take a minute or two) will print to the
-#' screen. For more details, see Sievert and Shirley, 2014, ACL Workshop.
+#' screen.
+
+#' @references Sievert, C. and Shirley, K. (2014) \emph{LDAvis: A Method for
+#' Visualizing and Interpreting Topics}, ACL Workshop on Interactive 
+#' Language Learning, Visualization, and Interfaces.
+#' \url{http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf}
 #'
 #' @return a JSON object in R that can be written to a file to feed the
 #' interactive visualization
@@ -51,29 +56,39 @@
 #' @export
 #' @examples
 #' 
-#' # This example uses Newsgroup documents from 
-#' # http://qwone.com/~jason/20Newsgroups/
+#'\dontrun{
+#'# This example uses news article data from D = 2246 Associated Press
+#'articles tokenized and shared by David Blei: 
+#'# http://www.cs.princeton.edu/~blei/lda-c/index.html
 #'
-#' #data("Newsgroupdata", package = "LDAvis")
+#'# load the AP data:
+#'data(AP, package="LDAvis")
 #'
-#' # K = 50 topics
-#' # W = 22524 terms in the vocabulary
-#' 
-#' #json <- newJSON(...)
-#'                  
-#' # Open vis in a browser!
-#' #serVis(json)
+#'# create the json object:
+#'json <- newJSON(phi = AP$phi, theta = AP$theta, alpha = AP$alpha, 
+#'                beta = AP$beta, doc.length = AP$doc.length, 
+#'                vocab = AP$vocab, term.frequency = AP$term.frequency, 
+#'                R = 30, print.progress = TRUE)
 #'
-#' # By default serVis uses a temporary directory
-#' # Instead, we could write files to current working directory
-#' #serVis(json, out.dir = '.', open.browser = FALSE)
+#'                
+#'# To serve it locally:
+#'#cat(json, file="path-to-LDAvis/LDAvis/inst/htmljs/lda.json")
+#'# from path-to-LDAvis/LDAvis/inst/htmljs/ python -m SimpleHTTPServer
 #'
-#' # If you have a GitHub account and want to quickly share with others!
-#' serVis(json, as.gist = TRUE)
+#'# Open vis in a browser!
+#'#serVis(json)
+#'
+#'# By default serVis uses a temporary directory
+#'# Instead, we could write files to current working directory
+#'#serVis(json, out.dir = '.', open.browser = FALSE)
+#'
+#'# If you have a GitHub account and want to quickly share with others!
+#'serVis(json, as.gist = TRUE)
+#'}
 
-newJSON <- function(phi=matrix(), theta=matrix(), alpha=numeric(), 
-                    beta=numeric(), doc.length=integer(), vocab=character(), 
-                    term.frequency=integer(), R=30, 
+newJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(), 
+                    beta = numeric(), doc.length = integer(), 
+                    vocab = character(), term.frequency = integer(), R = 30, 
                     print.progress=FALSE) {
 
   # check input dimensions:
@@ -107,12 +122,6 @@ newJSON <- function(phi=matrix(), theta=matrix(), alpha=numeric(),
   # compute counts of tokens across K topics (length-K vector):
   # (this determines the areas of the default topic circles when no term is 
   # highlighted)
-
-  # including pseudotokens from the prior:
-  #topic.frequency <- apply((doc.length + K*mean(alpha)) * theta, 2, sum) + 
-  #                   W*mean(beta)
-
-  # not including pseudo-tokens
   topic.frequency <- apply(doc.length * theta, 2, sum)
   topic.proportion <- topic.frequency/sum(topic.frequency)
 
@@ -172,11 +181,11 @@ newJSON <- function(phi=matrix(), theta=matrix(), alpha=numeric(),
   n.lambda <- length(lambda.seq)
   term.vectors <- as.list(rep(0, K))
   if (print.progress) {
-    print(paste0("Looping through topics to compute top-", R, 
+    print(paste0("Looping through ", K, " topics to compute top-", R, 
                  " most relevant terms for grid of lambda values"))
   }
   for (k in 1:K) {
-    if (print.progress) print(k)
+    if (print.progress) print(paste0("Topic ", k))
     phi.k <- phi[k ,]
     lift <- phi.k/term.proportion
     term.vectors[[k]] <- data.frame(term=rep("", R*n.lambda), 
@@ -197,8 +206,6 @@ newJSON <- function(phi=matrix(), theta=matrix(), alpha=numeric(),
   topic.info <- lapply(term.vectors, function(x) unique(x))
   tinfo <- do.call("rbind", topic.info)
   n.topic <- sapply(topic.info, nrow)
-
-  #tinfo$Freq1 <- exp(tinfo$logprob)*N*topic.proportion[rep(1:K, n.topic)]
   tinfo$Freq <- term.topic.frequency[cbind(rep(1:K, n.topic), 
                                            match(tinfo[, 1], vocab))]
   tinfo$Total <- term.frequency[match(tinfo[, "term"], vocab)]
