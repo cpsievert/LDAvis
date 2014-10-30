@@ -51,8 +51,7 @@ the interactive visualization
 }
 \description{
 This function creates the JSON object that feeds the
-javascript visualization that is currently stored in
-'path-to-LDAvis/LDAvis/inst/htmljs/'
+visualization template.
 }
 \details{
 The function first computes the topic frequencies (across
@@ -65,11 +64,10 @@ If \code{print.progress = TRUE} progress in this loop
 (which can take a minute or two) will print to the screen.
 }
 \examples{
-\dontrun{
 # This example uses news article data from D = 2246 Associated Press
-articles tokenized and shared by David Blei:
+# articles tokenized and shared by David Blei:
 # http://www.cs.princeton.edu/~blei/lda-c/index.html
-
+\dontrun{
 # load the AP data:
 data(AP, package="LDAvis")
 
@@ -78,20 +76,19 @@ json <- newJSON(phi = AP$phi, theta = AP$theta, alpha = AP$alpha,
                beta = AP$beta, doc.length = AP$doc.length,
                vocab = AP$vocab, term.frequency = AP$term.frequency,
                R = 30, print.progress = TRUE)
+# By default, serVis will attempt to run a local file server
+# in a temporary directory (and prompt your browser to open)
+serVis(json) # press ESC or Ctrl-C to kill
 
+# You may want to just write the JSON and other dependency files
+# to a folder named AP under the working directory
+serVis(json, out.dir = 'AP', open.browser = FALSE)
+# then you could use a server of your choice
+system("cd AP && python -m SimpleHTTPServer", wait = FALSE)
+browseURL("http://localhost:8000")
 
-# To serve it locally:
-#cat(json, file="path-to-LDAvis/LDAvis/inst/htmljs/lda.json")
-# from path-to-LDAvis/LDAvis/inst/htmljs/ python -m SimpleHTTPServer
-
-# Open vis in a browser!
-#serVis(json)
-
-# By default serVis uses a temporary directory
-# Instead, we could write files to current working directory
-#serVis(json, out.dir = '.', open.browser = FALSE)
-
-# If you have a GitHub account and want to quickly share with others!
+# If you have a GitHub account, you can even publish as a gist
+# which allows you to easily share with others!
 serVis(json, as.gist = TRUE)
 }
 }
