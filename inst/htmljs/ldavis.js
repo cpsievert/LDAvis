@@ -366,7 +366,7 @@ LDAvis = function(to_select, json_file) {
 	    .attr("y", margin.top/2)
 	    .attr("text-anchor", "middle")
 			.attr("class", "bubble-tool")       //  set class so we can remove it when highlight_off is called  
-			.style("font-size", "16px") 
+			.attr("font-size", "16px") 
 			.style("text-decoration", "underline")  
 			.text(Freq + "% of tokens come from topic " + topics);
 
@@ -447,10 +447,11 @@ LDAvis = function(to_select, json_file) {
 		circle.style.opacity = base_opacity;
 		circle.style.fill = "#1F77B4";
 
-    // change the topic label to bold:
+    /* change the topic label to bold:
     var z = d3.selectAll(".txt")
-	    .style("font-weight", "normal")
-	    .style("font-size", 11);
+	    .attr("font-weight", "normal")
+	    .attr("font-size", "11px");
+	   */
 
     // change the bar chart "title"
     d3.selectAll(".bubble-tool").text("Most Salient Terms");
@@ -502,52 +503,54 @@ LDAvis = function(to_select, json_file) {
 
 	function text_on(d) {
 		var text = d3.select(this);
-		text.style("font-weight", "bold");
+		text.attr("font-weight", "bold");
 
 		var Term = d.Term;
 		var dat2 = mdsData3.filter(function(d) { return d.Term == Term });
 
-	    var k = dat2.length;  // number of topics for this token with non-zero frequency
+    var k = dat2.length;  // number of topics for this token with non-zero frequency
 
-	    var radius = [];
-	    for (var i = 0; i < K; ++i) {
-	    	radius[i] = 0;
-	    }
-	    for (i = 0; i < k; i++) {
-	    	radius[dat2[i].Topic - 1] = dat2[i].Freq;
-	    }
+    var radius = [];
+    for (var i = 0; i < K; ++i) {
+    	radius[i] = 0;
+    }
+    for (i = 0; i < k; i++) {
+    	radius[dat2[i].Topic - 1] = dat2[i].Freq;
+    }
 
-	    var size = [];
-	    for (var i = 0; i < K; ++i) {
-	    	size[i] = 0;
-	    }
-	    for (i = 0; i < k; i++) {
-		// If we want to also re-size the topic number labels, do it here
-		// 11 is the default, so leaving this as 11 won't change anything.
-		size[dat2[i].Topic - 1] = 11;
-	}
+    var size = [];
+    for (var i = 0; i < K; ++i) {
+    	size[i] = 0;
+    }
+    for (i = 0; i < k; i++) {
+			// If we want to also re-size the topic number labels, do it here
+			// 11 is the default, so leaving this as 11 won't change anything.
+			size[dat2[i].Topic - 1] = 11;
+		}
 
-	    // Change size of bubbles according to the word's distribution over topics
-	    d3.selectAll(".dot")
-	    .data(radius)
-	    .transition()
-	    .attr("r", function(d) { 
-	    	return Math.sqrt(d*mdswidth*mdsheight*word_prop/Math.PI); 
-	    });
+    // Change size of bubbles according to the word's distribution over topics
+    d3.selectAll(".dot")
+    .data(radius)
+    .transition()
+    .attr("r", function(d) { 
+    	return Math.sqrt(d*mdswidth*mdsheight*word_prop/Math.PI); 
+    });
 
-	    // Change sizes of topic numbers:
-	    d3.selectAll(".txt")
-	    .data(size)
-	    .transition()
-	    .style("font-size", function(d) { 
-	    	return +d;
-	    });
+    // Change sizes of topic numbers:
+    d3.selectAll(".txt")
+    .data(size)
+    .transition()
+    .style("font-size", function(d) { 
+    	return +d;
+    });
+
+    console.log(size);
 	}
 
 
 	function text_off() {
 		var text = d3.select(this);
-		text.style("font-weight", null);
+		text.attr("font-weight", "normal");
 
 		d3.selectAll(".dot")
 		.data(mdsData)
@@ -556,10 +559,10 @@ LDAvis = function(to_select, json_file) {
 			return Math.sqrt((d.Freq/100)*mdswidth*mdsheight*circle_prop/Math.PI); 
 		});
 
-	    // Change sizes of topic numbers:
-	    d3.selectAll(".txt")
-	    .transition()
-	    .style("font-size", 11);
+    // Change sizes of topic numbers:
+    d3.selectAll(".txt")
+    	.transition()
+    	.style("font-size", "11px");
 	}
 
 
@@ -695,7 +698,7 @@ LDAvis = function(to_select, json_file) {
 	    .attr("text-anchor", "middle")        
 	    .attr("stroke", "black")
 	    .attr("opacity", 1)
-	    .attr("font-size", 11)
+	    .attr("font-size", "11px")
 	    .attr("font-weight", 100);
 
     // draw circles
@@ -792,7 +795,7 @@ LDAvis = function(to_select, json_file) {
 	    .attr("y", margin.top/2)
 	    .attr("text-anchor", "middle")
 			.attr("class", "bubble-tool")       //  set class so we can remove it when highlight_off is called  
-			.style("font-size", "16px") 
+			.attr("font-size", "16px") 
 			.style("text-decoration", "underline")  
 			.text("Most Salient Terms");
 
