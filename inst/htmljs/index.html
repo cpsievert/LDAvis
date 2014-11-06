@@ -1,56 +1,22 @@
 <!DOCTYPE html>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <html>
-<head>
-  <link rel="stylesheet" type="text/css" href="lda.css">
-  <title>LDAvis</title>
-</head>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>LDAvis</title>
+    <link rel="stylesheet" type="text/css" href="lda.css">
+    <script src="d3.v3.js"></script>
+    <script src="ldavis.js"></script>
+  </head>
 
-<body>
+  <body>
+    <!-- Do we need this? -->
+    <div id="errorMsg"></div>
 
-<script src="d3.v3.js"></script>
-
-<!--div to enter a value to select a specific topic-->
-<div id="topicentry" style="float: left; margin-left: 30px; padding-bottom: 10px; font: 14px sans-serif; background-color:white">
-<form class="inlineForm" onSubmit="return change_topic()">
-Selected Topic: 
-<input type="text" id="topic" size="10">
-<input type="submit" value="Submit">
-</form>
-<form class="inlineForm" onSubmit="return decrement_topic()">
-<input type="submit" value="Previous Topic">
-</form>
-<form class="inlineForm" onSubmit="return increment_topic()">
-<input type="submit" value="Next Topic">
-</form>
-</div>
-
-<!--Div to input value of lambda using text box-->
-<div id="lambdaentry" style="float: left; margin-left: 30px; padding-bottom: 10px; font: 14px sans-serif; background-color:white">
-<form class="inlineForm" onSubmit="return change_lambda()">
-Lambda = 
-<input type="text" id="lambda" size="10">
-<input type="submit" value="Submit">
-</form>
-<form class="inlineForm" onSubmit="return decrement_lambda()">
-<input type="submit" value="&#955 - 0.1">
-</form>
-<form class="inlineForm" onSubmit="return increment_lambda()">
-<input type="submit" value="&#955 + 0.1">
-</form>
-</div>
-
-
-<div id="errorMsg"></div>
-
-<!-- Placeholder div if we want to create the content of the forms from within javascript
-<div id="forms" style="clear: left; background-color: white"></div>
--->
-
-<div id="lda" style="clear: left; background-color: white"></div>
-
-<script src="ldaviz-lambdatransition.js"></script>
-
-</body>
+    <!-- Placeholder div -->
+    <div id="lda" style="clear: left; background-color: white"></div>
+    <script>
+      var vis = new LDAvis("#lda", "lda.json");
+    </script>
+  </body>
 
 </html>
