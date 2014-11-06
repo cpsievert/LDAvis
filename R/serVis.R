@@ -45,7 +45,7 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
   
   ## Try to upload gist
   if (as.gist) {
-    gistd <- suppressMessages(suppressWarnings(require('gistr')))
+    gistd <- requireNamespace('gistr')
     if (!gistd) {
       warning("Please run `devtools::install_github('rOpenSci/gistr')` 
               to upload vis to https://gist.github.com")
@@ -60,7 +60,7 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
     return(invisible())
   }
 
-  servd <- suppressMessages(suppressWarnings(require('servr')))
+  servd <- requireNamespace('servr')
   if (open.browser) {
     if (!servd) {
       message("If the visualization doesn't render, consider installing the 
@@ -70,7 +70,7 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
               "as some browsers block this by default") 
       browseURL(sprintf("%s/index.html", out.dir))
     } else {
-      httd(dir = out.dir)
+      servr::httd(dir = out.dir)
     }
   }
 }
