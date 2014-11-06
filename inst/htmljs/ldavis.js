@@ -174,8 +174,8 @@ LDAvis = function(to_select, json_file) {
 			.attr("x", -5)
 			.attr("class", "terms")
 			.attr("y", function(d) { return y(d.Term) + 12 + barheight + margin.bottom; })
-			.attr("text-anchor", "end")
 			.attr("cursor", "pointer")
+			.style("text-anchor", "end")
 			.text(function(d) { return d.Term; })
 			.on("mouseover", text_on)
 			.on("mouseout", text_off);
@@ -364,9 +364,9 @@ LDAvis = function(to_select, json_file) {
 	    .append("text")
 	    .attr("x", mdswidth + 2*margin.left + barwidth/2)             
 	    .attr("y", margin.top/2)
-	    .attr("text-anchor", "middle")
 			.attr("class", "bubble-tool")       //  set class so we can remove it when highlight_off is called  
-			.attr("font-size", "16px") 
+			.style("text-anchor", "middle")
+			.style("font-size", "16px") 
 			.style("text-decoration", "underline")  
 			.text(Freq + "% of tokens come from topic " + topics);
 
@@ -412,7 +412,7 @@ LDAvis = function(to_select, json_file) {
 	    .data(dat3)
 	    .attr("x", -5)
 	    .attr("y", function(d) { return y(d.Term) + 12; })
-	    .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
+	    .style("text-anchor", "end") // right align text - use 'middle' for center alignment
 	    .text(function(d) { return d.Term; });
 
     // Create red bars (drawn over the gray ones) to signify the frequency under the selected topic
@@ -446,12 +446,6 @@ LDAvis = function(to_select, json_file) {
 		// go back to original opacity/fill
 		circle.style.opacity = base_opacity;
 		circle.style.fill = "#1F77B4";
-
-    /* change the topic label to bold:
-    var z = d3.selectAll(".txt")
-	    .attr("font-weight", "normal")
-	    .attr("font-size", "11px");
-	   */
 
     // change the bar chart "title"
     d3.selectAll(".bubble-tool").text("Most Salient Terms");
@@ -503,7 +497,7 @@ LDAvis = function(to_select, json_file) {
 
 	function text_on(d) {
 		var text = d3.select(this);
-		text.attr("font-weight", "bold");
+		text.style("font-weight", "bold");
 
 		var Term = d.Term;
 		var dat2 = mdsData3.filter(function(d) { return d.Term == Term });
@@ -550,7 +544,7 @@ LDAvis = function(to_select, json_file) {
 
 	function text_off() {
 		var text = d3.select(this);
-		text.attr("font-weight", "normal");
+		text.style("font-weight", "normal");
 
 		d3.selectAll(".dot")
 		.data(mdsData)
@@ -694,12 +688,12 @@ LDAvis = function(to_select, json_file) {
 	    .attr("class", "txt")
 	    .attr("x", function(d) { return(xScale(+d.x)); })
 	    .attr("y", function(d) { return(yScale(+d.y)+4); })
-	    .text(function(d) { return d.topics; })
-	    .attr("text-anchor", "middle")        
 	    .attr("stroke", "black")
 	    .attr("opacity", 1)
-	    .attr("font-size", "11px")
-	    .attr("font-weight", 100);
+	    .style("text-anchor", "middle")
+	    .style("font-size", "11px")
+	    .style("font-weight", 100)
+	    .text(function(d) { return d.topics; });
 
     // draw circles
     points.append("circle")
@@ -784,7 +778,7 @@ LDAvis = function(to_select, json_file) {
 	    .attr("class", "terms")
 	    .attr("y", function(d) { return y(d.Term) + 12; })
 	    .attr("cursor", "pointer")
-      .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
+      .style("text-anchor", "end") // right align text - use 'middle' for center alignment
       .text(function(d) { return d.Term; })
       .on("mouseover", text_on)
       .on("mouseout", text_off);
@@ -793,9 +787,9 @@ LDAvis = function(to_select, json_file) {
     svg.append("text")
 	    .attr("x", mdswidth + 2*margin.left + barwidth/2)             
 	    .attr("y", margin.top/2)
-	    .attr("text-anchor", "middle")
-			.attr("class", "bubble-tool")       //  set class so we can remove it when highlight_off is called  
-			.attr("font-size", "16px") 
+	    .attr("class", "bubble-tool")       //  set class so we can remove it when highlight_off is called  
+	    .style("text-anchor", "middle")
+			.style("font-size", "16px") 
 			.style("text-decoration", "underline")  
 			.text("Most Salient Terms");
 
