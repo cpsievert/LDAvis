@@ -23,17 +23,17 @@ LDAvis = function(to_select, json_file) {
 	mdsheight = 530,
 	barwidth = 530,
 	barheight = 530,
-	termwidth = 90; // width to add between two panels to display terms
+	termwidth = 90, // width to add between two panels to display terms
+	mdsarea = mdsheight * mdswidth;
+
+	// a circle with this radius would be equal in area to the scatterplot
+	var rTotal = Math.sqrt(mdsarea/Math.PI); 
+	// controls how big the maximum circle can be
+	var rMax	 = rTotal/5; 
 
 	// opacity of topic circles:
 	var base_opacity = 0.2,
 	highlight_opacity = 0.6;
-
-	// the proportion of the left panel area to cover with the circles under default topic circles
-	var circle_prop = 0.25;
-
-	// the proportion of the left panel area to cover with circles when a word is highlighted
-	var word_prop = 0.25;
 
 	// topic/lambda selection names are specific to *this* vis
 	var topic_select = to_select + "-topic";
@@ -44,524 +44,6 @@ LDAvis = function(to_select, json_file) {
 	var visID = parts[parts.length - 1];
 	var topicID = visID + "-topic";
 	var lambdaID = visID + "-lambda";
-
-	function init_forms (topicID, lambdaID, visID) { 
-		// topic inputs
-		var topicLabel = document.createElement("label");
-	  	topicLabel.setAttribute("for", topicID);
-	  //newLabel.setAttribute("style", "display: inline-block; width: 240px; text-align: right");
-	  	topicLabel.innerHTML = "Enter a topic # = <span id='" + topicID + "-value'></span>";
-	  var topicInput = document.createElement("input");
-		  topicInput.type = "number";
-		  topicInput.min = "0";
-		  topicInput.max = K; // assumes the data has already been read in
-		  topicInput.step = "1";
-		  topicInput.value = "0"; // a value of 0 indicates no topic is selected
-		  topicInput.id = topicID;
-		// lambda inputs  	
-	  var lambdaLabel = document.createElement("label");
-	  	lambdaLabel.setAttribute("for", lambdaID);
-	  	lambdaLabel.setAttribute("style", 
-	  		"margin-left: 300px; width: 240px; text-align: right");
-	  	lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
-	  var lambdaInput = document.createElement("input");
-		  lambdaInput.type = "range";
-		  lambdaInput.min = "0";
-		  lambdaInput.max = "1";
-		  lambdaInput.step = "0.1";
-		  lambdaInput.value = "1";
-		  lambdaInput.id = lambdaID;
-		// input container
-		var inputDiv = document.createElement("div");
-
-		// append the forms to the containers
-		inputDiv.appendChild(topicLabel);
-		inputDiv.appendChild(topicInput);
-		inputDiv.appendChild(lambdaLabel);
-		inputDiv.appendChild(lambdaInput);
-		// insert the container just before the vis
-		var visDiv = document.getElementById(visID);
-		document.body.insertBefore(inputDiv, visDiv);
-	}
-
-	function show_state() {
-		console.log(current_clicked, current_hover, current_topic);
-	}
-
-	function reset_state() {
-		current_clicked = { what: "nothing", element: undefined, 
-		object: undefined },
-		current_hover = { what: "nothing", element: undefined, 
-		object: undefined },
-		document.getElementById(topicID).value = 0;
-		current_topic = 0;
-		update_drawing();    
-	}
-
-	// function to re-order the bars (gray and red), and terms:
-	function reorder_bars() {
-
-		var winning_state;
-		if (current_hover.what !== "nothing") {
-			winning_state = current_hover;
-		} else {
-			winning_state = current_clicked;
-		}
-
-	    // Set up a transition:
-	  if (old_winning_state.what == "topic") {
-  		topics = old_winning_state.object.topics;
-  		d = old_winning_state.object;
-      // grab the bar-chart data for this topic only:
-      var dat2 = lamData.filter(function(d) { return d.Category == "Topic"+topics });
-
-      // define relevance:
-      for (var i = 0; i < dat2.length; i++)  { 
-      	dat2[i].relevance = lambda.current * dat2[i].logprob + 
-      											(1 - lambda.current) * dat2[i].loglift;
-      }
-
-      // sort by relevance:
-      dat2.sort(fancysort("relevance"));
-
-      // truncate to the top R tokens:
-      var dat3 = dat2.slice(0, R); 
-
-      var y = d3.scale.ordinal()
-      .domain(dat3.map(function(d) { return d.Term; }))
-      .rangeRoundBands([0, barheight], 0.15);
-      var x = d3.scale.linear()
-      .domain([1, d3.max(dat3, function(d) { return d.Total; })])
-      .range([0, barwidth])
-      .nice();
-
-      // Change Total Frequency bars
-      var graybars = d3.select("#bar-freqs")
-      .selectAll(".bar-totals")
-      .data(dat3, function(d) { return d.Term; });
-
-      // Change word labels
-      var labels = d3.select("#bar-freqs")
-      .selectAll(".terms")
-      .data(dat3, function(d) { return d.Term; });
-
-      // Create red bars (drawn over the gray ones) to signify the frequency under the selected topic
-      var redbars = d3.select("#bar-freqs")
-      .selectAll(".overlay")  
-      .data(dat3, function(d) { return d.Term; });
-
-      // adapted from http://bl.ocks.org/mbostock/1166403
-      var xAxis = d3.svg.axis().scale(x)
-      .orient("top")
-      .tickSize(-barheight)
-      .tickSubdivide(true)
-      .ticks(6);
-
-			// New axis definition:
-			var newaxis = d3.selectAll(".xaxis");
-			
-			// define the new elements to enter:
-			var graybarsEnter = graybars.enter().append("rect")
-			.attr("class", "bar-totals")
-			.attr("x", 0)  
-			.attr("y", function(d) { return y(d.Term) + barheight + margin.bottom; })
-			.attr("height", y.rangeBand()) 
-			.style("fill", "gray")   
-			.attr("opacity", 0.4)
-			
-			var labelsEnter = labels.enter()
-			.append("text")
-			.attr("x", -5)
-			.attr("class", "terms")
-			.attr("y", function(d) { return y(d.Term) + 12 + barheight + margin.bottom; })
-			.attr("text-anchor", "end")
-			.attr("cursor", "pointer")
-			.text(function(d) { return d.Term; })
-			.on("mouseover", text_on)
-			.on("mouseout", text_off);
-			
-			var redbarsEnter = redbars.enter().append("rect")
-			.attr("class", "overlay")
-			.attr("x", 0)  
-			.attr("y", function(d) { return y(d.Term) + barheight + margin.bottom; })
-			.attr("height", y.rangeBand()) 
-			.style("fill", "red")   
-			.attr("opacity", 0.4);
-			
-			
-			if (lambda.old < lambda.current) {
-				graybarsEnter
-				.attr("width", function(d) { return x(d.Total); } )
-				.transition().duration(duration)
-				.delay(duration)
-				.attr("y", function(d) { return y(d.Term); });
-				labelsEnter
-				.transition().duration(duration)
-				.delay(duration)
-				.attr("y", function(d) { return y(d.Term) + 12; });
-				redbarsEnter
-				.attr("width", function(d) { return x(d.Freq); } )
-				.transition().duration(duration)
-				.delay(duration)
-				.attr("y", function(d) { return y(d.Term); } );
-
-				graybars.transition().duration(duration)
-				.attr("width", function(d) { return x(d.Total); } )
-				.transition().duration(duration)
-				.attr("y", function(d) { return y(d.Term); });
-				labels.transition().duration(duration)
-				.delay(duration)
-				.attr("y", function(d) { return y(d.Term) + 12; });
-				redbars.transition().duration(duration)
-				.attr("width", function(d) { return x(d.Freq); } )
-				.transition().duration(duration)
-				.attr("y", function(d) { return y(d.Term); });
-
-		    // Transition exiting rectangles to the bottom of the barchart:
-		    graybars.exit()
-		    .transition().duration(duration)
-		    .attr("width", function(d) { return x(d.Total); } )
-		    .transition().duration(duration)
-		    .attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
-		    .remove();
-		    labels.exit()
-		    .transition().duration(duration)
-		    .delay(duration)
-		    .attr("y", function(d, i) { return barheight + margin.bottom + 18 + i * 18; })
-		    .remove();
-		    redbars.exit()
-		    .transition().duration(duration)
-		    .attr("width", function(d) { return x(d.Freq); } )
-		    .transition().duration(duration)
-		    .attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
-		    .remove();
-		    // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
-		    newaxis.transition().duration(duration)
-		    .call(xAxis)
-		    .transition().duration(duration);
-			} else { 
-				graybarsEnter
-				.attr("width", 100) // FIXME by looking up old width of these bars
-				.transition().duration(duration)
-				.attr("y", function(d) { return y(d.Term); })
-				.transition().duration(duration)
-				.attr("width", function(d) { return x(d.Total); } );
-				labelsEnter
-				.transition().duration(duration)
-				.attr("y", function(d) { return y(d.Term) + 12; });
-				redbarsEnter
-				.attr("width", 50) // FIXME by looking up old width of these bars
-				.transition().duration(duration)
-				.attr("y", function(d) { return y(d.Term); })
-				.transition().duration(duration)
-				.attr("width", function(d) { return x(d.Freq); } );
-
-				graybars.transition().duration(duration)
-				.attr("y", function(d) { return y(d.Term); })
-				.transition().duration(duration)
-				.attr("width", function(d) { return x(d.Total); } );
-				labels.transition().duration(duration)
-				.attr("y", function(d) { return y(d.Term) + 12; });
-				redbars.transition().duration(duration)
-				.attr("y", function(d) { return y(d.Term); })
-				.transition().duration(duration)
-				.attr("width", function(d) { return x(d.Freq); } );
-
-		    // Transition exiting rectangles to the bottom of the barchart:
-		    graybars.exit()
-		    .transition().duration(duration)
-		    .attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
-		    .remove();
-		    labels.exit()
-		    .transition().duration(duration)
-		    .attr("y", function(d, i) { return barheight + margin.bottom + 18 + i * 18; })
-		    .remove();
-		    redbars.exit()
-		    .transition().duration(duration)
-		    .attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
-		    .remove();
-
-		    // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
-		    newaxis.transition().duration(duration)
-		    .transition().duration(duration)
-		    .call(xAxis);
-			} // end of old_lambda vs lambda
-		}
-
-		old_winning_state.what = winning_state.what;
-		old_winning_state.element = winning_state.element;
-		old_winning_state.object = winning_state.object;  
-	}
-
-	// Main function to update the drawing:
-	function update_drawing() {
-		var winning_state;
-		if (current_hover.what !== "nothing") {
-			winning_state = current_hover;
-		} else {
-			winning_state = current_clicked;
-		}
-
-		if (old_winning_state.element !== undefined) {
-			switch (old_winning_state.what) {
-				case "nothing": throw new Error("internal error");
-				case "topic":
-					topic_off(old_winning_state.element);
-				break;
-			}
-		}
-
-		switch (winning_state.what) {
-			case "nothing":
-				topic_off(old_winning_state.element);
-			break;
-			case "topic":
-				topic_on(winning_state.element);
-			break;
-		}
-		old_winning_state.what = winning_state.what;
-		old_winning_state.element = winning_state.element;
-		old_winning_state.object = winning_state.object;
-	    //console.log(winning_state);
-	    //show_state();
-	}
-
-
-	//////////////////////////////////////////////////////////////////////////////
-
-	// sort array according to a specified object key name 
-	// Note that default is decreasing sort, set decreasing = -1 for increasing
-	// adpated from http://stackoverflow.com/questions/16648076/sort-array-on-key-value
-	function fancysort(key_name, decreasing) {
-		decreasing = (typeof decreasing === "undefined") ? 1 : decreasing;
-		return function (a, b) {
-			if (a[key_name] < b[key_name])
-				return 1*decreasing;
-			if (a[key_name] > b[key_name])
-				return -1*decreasing;
-			return 0;
-		};
-	}
-
-	//////////////////////////////////////////////////////////////////////////////
-
-	// function to update bar chart when a topic is selected
-	// the circle argument should be the actual circle element
-	function topic_on(circle) {
-		// grab data bound to this element
-		var d = circle.__data__
-		var Freq = Math.round(d.Freq * 10)/10, topics = d.topics;
-
-		// change opacity and fill of the selected circle
-		circle.style.opacity = highlight_opacity;
-		circle.style.fill = "#FFA500";
-		
-    var text = d3.select(".bubble-tool");
-    text.remove();
-
-    // append text with info relevant to topic of interest
-    d3.select("svg")
-	    .append("text")
-	    .attr("x", mdswidth + 2*margin.left + barwidth/2)             
-	    .attr("y", margin.top/2)
-	    .attr("text-anchor", "middle")
-			.attr("class", "bubble-tool")       //  set class so we can remove it when highlight_off is called  
-			.style("font-size", "16px") 
-			.style("text-decoration", "underline")  
-			.text(Freq + "% of tokens come from topic " + topics);
-
-    // grab the bar-chart data for this topic only:
-    var dat2 = lamData.filter(function(d) { return d.Category == "Topic"+topics });
-    
-    // define relevance:
-    for (var i = 0; i < dat2.length; i++)  { 
-    	dat2[i].relevance = lambda.current * dat2[i].logprob + 
-    												(1 - lambda.current) * dat2[i].loglift;
-    }
-
-    // sort by relevance:
-    dat2.sort(fancysort("relevance"));
-
-    // truncate to the top R tokens:
-    var dat3 = dat2.slice(0, R); 
-
-    // scale the bars to the top R terms:
-    var y = d3.scale.ordinal()
-	    .domain(dat3.map(function(d) { return d.Term; }))
-	    .rangeRoundBands([0, barheight], 0.15);
-    var x = d3.scale.linear()
-	    .domain([1, d3.max(dat3, function(d) { return d.Total; })])
-	    .range([0, barwidth])
-	    .nice();
-
-    // remove the red bars if there are any:
-    d3.selectAll(".overlay").remove();
-
-    // Change Total Frequency bars
-    d3.selectAll(".bar-totals")
-	    .data(dat3)
-	    .attr("x", 0)  
-	    .attr("y", function(d) { return y(d.Term); })
-	    .attr("height", y.rangeBand()) 
-	    .attr("width", function(d) { return x(d.Total); } )
-	    .style("fill", "gray")   
-	    .attr("opacity", 0.4);
-
-    // Change word labels
-    d3.selectAll(".terms")
-	    .data(dat3)
-	    .attr("x", -5)
-	    .attr("y", function(d) { return y(d.Term) + 12; })
-	    .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
-	    .text(function(d) { return d.Term; });
-
-    // Create red bars (drawn over the gray ones) to signify the frequency under the selected topic
-    d3.select("#bar-freqs").selectAll(".overlay")  
-	    .data(dat3)
-	    .enter()
-	    .append("rect")
-	    .attr("class", "overlay")
-	    .attr("x", 0)  
-	    .attr("y", function(d) { return y(d.Term); })
-	    .attr("height", y.rangeBand()) 
-	    .attr("width", function(d) { return x(d.Freq); } )
-	    .style("fill", "red")   
-	    .attr("opacity", 0.4); 
-
-    // adapted from http://bl.ocks.org/mbostock/1166403
-    var xAxis = d3.svg.axis().scale(x)
-	    .orient("top")
-	    .tickSize(-barheight)
-	    .tickSubdivide(true)
-	    .ticks(6);
-
-    // redraw x-axis
-    d3.selectAll(".xaxis")
-	    .attr("class", "xaxis")
-	    .call(xAxis);
-	}
-
-
-	function topic_off(circle) {
-		// go back to original opacity/fill
-		circle.style.opacity = base_opacity;
-		circle.style.fill = "#1F77B4";
-
-    // change the topic label to bold:
-    var z = d3.selectAll(".txt")
-	    .style("font-weight", "normal")
-	    .style("font-size", 11);
-
-    // change the bar chart "title"
-    d3.selectAll(".bubble-tool").text("Most Salient Terms");
-
-    // remove the red bars
-    d3.selectAll(".overlay").remove();
-
-    // go back to 'default' bar chart
-    var dat2 = lamData.filter(function(d) { return d.Category == "Default" });
-
-    var y = d3.scale.ordinal()
-	    .domain(dat2.map(function(d) { return d.Term; }))
-	    .rangeRoundBands([0, barheight], 0.15);
-    var x = d3.scale.linear()
-	    .domain([1, d3.max(dat2, function(d) { return d.Total; })])
-	    .range([0, barwidth])
-	    .nice();
-
-    // Change Total Frequency bars
-    d3.selectAll(".bar-totals")
-	    .data(dat2)
-	    .attr("x", 0)  
-	    .attr("y", function(d) { return y(d.Term); })
-	    .attr("height", y.rangeBand()) 
-	    .attr("width", function(d) { return x(d.Total); } )
-	    .style("fill", "gray")   
-	    .attr("opacity", 0.4);
-
-    //Change word labels
-    d3.selectAll(".terms")
-	    .data(dat2)
-	    .attr("x", -5)
-	    .attr("y", function(d) { return y(d.Term) + 12; })
-	    .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
-	    .text(function(d) { return d.Term; });
-
-    // adapted from http://bl.ocks.org/mbostock/1166403
-    var xAxis = d3.svg.axis().scale(x)
-	    .orient("top")
-	    .tickSize(-barheight)
-	    .tickSubdivide(true)
-	    .ticks(6);
-
-    // redraw x-axis
-    d3.selectAll(".xaxis")
-	    .attr("class", "xaxis")
-	    .call(xAxis);
-	}
-
-	function text_on(d) {
-		var text = d3.select(this);
-		text.style("font-weight", "bold");
-
-		var Term = d.Term;
-		var dat2 = mdsData3.filter(function(d) { return d.Term == Term });
-
-	    var k = dat2.length;  // number of topics for this token with non-zero frequency
-
-	    var radius = [];
-	    for (var i = 0; i < K; ++i) {
-	    	radius[i] = 0;
-	    }
-	    for (i = 0; i < k; i++) {
-	    	radius[dat2[i].Topic - 1] = dat2[i].Freq;
-	    }
-
-	    var size = [];
-	    for (var i = 0; i < K; ++i) {
-	    	size[i] = 0;
-	    }
-	    for (i = 0; i < k; i++) {
-		// If we want to also re-size the topic number labels, do it here
-		// 11 is the default, so leaving this as 11 won't change anything.
-		size[dat2[i].Topic - 1] = 11;
-	}
-
-	    // Change size of bubbles according to the word's distribution over topics
-	    d3.selectAll(".dot")
-	    .data(radius)
-	    .transition()
-	    .attr("r", function(d) { 
-	    	return Math.sqrt(d*mdswidth*mdsheight*word_prop/Math.PI); 
-	    });
-
-	    // Change sizes of topic numbers:
-	    d3.selectAll(".txt")
-	    .data(size)
-	    .transition()
-	    .style("font-size", function(d) { 
-	    	return +d;
-	    });
-	}
-
-
-	function text_off() {
-		var text = d3.select(this);
-		text.style("font-weight", null);
-
-		d3.selectAll(".dot")
-		.data(mdsData)
-		.transition()
-		.attr("r", function(d) { 
-			return Math.sqrt((d.Freq/100)*mdswidth*mdsheight*circle_prop/Math.PI); 
-		});
-
-	    // Change sizes of topic numbers:
-	    d3.selectAll(".txt")
-	    .transition()
-	    .style("font-size", 11);
-	}
-
 
 	// The actual read-in of the data and main code:
 	d3.json(json_file, function(error, data) {
@@ -611,7 +93,7 @@ LDAvis = function(to_select, json_file) {
 
 		// When the value of lambda changes, update the visualization
 		d3.select(lambda_select)
-			.on("input", function() {
+			.on("mouseup", function() {
 				// store the previous lambda value
 				lambda.old = document.getElementById(lambdaID).value;
 				lambda.current = +this.value;
@@ -654,10 +136,16 @@ LDAvis = function(to_select, json_file) {
 	    .range([mdsheight, 0])
 	    .domain([yrange[0] - ypad*ydiff, yrange[1] + ypad*ydiff]);
 
+
+	  var maxTopicFreq = Math.max.apply(null, data['mdsDat']['Freq']);
+	  var minTopicFreq = Math.min.apply(null, data['mdsDat']['Freq']);
+	  var rScaleMargin = d3.scale.sqrt().domain([0, maxTopicFreq]).range([1, rMax]);
+      
+
     // Create new svg element (that will contain everything):
     var svg = d3.select(to_select).append("svg")
 	    .attr("width", mdswidth  + barwidth + margin.left + termwidth + margin.right)
-	    .attr("height", mdsheight + 2*margin.top + margin.bottom);
+	    .attr("height", mdsheight + 2*margin.top + margin.bottom + 2*rMax);
 
     // Create a group for the mds plot
     var mdsplot = svg.append("g")
@@ -681,6 +169,62 @@ LDAvis = function(to_select, json_file) {
 	    .attr("stroke", "gray")
 	    .attr("opacity", 0.3);
 
+		// circle guide inspired from
+	  // http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html?_r=0
+	  var rSmall = rScaleMargin(100/K),  // an 'average circle'
+	  	rBig = rMax,
+	  	cx = 10 + rBig,
+    	cx2 = cx + 1.5*rBig;
+
+    circleGuide =  function(rSize, size) {
+     	d3.select("#leftpanel").append("circle")
+        .attr('class',"circleGuide" + size)
+        .attr('r', rSize)
+        .attr('cx', cx)
+        .attr('cy', mdsheight + rSize)
+        .style('fill', 'none')
+        .style('stroke-dasharray', '2 2')
+        .style('stroke', '#999');
+      d3.select("#leftpanel").append("line")
+      	.attr('class',"lineGuide" + size)
+        .attr("x1", cx)
+	      .attr("x2", cx2)
+	      .attr("y1", mdsheight + 2*rSize)
+	      .attr("y2", mdsheight + 2*rSize)
+	      .style("stroke", "gray")
+	      .style("opacity", 0.3);
+     }
+
+    circleGuide(rBig, "Big");
+    circleGuide(rSmall, "Small");
+
+    // Guide title vars
+    var defaultLabelBig = "The largest frequency is " + 
+    	Math.round(10*Math.pow(rBig/rSmall, 2))/10  + 
+    	" times larger than the average.";
+    var defaultLabelSmall = "Average frequency (" + 
+    	Math.round(100*(1/K)) + "% of the corpus)";
+
+    d3.select("#leftpanel").append("text")
+    	.attr("x", cx)
+    	.attr("y", mdsheight - 10)
+    	.attr('class',"circleGuideTitle")
+    	.style("text-anchor", "middle")
+    	.style("font-weight", "bold")
+    	.text("Marginal topic frequency");
+    d3.select("#leftpanel").append("text")
+    	.attr("x", cx2 + 10)
+    	.attr("y", mdsheight + 2*rBig)
+    	.attr('class',"circleGuideLabelBig")
+    	.style("text-anchor", "start")
+    	.text(defaultLabelBig);
+    d3.select("#leftpanel").append("text")
+    	.attr("x", cx2 + 10)
+    	.attr("y", mdsheight + 2*rSmall)
+    	.attr('class',"circleGuideLabelSmall")
+    	.style("text-anchor", "start")
+    	.text(defaultLabelSmall);
+
     // bind mdsData to the points in the left panel:
     var points = mdsplot.selectAll("points")
 	    .data(mdsData)
@@ -691,12 +235,12 @@ LDAvis = function(to_select, json_file) {
 	    .attr("class", "txt")
 	    .attr("x", function(d) { return(xScale(+d.x)); })
 	    .attr("y", function(d) { return(yScale(+d.y)+4); })
-	    .text(function(d) { return d.topics; })
-	    .attr("text-anchor", "middle")        
 	    .attr("stroke", "black")
 	    .attr("opacity", 1)
-	    .attr("font-size", 11)
-	    .attr("font-weight", 100);
+	    .style("text-anchor", "middle")
+	    .style("font-size", "11px")
+	    .style("font-weight", 100)
+	    .text(function(d) { return d.topics; });
 
     // draw circles
     points.append("circle")
@@ -704,8 +248,7 @@ LDAvis = function(to_select, json_file) {
     .style("opacity", 0.2)
     .style("fill", function(d) { return color(d.cluster); })
     // circle sizes should get smaller as the # of topics increases:
-    .attr("r", function(d) { 
-    	return Math.sqrt((d.Freq/100)*mdswidth*mdsheight*circle_prop/Math.PI) ; })
+    .attr("r", function(d) { return (rScaleMargin(+d.Freq)); })
     .attr("cx", function(d) { return (xScale(+d.x)); })
     .attr("cy", function(d) { return (yScale(+d.y)); })
     .attr("stroke", "black")
@@ -781,7 +324,7 @@ LDAvis = function(to_select, json_file) {
 	    .attr("class", "terms")
 	    .attr("y", function(d) { return y(d.Term) + 12; })
 	    .attr("cursor", "pointer")
-      .attr("text-anchor", "end") // right align text - use 'middle' for center alignment
+      .style("text-anchor", "end") // right align text - use 'middle' for center alignment
       .text(function(d) { return d.Term; })
       .on("mouseover", text_on)
       .on("mouseout", text_off);
@@ -790,8 +333,8 @@ LDAvis = function(to_select, json_file) {
     svg.append("text")
 	    .attr("x", mdswidth + 2*margin.left + barwidth/2)             
 	    .attr("y", margin.top/2)
-	    .attr("text-anchor", "middle")
-			.attr("class", "bubble-tool")       //  set class so we can remove it when highlight_off is called  
+	    .attr("class", "bubble-tool")       //  set class so we can remove it when highlight_off is called  
+	    .style("text-anchor", "middle")
 			.style("font-size", "16px") 
 			.style("text-decoration", "underline")  
 			.text("Most Salient Terms");
@@ -805,6 +348,552 @@ LDAvis = function(to_select, json_file) {
 
     chart.attr("class", "xaxis")
     	.call(xAxis);
+
+
+	  function init_forms (topicID, lambdaID, visID) { 
+			// topic inputs
+			var topicLabel = document.createElement("label");
+		  	topicLabel.setAttribute("for", topicID);
+		  //newLabel.setAttribute("style", "display: inline-block; width: 240px; text-align: right");
+		  	topicLabel.innerHTML = "Enter a topic # = <span id='" + topicID + "-value'></span>";
+		  var topicInput = document.createElement("input");
+			  topicInput.type = "number";
+			  topicInput.min = "0";
+			  topicInput.max = K; // assumes the data has already been read in
+			  topicInput.step = "1";
+			  topicInput.value = "0"; // a value of 0 indicates no topic is selected
+			  topicInput.id = topicID;
+			// lambda inputs  	
+		  var lambdaLabel = document.createElement("label");
+		  	lambdaLabel.setAttribute("for", lambdaID);
+		  	lambdaLabel.setAttribute("style", 
+		  		"margin-left: 300px; width: 240px; text-align: right");
+		  	lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
+		  var lambdaInput = document.createElement("input");
+			  lambdaInput.type = "range";
+			  lambdaInput.min = "0";
+			  lambdaInput.max = "1";
+			  lambdaInput.step = "0.1";
+			  lambdaInput.value = "1";
+			  lambdaInput.id = lambdaID;
+			// input container
+			var inputDiv = document.createElement("div");
+
+			// append the forms to the containers
+			inputDiv.appendChild(topicLabel);
+			inputDiv.appendChild(topicInput);
+			inputDiv.appendChild(lambdaLabel);
+			inputDiv.appendChild(lambdaInput);
+			// insert the container just before the vis
+			var visDiv = document.getElementById(visID);
+			document.body.insertBefore(inputDiv, visDiv);
+		}
+
+		function show_state() {
+			console.log(current_clicked, current_hover, current_topic);
+		}
+
+		function reset_state() {
+			current_clicked = { what: "nothing", element: undefined, 
+			object: undefined },
+			current_hover = { what: "nothing", element: undefined, 
+			object: undefined },
+			document.getElementById(topicID).value = 0;
+			current_topic = 0;
+			update_drawing();    
+		}
+
+		// function to re-order the bars (gray and red), and terms:
+		function reorder_bars() {
+
+			var winning_state;
+			if (current_hover.what !== "nothing") {
+				winning_state = current_hover;
+			} else {
+				winning_state = current_clicked;
+			}
+
+		    // Set up a transition:
+		  if (old_winning_state.what == "topic") {
+	  		topics = old_winning_state.object.topics;
+	  		d = old_winning_state.object;
+	      // grab the bar-chart data for this topic only:
+	      var dat2 = lamData.filter(function(d) { return d.Category == "Topic"+topics });
+
+	      // define relevance:
+	      for (var i = 0; i < dat2.length; i++)  { 
+	      	dat2[i].relevance = lambda.current * dat2[i].logprob + 
+	      											(1 - lambda.current) * dat2[i].loglift;
+	      }
+
+	      // sort by relevance:
+	      dat2.sort(fancysort("relevance"));
+
+	      // truncate to the top R tokens:
+	      var dat3 = dat2.slice(0, R); 
+
+	      var y = d3.scale.ordinal()
+	      .domain(dat3.map(function(d) { return d.Term; }))
+	      .rangeRoundBands([0, barheight], 0.15);
+	      var x = d3.scale.linear()
+	      .domain([1, d3.max(dat3, function(d) { return d.Total; })])
+	      .range([0, barwidth])
+	      .nice();
+
+	      // Change Total Frequency bars
+	      var graybars = d3.select("#bar-freqs")
+	      .selectAll(".bar-totals")
+	      .data(dat3, function(d) { return d.Term; });
+
+	      // Change word labels
+	      var labels = d3.select("#bar-freqs")
+	      .selectAll(".terms")
+	      .data(dat3, function(d) { return d.Term; });
+
+	      // Create red bars (drawn over the gray ones) to signify the frequency under the selected topic
+	      var redbars = d3.select("#bar-freqs")
+	      .selectAll(".overlay")  
+	      .data(dat3, function(d) { return d.Term; });
+
+	      // adapted from http://bl.ocks.org/mbostock/1166403
+	      var xAxis = d3.svg.axis().scale(x)
+	      .orient("top")
+	      .tickSize(-barheight)
+	      .tickSubdivide(true)
+	      .ticks(6);
+
+				// New axis definition:
+				var newaxis = d3.selectAll(".xaxis");
+				
+				// define the new elements to enter:
+				var graybarsEnter = graybars.enter().append("rect")
+				.attr("class", "bar-totals")
+				.attr("x", 0)  
+				.attr("y", function(d) { return y(d.Term) + barheight + margin.bottom; })
+				.attr("height", y.rangeBand()) 
+				.style("fill", "gray")   
+				.attr("opacity", 0.4)
+				
+				var labelsEnter = labels.enter()
+				.append("text")
+				.attr("x", -5)
+				.attr("class", "terms")
+				.attr("y", function(d) { return y(d.Term) + 12 + barheight + margin.bottom; })
+				.attr("cursor", "pointer")
+				.style("text-anchor", "end")
+				.text(function(d) { return d.Term; })
+				.on("mouseover", text_on)
+				.on("mouseout", text_off);
+				
+				var redbarsEnter = redbars.enter().append("rect")
+				.attr("class", "overlay")
+				.attr("x", 0)  
+				.attr("y", function(d) { return y(d.Term) + barheight + margin.bottom; })
+				.attr("height", y.rangeBand()) 
+				.style("fill", "red")   
+				.attr("opacity", 0.4);
+				
+				
+				if (lambda.old < lambda.current) {
+					graybarsEnter
+					.attr("width", function(d) { return x(d.Total); } )
+					.transition().duration(duration)
+					.delay(duration)
+					.attr("y", function(d) { return y(d.Term); });
+					labelsEnter
+					.transition().duration(duration)
+					.delay(duration)
+					.attr("y", function(d) { return y(d.Term) + 12; });
+					redbarsEnter
+					.attr("width", function(d) { return x(d.Freq); } )
+					.transition().duration(duration)
+					.delay(duration)
+					.attr("y", function(d) { return y(d.Term); } );
+
+					graybars.transition().duration(duration)
+					.attr("width", function(d) { return x(d.Total); } )
+					.transition().duration(duration)
+					.attr("y", function(d) { return y(d.Term); });
+					labels.transition().duration(duration)
+					.delay(duration)
+					.attr("y", function(d) { return y(d.Term) + 12; });
+					redbars.transition().duration(duration)
+					.attr("width", function(d) { return x(d.Freq); } )
+					.transition().duration(duration)
+					.attr("y", function(d) { return y(d.Term); });
+
+			    // Transition exiting rectangles to the bottom of the barchart:
+			    graybars.exit()
+			    .transition().duration(duration)
+			    .attr("width", function(d) { return x(d.Total); } )
+			    .transition().duration(duration)
+			    .attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
+			    .remove();
+			    labels.exit()
+			    .transition().duration(duration)
+			    .delay(duration)
+			    .attr("y", function(d, i) { return barheight + margin.bottom + 18 + i * 18; })
+			    .remove();
+			    redbars.exit()
+			    .transition().duration(duration)
+			    .attr("width", function(d) { return x(d.Freq); } )
+			    .transition().duration(duration)
+			    .attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
+			    .remove();
+			    // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
+			    newaxis.transition().duration(duration)
+			    .call(xAxis)
+			    .transition().duration(duration);
+				} else { 
+					graybarsEnter
+					.attr("width", 100) // FIXME by looking up old width of these bars
+					.transition().duration(duration)
+					.attr("y", function(d) { return y(d.Term); })
+					.transition().duration(duration)
+					.attr("width", function(d) { return x(d.Total); } );
+					labelsEnter
+					.transition().duration(duration)
+					.attr("y", function(d) { return y(d.Term) + 12; });
+					redbarsEnter
+					.attr("width", 50) // FIXME by looking up old width of these bars
+					.transition().duration(duration)
+					.attr("y", function(d) { return y(d.Term); })
+					.transition().duration(duration)
+					.attr("width", function(d) { return x(d.Freq); } );
+
+					graybars.transition().duration(duration)
+					.attr("y", function(d) { return y(d.Term); })
+					.transition().duration(duration)
+					.attr("width", function(d) { return x(d.Total); } );
+					labels.transition().duration(duration)
+					.attr("y", function(d) { return y(d.Term) + 12; });
+					redbars.transition().duration(duration)
+					.attr("y", function(d) { return y(d.Term); })
+					.transition().duration(duration)
+					.attr("width", function(d) { return x(d.Freq); } );
+
+			    // Transition exiting rectangles to the bottom of the barchart:
+			    graybars.exit()
+			    .transition().duration(duration)
+			    .attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
+			    .remove();
+			    labels.exit()
+			    .transition().duration(duration)
+			    .attr("y", function(d, i) { return barheight + margin.bottom + 18 + i * 18; })
+			    .remove();
+			    redbars.exit()
+			    .transition().duration(duration)
+			    .attr("y", function(d, i) { return barheight + margin.bottom + 6 + i * 18; } )
+			    .remove();
+
+			    // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
+			    newaxis.transition().duration(duration)
+			    .transition().duration(duration)
+			    .call(xAxis);
+				} // end of old_lambda vs lambda
+			}
+
+			old_winning_state.what = winning_state.what;
+			old_winning_state.element = winning_state.element;
+			old_winning_state.object = winning_state.object;  
+		}
+
+		// Main function to update the drawing:
+		function update_drawing() {
+			var winning_state;
+			if (current_hover.what !== "nothing") {
+				winning_state = current_hover;
+			} else {
+				winning_state = current_clicked;
+			}
+
+			if (old_winning_state.element !== undefined) {
+				switch (old_winning_state.what) {
+					case "nothing": throw new Error("internal error");
+					case "topic":
+						topic_off(old_winning_state.element);
+					break;
+				}
+			}
+
+			switch (winning_state.what) {
+				case "nothing":
+					topic_off(old_winning_state.element);
+				break;
+				case "topic":
+					topic_on(winning_state.element);
+				break;
+			}
+			old_winning_state.what = winning_state.what;
+			old_winning_state.element = winning_state.element;
+			old_winning_state.object = winning_state.object;
+		    //console.log(winning_state);
+		    //show_state();
+		}
+
+
+		//////////////////////////////////////////////////////////////////////////////
+
+		// sort array according to a specified object key name 
+		// Note that default is decreasing sort, set decreasing = -1 for increasing
+		// adpated from http://stackoverflow.com/questions/16648076/sort-array-on-key-value
+		function fancysort(key_name, decreasing) {
+			decreasing = (typeof decreasing === "undefined") ? 1 : decreasing;
+			return function (a, b) {
+				if (a[key_name] < b[key_name])
+					return 1*decreasing;
+				if (a[key_name] > b[key_name])
+					return -1*decreasing;
+				return 0;
+			};
+		}
+
+		//////////////////////////////////////////////////////////////////////////////
+
+		// function to update bar chart when a topic is selected
+		// the circle argument should be the actual circle element
+		function topic_on(circle) {
+			// grab data bound to this element
+			var d = circle.__data__
+			var Freq = Math.round(d.Freq * 10)/10, topics = d.topics;
+
+			// change opacity and fill of the selected circle
+			circle.style.opacity = highlight_opacity;
+			circle.style.fill = "#FFA500";
+			
+	    var text = d3.select(".bubble-tool");
+	    text.remove();
+
+	    // append text with info relevant to topic of interest
+	    d3.select("svg")
+		    .append("text")
+		    .attr("x", mdswidth + 2*margin.left + barwidth/2)             
+		    .attr("y", margin.top/2)
+				.attr("class", "bubble-tool")       //  set class so we can remove it when highlight_off is called  
+				.style("text-anchor", "middle")
+				.style("font-size", "16px") 
+				.style("text-decoration", "underline")  
+				.text(Freq + "% of tokens come from topic " + topics);
+
+	    // grab the bar-chart data for this topic only:
+	    var dat2 = lamData.filter(function(d) { return d.Category == "Topic"+topics });
+	    
+	    // define relevance:
+	    for (var i = 0; i < dat2.length; i++)  { 
+	    	dat2[i].relevance = lambda.current * dat2[i].logprob + 
+	    												(1 - lambda.current) * dat2[i].loglift;
+	    }
+
+	    // sort by relevance:
+	    dat2.sort(fancysort("relevance"));
+
+	    // truncate to the top R tokens:
+	    var dat3 = dat2.slice(0, R); 
+
+	    // scale the bars to the top R terms:
+	    var y = d3.scale.ordinal()
+		    .domain(dat3.map(function(d) { return d.Term; }))
+		    .rangeRoundBands([0, barheight], 0.15);
+	    var x = d3.scale.linear()
+		    .domain([1, d3.max(dat3, function(d) { return d.Total; })])
+		    .range([0, barwidth])
+		    .nice();
+
+	    // remove the red bars if there are any:
+	    d3.selectAll(".overlay").remove();
+
+	    // Change Total Frequency bars
+	    d3.selectAll(".bar-totals")
+		    .data(dat3)
+		    .attr("x", 0)  
+		    .attr("y", function(d) { return y(d.Term); })
+		    .attr("height", y.rangeBand()) 
+		    .attr("width", function(d) { return x(d.Total); } )
+		    .style("fill", "gray")   
+		    .attr("opacity", 0.4);
+
+	    // Change word labels
+	    d3.selectAll(".terms")
+		    .data(dat3)
+		    .attr("x", -5)
+		    .attr("y", function(d) { return y(d.Term) + 12; })
+		    .style("text-anchor", "end") // right align text - use 'middle' for center alignment
+		    .text(function(d) { return d.Term; });
+
+	    // Create red bars (drawn over the gray ones) to signify the frequency under the selected topic
+	    d3.select("#bar-freqs").selectAll(".overlay")  
+		    .data(dat3)
+		    .enter()
+		    .append("rect")
+		    .attr("class", "overlay")
+		    .attr("x", 0)  
+		    .attr("y", function(d) { return y(d.Term); })
+		    .attr("height", y.rangeBand()) 
+		    .attr("width", function(d) { return x(d.Freq); } )
+		    .style("fill", "red")   
+		    .attr("opacity", 0.4); 
+
+	    // adapted from http://bl.ocks.org/mbostock/1166403
+	    var xAxis = d3.svg.axis().scale(x)
+		    .orient("top")
+		    .tickSize(-barheight)
+		    .tickSubdivide(true)
+		    .ticks(6);
+
+	    // redraw x-axis
+	    d3.selectAll(".xaxis")
+		    .attr("class", "xaxis")
+		    .call(xAxis);
+		}
+
+
+		function topic_off(circle) {
+			// go back to original opacity/fill
+			circle.style.opacity = base_opacity;
+			circle.style.fill = "#1F77B4";
+
+	    // change the bar chart "title"
+	    d3.selectAll(".bubble-tool").text("Most Salient Terms");
+
+	    // remove the red bars
+	    d3.selectAll(".overlay").remove();
+
+	    // go back to 'default' bar chart
+	    var dat2 = lamData.filter(function(d) { return d.Category == "Default" });
+
+	    var y = d3.scale.ordinal()
+		    .domain(dat2.map(function(d) { return d.Term; }))
+		    .rangeRoundBands([0, barheight], 0.15);
+	    var x = d3.scale.linear()
+		    .domain([1, d3.max(dat2, function(d) { return d.Total; })])
+		    .range([0, barwidth])
+		    .nice();
+
+	    // Change Total Frequency bars
+	    d3.selectAll(".bar-totals")
+		    .data(dat2)
+		    .attr("x", 0)  
+		    .attr("y", function(d) { return y(d.Term); })
+		    .attr("height", y.rangeBand()) 
+		    .attr("width", function(d) { return x(d.Total); } )
+		    .style("fill", "gray")   
+		    .attr("opacity", 0.4);
+
+	    //Change word labels
+	    d3.selectAll(".terms")
+		    .data(dat2)
+		    .attr("x", -5)
+		    .attr("y", function(d) { return y(d.Term) + 12; })
+		    .style("text-anchor", "end") // right align text - use 'middle' for center alignment
+		    .text(function(d) { return d.Term; });
+
+	    // adapted from http://bl.ocks.org/mbostock/1166403
+	    var xAxis = d3.svg.axis().scale(x)
+		    .orient("top")
+		    .tickSize(-barheight)
+		    .tickSubdivide(true)
+		    .ticks(6);
+
+	    // redraw x-axis
+	    d3.selectAll(".xaxis")
+		    .attr("class", "xaxis")
+		    .call(xAxis);
+		}
+
+    function text_on(d) {
+			var text = d3.select(this);
+			text.style("font-weight", "bold");
+
+			var Term = d.Term;
+			var dat2 = mdsData3.filter(function(d) { return d.Term == Term });
+
+	    var k = dat2.length;  // number of topics for this token with non-zero frequency
+
+	    var radius = [];
+	    for (var i = 0; i < K; ++i) {
+	    	radius[i] = 0;
+	    }
+	    for (i = 0; i < k; i++) {
+	    	radius[dat2[i].Topic - 1] = dat2[i].Freq;
+	    }
+
+	    var size = [];
+	    for (var i = 0; i < K; ++i) {
+	    	size[i] = 0;
+	    }
+	    for (i = 0; i < k; i++) {
+				// If we want to also re-size the topic number labels, do it here
+				// 11 is the default, so leaving this as 11 won't change anything.
+				size[dat2[i].Topic - 1] = 11;
+			}
+
+			var rScaleCond = d3.scale.sqrt()
+				.domain([0, 1]).range([0, rMax]);
+
+	    // Change size of bubbles according to the word's distribution over topics
+	    d3.selectAll(".dot")
+		    .data(radius)
+		    .transition()
+		    .attr("r", function(d) { return (rScaleCond(d)); });
+
+	    // Change sizes of topic numbers:
+	    d3.selectAll(".txt")
+		    .data(size)
+		    .transition()
+		    .style("font-size", function(d) { 
+		    	return +d;
+		    });
+
+	    // Alter the guide
+	    d3.select(".circleGuideTitle")
+    		.text("Topic frequency given: " + text.text());
+    	// Size of the big circle changes
+    	d3.select(".circleGuideLabelBig")
+    		.text("Total frequency (100% of occurences)");
+    	// Average size changes
+    	var rAvg = rScaleCond(1/K);
+    	d3.select(".circleGuideLabelSmall")
+    		.attr("y", mdsheight + 2*rAvg)
+    		.text("Average frequency (" + Math.round(100*(1/K)) + "% of occurences)");
+    	d3.select(".circleGuideSmall")
+    		.attr("r", rAvg)
+    		.attr("cy", mdsheight + rAvg);
+    	d3.select(".lineGuideSmall")
+    		.attr("y1", mdsheight + 2*rAvg)
+    		.attr("y2", mdsheight + 2*rAvg);
+    	
+		}
+
+		function text_off() {
+			var text = d3.select(this);
+			text.style("font-weight", "normal");
+
+			d3.selectAll(".dot")
+				.data(mdsData)
+				.transition()
+				.attr("r", function(d) { return (rScaleMargin(+d.Freq)); });
+
+	    // Change sizes of topic numbers:
+	    d3.selectAll(".txt")
+	    	.transition()
+	    	.style("font-size", "11px");
+
+	    // Go back to the default guide
+	    d3.select(".circleGuideTitle")
+    		.text("Marginal topic frequency");
+    	d3.select(".circleGuideLabelBig")
+    		.text(defaultLabelBig);
+    	d3.select(".circleGuideLabelSmall")
+    		.attr("y", mdsheight + 2*rSmall)
+    		.text(defaultLabelSmall);
+    	d3.select(".circleGuideSmall")
+    		.attr("r", rSmall)
+    		.attr("cy", mdsheight + rSmall);
+    	d3.select(".lineGuideSmall")
+    		.attr("y1", mdsheight + 2*rSmall)
+    		.attr("y2", mdsheight + 2*rSmall);
+    	
+		}
 	});
 
 }
