@@ -93,7 +93,7 @@ LDAvis = function(to_select, json_file) {
 
 		// When the value of lambda changes, update the visualization
 		d3.select(lambda_select)
-			.on("input", function() {
+			.on("mouseup", function() {
 				// store the previous lambda value
 				lambda.old = document.getElementById(lambdaID).value;
 				lambda.current = +this.value;
