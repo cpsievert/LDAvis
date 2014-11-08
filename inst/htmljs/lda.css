@@ -1,3 +1,9 @@
+/* http://stackoverflow.com/questions/25194631/is-it-possible-to-always-show-up-down-arrows-for-input-number */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {  
+   opacity: 1;
+}
+
 div .tab-content {
     overflow:hidden;
 }

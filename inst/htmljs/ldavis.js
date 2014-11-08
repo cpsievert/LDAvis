@@ -354,9 +354,11 @@ LDAvis = function(to_select, json_file) {
 			// topic inputs
 			var topicLabel = document.createElement("label");
 		  	topicLabel.setAttribute("for", topicID);
+		  	topicLabel.setAttribute("style", "margin-left: 15px");
 		  //newLabel.setAttribute("style", "display: inline-block; width: 240px; text-align: right");
 		  	topicLabel.innerHTML = "Enter a topic number = <span id='" + topicID + "-value'></span>";
 		  var topicInput = document.createElement("input");
+		  	topicInput.setAttribute("style", "width: 50px");
 			  topicInput.type = "number";
 			  topicInput.min = "0";
 			  topicInput.max = K; // assumes the data has already been read in
@@ -369,12 +371,12 @@ LDAvis = function(to_select, json_file) {
 		  	lambdaLabel.setAttribute("style", "width: 300px; margin-left: 15px");
 		  	lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
 		  var lambdaInput = document.createElement("input");
+		  	lambdaInput.setAttribute("style", "margin-left: 150px");
 			  lambdaInput.type = "range";
 			  lambdaInput.min = 0;
 			  lambdaInput.max = 1;
 			  lambdaInput.step = 0.1;
 			  lambdaInput.value = 1;
-				lambdaInput.setAttribute("style", "margin-left: 300px");
 			  lambdaInput.id = lambdaID;
 			// input container
 			var inputDiv = document.createElement("div");
