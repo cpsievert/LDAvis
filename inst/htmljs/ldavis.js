@@ -200,10 +200,10 @@ LDAvis = function(to_select, json_file) {
 
     // Guide title vars
     var defaultLabelBig = "The largest frequency is " + 
-    	Math.round(10*Math.pow(rBig/rSmall, 2))/10  + 
+    	Math.pow(rBig/rSmall, 2).toFixed(1)  + 
     	" times larger than the average.";
     var defaultLabelSmall = "Average frequency (" + 
-    	Math.round(100*(1/K)) + "% of the corpus)";
+    	(100*(1/K)).toFixed(1) + "% of the corpus)";
 
     d3.select("#leftpanel").append("text")
     	.attr("x", cx)
@@ -858,7 +858,7 @@ LDAvis = function(to_select, json_file) {
     	var rAvg = rScaleCond(1/K);
     	d3.select(".circleGuideLabelSmall")
     		.attr("y", mdsheight + 2*rAvg)
-    		.text("Average frequency (" + Math.round(100*(1/K)) + "% of occurences)");
+    		.text("Average frequency (" + (100*(1/K)).toFixed(1) + "% of occurences)");
     	d3.select(".circleGuideSmall")
     		.attr("r", rAvg)
     		.attr("cy", mdsheight + rAvg);
