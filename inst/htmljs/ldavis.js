@@ -263,6 +263,7 @@ LDAvis = function(to_select, json_file) {
     	current_clicked.element = this;
     	current_clicked.what = "topic";
     	current_clicked.object = d;
+    	change_box(this);
     	update_drawing();
     })
     .on("mouseout", function(d) {
@@ -650,6 +651,11 @@ LDAvis = function(to_select, json_file) {
 					return -1*decreasing;
 				return 0;
 			};
+		}
+
+		// make sure topic input box shows the right topic
+		function change_box(circle) {
+			document.getElementById(topicID).value = circle.__data__.topics;
 		}
 
 		//////////////////////////////////////////////////////////////////////////////
