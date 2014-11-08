@@ -274,7 +274,7 @@ LDAvis = function(to_select, json_file) {
 
     // Add the clear selection clickable text:
     svg.append("text")
-    .text("Click here to clear selection")
+    .text("Click to clear topic selection")
     .attr("x", 40)
     .attr("y", 20)
     .attr("cursor", "pointer")
@@ -355,7 +355,7 @@ LDAvis = function(to_select, json_file) {
 			var topicLabel = document.createElement("label");
 		  	topicLabel.setAttribute("for", topicID);
 		  //newLabel.setAttribute("style", "display: inline-block; width: 240px; text-align: right");
-		  	topicLabel.innerHTML = "Enter a topic # = <span id='" + topicID + "-value'></span>";
+		  	topicLabel.innerHTML = "Enter a topic number = <span id='" + topicID + "-value'></span>";
 		  var topicInput = document.createElement("input");
 			  topicInput.type = "number";
 			  topicInput.min = "0";
@@ -366,15 +366,15 @@ LDAvis = function(to_select, json_file) {
 			// lambda inputs  	
 		  var lambdaLabel = document.createElement("label");
 		  	lambdaLabel.setAttribute("for", lambdaID);
-		  	lambdaLabel.setAttribute("style", 
-		  		"margin-left: 300px; width: 240px; text-align: right");
+		  	lambdaLabel.setAttribute("style", "width: 300px; margin-left: 15px");
 		  	lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
 		  var lambdaInput = document.createElement("input");
 			  lambdaInput.type = "range";
-			  lambdaInput.min = "0";
-			  lambdaInput.max = "1";
-			  lambdaInput.step = "0.1";
-			  lambdaInput.value = "1";
+			  lambdaInput.min = 0;
+			  lambdaInput.max = 1;
+			  lambdaInput.step = 0.1;
+			  lambdaInput.value = 1;
+				lambdaInput.setAttribute("style", "margin-left: 300px");
 			  lambdaInput.id = lambdaID;
 			// input container
 			var inputDiv = document.createElement("div");
@@ -382,8 +382,10 @@ LDAvis = function(to_select, json_file) {
 			// append the forms to the containers
 			inputDiv.appendChild(topicLabel);
 			inputDiv.appendChild(topicInput);
-			inputDiv.appendChild(lambdaLabel);
 			inputDiv.appendChild(lambdaInput);
+			inputDiv.appendChild(lambdaLabel);
+			
+			
 			// insert the container just before the vis
 			var visDiv = document.getElementById(visID);
 			document.body.insertBefore(inputDiv, visDiv);
