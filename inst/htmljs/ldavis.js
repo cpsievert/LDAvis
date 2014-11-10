@@ -759,8 +759,8 @@ LDAvis = function(to_select, json_file) {
     	if (term == null) return null;
 			term.style["font-weight"] = "bold";
 			var d = term.__data__
-			var Term = term.innerHTML;
-			var dat2 = mdsData3.filter(function(d) { return d.Term == Term });
+			var Term = d.Term;
+			var dat2 = mdsData3.filter(function(d2) { return d2.Term == Term });
 
 	    var k = dat2.length;  // number of topics for this token with non-zero frequency
 
