@@ -790,16 +790,14 @@ LDAvis = function(to_select, json_file) {
 	}
 
 	function term_on(term) {
-	    debugger;
     	    if (term == null) return null;
 	    term.style["font-weight"] = "bold";
 	    var d = term.__data__
-	    var Term = term.innerHTML;
-	    //debugger;
-	    var dat2 = mdsData3.filter(function(d) { return d.Term == Term });
-
+	    var Term = d.Term;
+	    var dat2 = mdsData3.filter(function(d2) { return d2.Term == Term });
+	    
 	    var k = dat2.length;  // number of topics for this token with non-zero frequency
-
+	    
 	    var radius = [];
 	    for (var i = 0; i < K; ++i) {
 	    	radius[i] = 0;
