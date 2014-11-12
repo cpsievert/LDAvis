@@ -28,7 +28,7 @@ LDAvis = function(to_select, json_file) {
 	// a circle with this radius would be equal in area to the scatterplot
 	var rTotal = Math.sqrt(mdsarea/Math.PI); 
 	// controls how big the maximum circle can be
-	var rMax	 = rTotal/5; 
+	var rMax = rTotal/5;
 
 	// opacity of topic circles:
 	var base_opacity = 0.2,
