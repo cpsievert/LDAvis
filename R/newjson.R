@@ -95,10 +95,12 @@ newJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   if (dim(phi)[1] != dim(theta)[2]) stop("Number of rows of phi does not match 
       number of columns of theta; both should be equal to the number of topics 
       in the model.")
-  if (!all.equal(rep(1, dim(phi)[1]), apply(phi, 1, sum))) stop("Rows of phi 
-      don't all sum to 1.")
-  if (!all.equal(rep(1, dim(theta)[1]), apply(theta, 1, sum))) stop("Rows of 
-      theta don't all sum to 1.")
+  if (!all.equal(rep(1, dim(phi)[1]), as.numeric(apply(phi, 1, sum)))) {
+  	stop("Rows of phi don't all sum to 1.")
+  }
+  if (!all.equal(rep(1, dim(theta)[1]), as.numeric(apply(theta, 1, sum)))) {
+    stop("Rows of theta don't all sum to 1.")
+  }
   if (length(alpha) != dim(theta)[2]) stop("Length of alpha not equal to number
       of columns of theta; both should be equal to the number of topics in the 
       model.")

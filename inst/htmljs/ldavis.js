@@ -29,8 +29,8 @@ LDAvis = function(to_select, json_file) {
             old: 1,
             current: 1
         },
-        color2 = "#ffa500", // 'highlight' color for selected topics and term-topic frequencies
-        color1 = "#1f77b4"; // baseline color for default topic circles and overall term frequencies
+        color1 = "#1f77b4", // baseline color for default topic circles and overall term frequencies
+        color2 = "#ffa500"; // 'highlight' color for selected topics and term-topic frequencies
 
     // Set the duration of each half of the transition:
     var duration = 750;
@@ -53,6 +53,10 @@ LDAvis = function(to_select, json_file) {
     var rTotal = Math.sqrt(mdsarea / Math.PI);
     // controls how big the maximum circle can be
     var rMax = rTotal / 5;
+
+    // proportion of area of MDS plot to which the sum of default topic circle areas is set
+    var circle_prop = 0.25;
+    var word_prop = 0.25;
 
     // opacity of topic circles:
     var base_opacity = 0.2,
@@ -220,11 +224,18 @@ LDAvis = function(to_select, json_file) {
 
         // circle guide inspired from
         // http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html?_r=0
-        var rSmall = rScaleMargin(100 / K), // an 'average circle'
-            rBig = rMax,
-            cx = 10 + rBig,
-            cx2 = cx + 1.5 * rBig;
+        //var rSmall = rScaleMargin(100 / K), // an 'average circle'
+            //rBig = rMax;
+            //cx = 10 + rBig,
+            //cx2 = cx + 1.5 * rBig;
 
+	var newSmall = Math.sqrt(0.02*mdswidth*mdsheight*circle_prop/Math.PI);
+	var newMedium = Math.sqrt(0.05*mdswidth*mdsheight*circle_prop/Math.PI);
+	var newLarge = Math.sqrt(0.10*mdswidth*mdsheight*circle_prop/Math.PI);
+        //debugger;
+	var cx = 10 + newLarge,
+            cx2 = cx + 1.5 * newLarge;
+	
         circleGuide = function(rSize, size) {
             d3.select("#leftpanel").append("circle")
                 .attr('class', "circleGuide" + size)
@@ -243,36 +254,50 @@ LDAvis = function(to_select, json_file) {
                 .style("stroke", "gray")
                 .style("opacity", 0.3);
         }
+        //circleGuide(rBig, "Big");
+        //circleGuide(rSmall, "Small");
 
-        circleGuide(rBig, "Big");
-        circleGuide(rSmall, "Small");
+        circleGuide(newSmall, "Small");
+        circleGuide(newMedium, "Medium");
+        circleGuide(newLarge, "Large");
 
         // Guide title vars
-        var defaultLabelBig = "The largest frequency is " +
-            Math.pow(rBig / rSmall, 2).toFixed(1) +
-            " times larger than the average.";
-        var defaultLabelSmall = "Average frequency (" +
-            (100 * (1 / K)).toFixed(1) + "% of the corpus)";
+        // var defaultLabelBig = "The largest frequency is " +
+        //     Math.pow(rBig / rSmall, 2).toFixed(1) +
+        //     " times larger than the average.";
+        // var defaultLabelSmall = "Average frequency (" +
+        //     (100 * (1 / K)).toFixed(1) + "% of the corpus)";
+
+        var defaultLabelSmall = "2%";
+        var defaultLabelMedium = "5%";
+        var defaultLabelLarge = "10%";
 
         d3.select("#leftpanel").append("text")
-            .attr("x", cx)
+            .attr("x", 10)
             .attr("y", mdsheight - 10)
             .attr('class', "circleGuideTitle")
-            .style("text-anchor", "middle")
+            .style("text-anchor", "left")
             .style("font-weight", "bold")
-            .text("Marginal topic frequency");
+            .text("Marginal topic distribtion");
         d3.select("#leftpanel").append("text")
             .attr("x", cx2 + 10)
-            .attr("y", mdsheight + 2 * rBig)
-            .attr('class', "circleGuideLabelBig")
-            .style("text-anchor", "start")
-            .text(defaultLabelBig);
-        d3.select("#leftpanel").append("text")
-            .attr("x", cx2 + 10)
-            .attr("y", mdsheight + 2 * rSmall)
+            .attr("y", mdsheight + 2 * newSmall)
             .attr('class', "circleGuideLabelSmall")
             .style("text-anchor", "start")
             .text(defaultLabelSmall);
+        d3.select("#leftpanel").append("text")
+            .attr("x", cx2 + 10)
+            .attr("y", mdsheight + 2 * newMedium)
+            .attr('class', "circleGuideLabelMedium")
+            .style("text-anchor", "start")
+            .text(defaultLabelMedium);
+        d3.select("#leftpanel").append("text")
+            .attr("x", cx2 + 10)
+            .attr("y", mdsheight + 2 * newLarge)
+            .attr('class', "circleGuideLabelLarge")
+            .style("text-anchor", "start")
+            .text(defaultLabelLarge);
+	//debugger;
 
         // bind mdsData to the points in the left panel:
         var points = mdsplot.selectAll("points")
@@ -302,9 +327,9 @@ LDAvis = function(to_select, json_file) {
             .attr("class", "dot")
             .style("opacity", 0.2)
             .style("fill", color1)
-            // circle sizes should get smaller as the # of topics increases:
             .attr("r", function(d) {
-                return (rScaleMargin(+d.Freq));
+                //return (rScaleMargin(+d.Freq));
+                return (Math.sqrt((d.Freq/100)*mdswidth*mdsheight*circle_prop/Math.PI));
             })
             .attr("cx", function(d) {
                 return (xScale(+d.x));
@@ -364,7 +389,6 @@ LDAvis = function(to_select, json_file) {
             })])
             .range([0, barwidth])
             .nice();
-        //var color2 = d3.scale.category10();
         var yAxis = d3.svg.axis()
             .scale(y);
         // Add a group for the bar chart
@@ -473,6 +497,7 @@ LDAvis = function(to_select, json_file) {
             lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
             var lambdaInput = document.createElement("input");
             lambdaInput.setAttribute("style", "margin-left: 150px");
+            //lambdaInput.setAttribute("style", "size: 300px");
             lambdaInput.type = "range";
             lambdaInput.min = 0;
             lambdaInput.max = 1;
@@ -989,13 +1014,13 @@ LDAvis = function(to_select, json_file) {
             var rScaleCond = d3.scale.sqrt()
                 .domain([0, 1]).range([0, rMax]);
 
-
             // Change size of bubbles according to the word's distribution over topics
             d3.selectAll(".dot")
                 .data(radius)
                 .transition()
                 .attr("r", function(d) {
-                    return (rScaleCond(d));
+                    //return (rScaleCond(d));
+		    return (Math.sqrt(d*mdswidth*mdsheight*word_prop/Math.PI)); 
                 });
 
             // re-bind mdsData so we can handle multiple selection
@@ -1012,21 +1037,21 @@ LDAvis = function(to_select, json_file) {
 
             // Alter the guide
             d3.select(".circleGuideTitle")
-                .text("Topic frequency given: " + term.innerHTML);
+                .text("Conditional topic distribution given term = '" + term.innerHTML + "'");
             // Size of the big circle changes
-            d3.select(".circleGuideLabelBig")
-                .text("Total frequency (100% of occurences)");
+            //d3.select(".circleGuideLabelBig")
+                //.text("Total frequency (100% of occurences)");
             // Average size changes
-            var rAvg = rScaleCond(1 / K);
-            d3.select(".circleGuideLabelSmall")
-                .attr("y", mdsheight + 2 * rAvg)
-                .text("Average frequency (" + (100 * (1 / K)).toFixed(1) + "% of occurences)");
-            d3.select(".circleGuideSmall")
-                .attr("r", rAvg)
-                .attr("cy", mdsheight + rAvg);
-            d3.select(".lineGuideSmall")
-                .attr("y1", mdsheight + 2 * rAvg)
-                .attr("y2", mdsheight + 2 * rAvg);
+            // var rAvg = rScaleCond(1 / K);
+            // d3.select(".circleGuideLabelSmall")
+            //     .attr("y", mdsheight + 2 * rAvg)
+            //     .text("Average frequency (" + (100 * (1 / K)).toFixed(1) + "% of occurences)");
+            // d3.select(".circleGuideSmall")
+            //     .attr("r", rAvg)
+            //     .attr("cy", mdsheight + rAvg);
+            // d3.select(".lineGuideSmall")
+            //     .attr("y1", mdsheight + 2 * rAvg)
+            //     .attr("y2", mdsheight + 2 * rAvg);
         }
 
         function term_off(term) {
@@ -1037,7 +1062,8 @@ LDAvis = function(to_select, json_file) {
                 .data(mdsData)
                 .transition()
                 .attr("r", function(d) {
-                    return (rScaleMargin(+d.Freq));
+                    //return (rScaleMargin(+d.Freq));
+                    return (Math.sqrt((d.Freq/100)*mdswidth*mdsheight*circle_prop/Math.PI));
                 });
 
             // Change sizes of topic numbers:
@@ -1047,18 +1073,18 @@ LDAvis = function(to_select, json_file) {
 
             // Go back to the default guide
             d3.select(".circleGuideTitle")
-                .text("Marginal topic frequency");
-            d3.select(".circleGuideLabelBig")
-                .text(defaultLabelBig);
+                .text("Marginal topic distribution");
+            d3.select(".circleGuideLabelLarge")
+                .text(defaultLabelLarge);
             d3.select(".circleGuideLabelSmall")
-                .attr("y", mdsheight + 2 * rSmall)
+                .attr("y", mdsheight + 2 * newSmall)
                 .text(defaultLabelSmall);
             d3.select(".circleGuideSmall")
-                .attr("r", rSmall)
-                .attr("cy", mdsheight + rSmall);
+                .attr("r", newSmall)
+                .attr("cy", mdsheight + newSmall);
             d3.select(".lineGuideSmall")
-                .attr("y1", mdsheight + 2 * rSmall)
-                .attr("y2", mdsheight + 2 * rSmall);
+                .attr("y1", mdsheight + 2 * newSmall)
+                .attr("y2", mdsheight + 2 * newSmall);
         }
 
         // location.hash to controls the state of the vis
@@ -1106,3 +1132,4 @@ LDAvis = function(to_select, json_file) {
     });
 
 }
+
