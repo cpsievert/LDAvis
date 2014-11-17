@@ -4,7 +4,7 @@ Version: 0.1
 Authors@R: c(person("Carson", "Sievert", role = "aut", email =
     "cpsievert1@gmail.com"), person("Kenny", "Shirley", role = c("aut", "cre"),
     email = "kshirley@research.att.com"))
-Description: Interactive visualization of topic models using shiny and D3.
+Description: Interactive visualization of topic models.
 Depends:
     R (>= 2.15)
 Imports:
@@ -23,3 +23,4 @@ Suggests:
     knitr,
     rmarkdown
 Roxygen: list(wrap = TRUE)
+VignetteBuilder: knitr
