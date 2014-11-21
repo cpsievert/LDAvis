@@ -186,10 +186,6 @@ LDAvis = function(to_select, json_file) {
             .range([mdsheight, 0])
             .domain([yrange[0] - ypad * ydiff, yrange[1] + ypad * ydiff]);
 
-        // var maxTopicFreq = Math.max.apply(null, data['mdsDat']['Freq']);
-        // var minTopicFreq = Math.min.apply(null, data['mdsDat']['Freq']);
-        // var rScaleMargin = d3.scale.sqrt().domain([0, maxTopicFreq]).range([1, rMax]);
-
         // Create new svg element (that will contain everything):
         var svg = d3.select(to_select).append("svg")
             .attr("width", mdswidth + barwidth + margin.left + termwidth + margin.right)
@@ -217,20 +213,15 @@ LDAvis = function(to_select, json_file) {
             .attr("stroke", "gray")
             .attr("opacity", 0.3);
 
-        // circle guide inspired from
-        // http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html?_r=0
-        //var rSmall = rScaleMargin(100 / K), // an 'average circle'
-            //rBig = rMax;
-            //cx = 10 + rBig,
-            //cx2 = cx + 1.5 * rBig;
-
-	// new definitions based on fixing the sum of the areas of the default topic circles:
-	var newSmall = Math.sqrt(0.02*mdsarea*circle_prop/Math.PI);
-	var newMedium = Math.sqrt(0.05*mdsarea*circle_prop/Math.PI);
-	var newLarge = Math.sqrt(0.10*mdsarea*circle_prop/Math.PI);
-	var cx = 10 + newLarge,
+	   // new definitions based on fixing the sum of the areas of the default topic circles:
+	   var newSmall = Math.sqrt(0.02*mdsarea*circle_prop/Math.PI);
+	   var newMedium = Math.sqrt(0.05*mdsarea*circle_prop/Math.PI);
+	   var newLarge = Math.sqrt(0.10*mdsarea*circle_prop/Math.PI);
+	   var cx = 10 + newLarge,
             cx2 = cx + 1.5 * newLarge;
 	
+        // circle guide inspired from
+        // http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html?_r=0
         circleGuide = function(rSize, size) {
             d3.select("#leftpanel").append("circle")
                 .attr('class', "circleGuide" + size)
@@ -249,19 +240,10 @@ LDAvis = function(to_select, json_file) {
                 .style("stroke", "gray")
                 .style("opacity", 0.3);
         }
-        //circleGuide(rBig, "Big");
-        //circleGuide(rSmall, "Small");
 
         circleGuide(newSmall, "Small");
         circleGuide(newMedium, "Medium");
         circleGuide(newLarge, "Large");
-
-        // Guide title vars
-        // var defaultLabelBig = "The largest frequency is " +
-        //     Math.pow(rBig / rSmall, 2).toFixed(1) +
-        //     " times larger than the average.";
-        // var defaultLabelSmall = "Average frequency (" +
-        //     (100 * (1 / K)).toFixed(1) + "% of the corpus)";
 
         var defaultLabelSmall = "2%";
         var defaultLabelMedium = "5%";
@@ -391,6 +373,34 @@ LDAvis = function(to_select, json_file) {
             .attr("transform", "translate(" + +(mdswidth + margin.left + termwidth) + "," + 2 * margin.top + ")")
             .attr("id", "bar-freqs");
 
+        // bar chart legend/guide
+        var barguide = {"width": 15, "height": 10};
+        d3.select("#bar-freqs").append("rect")
+            .attr("x", barwidth/2)
+            .attr("y", mdsheight)
+            .attr("height", barguide.height)
+            .attr("width", barguide.width)
+            .style("fill", color1)
+            .attr("opacity", 0.4);
+        d3.select("#bar-freqs").append("text")
+            .attr("x", barwidth/2 + barguide.width + 5)
+            .attr("y", mdsheight + barguide.height/2)
+            .style("dominant-baseline", "middle")
+            .text("Overall term frequency");
+
+        d3.select("#bar-freqs").append("rect")
+            .attr("x", barwidth/2)
+            .attr("y", mdsheight + barguide.height + 5)
+            .attr("height", barguide.height)
+            .attr("width", barguide.width)
+            .style("fill", color2)
+            .attr("opacity", 1);
+        d3.select("#bar-freqs").append("text")
+            .attr("x", barwidth/2 + barguide.width + 5)
+            .attr("y", mdsheight + (3/2)*barguide.height + 5)
+            .style("dominant-baseline", "middle")
+            .text("Term frequency within the selected topic");
+
         // Bind 'default' data to 'default' bar chart
         var basebars = chart.selectAll(".bar-totals")
             .data(barDefault2)
@@ -469,12 +479,12 @@ LDAvis = function(to_select, json_file) {
         chart.attr("class", "xaxis")
             .call(xAxis);
 
-	// dynamically create the topic and lambda input forms at the top of the page:
+	   // dynamically create the topic and lambda input forms at the top of the page:
         function init_forms(topicID, lambdaID, visID) {
 
             // create container div for topic and lambda input:
-	    var inputDiv = document.createElement("div");
-	    inputDiv.setAttribute("id", "top");
+	       var inputDiv = document.createElement("div");
+	       inputDiv.setAttribute("id", "top");
 
             // insert the input container just before the vis:
             var visDiv = document.getElementById(visID);
@@ -482,9 +492,9 @@ LDAvis = function(to_select, json_file) {
 
 	    // topic input container:
             var topicDiv = document.createElement("div");
-	    topicDiv.setAttribute("id", "topicInput");
-	    topicDiv.setAttribute("style", "background-color: #ffffff; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
-	    inputDiv.appendChild(topicDiv);
+	        topicDiv.setAttribute("id", "topicInput");
+	        topicDiv.setAttribute("style", "background-color: #ffffff; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
+	        inputDiv.appendChild(topicDiv);
 
             var topicLabel = document.createElement("label");
             topicLabel.setAttribute("for", topicID);
@@ -503,22 +513,22 @@ LDAvis = function(to_select, json_file) {
             topicDiv.appendChild(topicInput);
 
             // lambda inputs
-	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
-	    var lambdaDivWidth = termwidth + barwidth;
-	    var lambdaDiv = document.createElement("div");
-	    lambdaDiv.setAttribute("id", "lambdaInput");
-	    lambdaDiv.setAttribute("style", "background-color: #ffffff; position: absolute; top: 10px; left: " + lambdaDivLeft + "px; height: 40px; width: " + lambdaDivWidth + "px");
-	    inputDiv.appendChild(lambdaDiv);
+    	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
+    	    var lambdaDivWidth = termwidth + barwidth;
+    	    var lambdaDiv = document.createElement("div");
+    	    lambdaDiv.setAttribute("id", "lambdaInput");
+    	    lambdaDiv.setAttribute("style", "background-color: #ffffff; position: absolute; top: 10px; left: " + lambdaDivLeft + "px; height: 40px; width: " + lambdaDivWidth + "px");
+    	    inputDiv.appendChild(lambdaDiv);
 
-	    var lambdaZero = document.createElement("span");
-	    lambdaZero.innerHTML = "High Lift";
-	    lambdaZero.setAttribute("style", "background-color: #ffffff; height: 40px; width: 60px; font-family: sans-serif; font-size: 14px; position: absolute; top: 0px; left: 0px");
-	    lambdaDiv.appendChild(lambdaZero);
+    	    var lambdaZero = document.createElement("span");
+    	    lambdaZero.innerHTML = "High Lift";
+    	    lambdaZero.setAttribute("style", "background-color: #ffffff; height: 40px; width: 60px; font-family: sans-serif; font-size: 14px; position: absolute; top: 0px; left: 0px");
+    	    lambdaDiv.appendChild(lambdaZero);
 
-	    var sliderDiv = document.createElement("div");
-	    sliderDiv.setAttribute("id", "sliderdiv");
-	    sliderDiv.setAttribute("style", "background-color: #ffffff; height: 40px; position: absolute; top:0px; left: 65px; width: 200px");
-	    lambdaDiv.appendChild(sliderDiv);
+    	    var sliderDiv = document.createElement("div");
+    	    sliderDiv.setAttribute("id", "sliderdiv");
+    	    sliderDiv.setAttribute("style", "background-color: #ffffff; height: 40px; position: absolute; top:0px; left: 65px; width: 200px");
+    	    lambdaDiv.appendChild(sliderDiv);
 
             var lambdaInput = document.createElement("input");
             lambdaInput.setAttribute("style", "width: 200px; margin: 0px");
@@ -528,40 +538,40 @@ LDAvis = function(to_select, json_file) {
             lambdaInput.step = 0.01;
             lambdaInput.value = 1;
             lambdaInput.id = lambdaID;
-	    lambdaInput.setAttribute("list", "ticks"); // to enable automatic ticks (with no labels, see below)
+	        lambdaInput.setAttribute("list", "ticks"); // to enable automatic ticks (with no labels, see below)
             sliderDiv.appendChild(lambdaInput);
 
-	    // Create the svg to contain the slider scale:
-	    var scaleContainer = d3.select("#sliderdiv").append("svg")
-                .attr("width", 200)
-                .attr("height", 25);
+	       // Create the svg to contain the slider scale:
+	        var scaleContainer = d3.select("#sliderdiv").append("svg")
+            .attr("width", 200)
+            .attr("height", 25);
 
             var sliderScale = d3.scale.linear()
-		.domain([0, 1])
-		.range([7.5, 192.5])  // trimmed by 7.5px on each side to match the input type=range slider:
-		.nice();
+		    .domain([0, 1])
+		    .range([7.5, 192.5])  // trimmed by 7.5px on each side to match the input type=range slider:
+		    .nice();
 
             // adapted from http://bl.ocks.org/mbostock/1166403
             var sliderAxis = d3.svg.axis()
-		.scale(sliderScale)
-		.orient("bottom")
-		.tickSize(10)
-		.tickSubdivide(true)
-		.ticks(6);
+		    .scale(sliderScale)
+            .orient("bottom")
+            .tickSize(10)
+            .tickSubdivide(true)
+            .ticks(6);
 
-	    // group to contain the elements of the slider axis:
-	    var sliderAxisGroup = scaleContainer.append("g")
-		.attr("class", "slideraxis")
-                .call(sliderAxis);
+	       // group to contain the elements of the slider axis:
+	        var sliderAxisGroup = scaleContainer.append("g")
+		    .attr("class", "slideraxis")
+            .call(sliderAxis);
 	    
-	    var lambdaOne = document.createElement("span");
-	    lambdaOne.innerHTML = "High Probability";
-	    lambdaOne.setAttribute("style", "background-color: #ffffff; height: 40px; width: 100px; font-family: sans-serif; font-size: 14px; position: absolute; top: 0px; left: 270px");
-	    lambdaDiv.appendChild(lambdaOne);
+	        var lambdaOne = document.createElement("span");
+	        lambdaOne.innerHTML = "High Probability";
+	        lambdaOne.setAttribute("style", "background-color: #ffffff; height: 40px; width: 100px; font-family: sans-serif; font-size: 14px; position: absolute; top: 0px; left: 270px");
+	        lambdaDiv.appendChild(lambdaOne);
 
             var lambdaLabel = document.createElement("label");
             lambdaLabel.setAttribute("for", lambdaID);
-	    lambdaLabel.setAttribute("style", "background-color: #ffffff; height: 40px; width: 80px; position: absolute; top: 0px; left: 375px; font-family: sans-serif; font-size: 14px");
+	        lambdaLabel.setAttribute("style", "background-color: #ffffff; height: 40px; width: 80px; position: absolute; top: 0px; left: 375px; font-family: sans-serif; font-size: 14px");
             lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
             lambdaDiv.appendChild(lambdaLabel);
 
@@ -872,14 +882,14 @@ LDAvis = function(to_select, json_file) {
             text.remove();
             // append text with info relevant to topic of interest
             d3.select("#bar-freqs")
-                .append("text")
-                .attr("x", barwidth/2)
-		.attr("y", -30)
-		.attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
-                .style("text-anchor", "middle")
-                .style("font-size", "16px")
-                .style("text-decoration", "underline")
-                .text(Freq + "% of tokens come from topic " + topics);
+            .append("text")
+            .attr("x", barwidth/2)
+            .attr("y", -30)
+            .attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
+            .style("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("text-decoration", "underline")
+            .text(Freq + "% of tokens come from topic " + topics);
 
             // grab the bar-chart data for this topic only:
             var dat2 = lamData.filter(function(d) {
@@ -1147,6 +1157,7 @@ LDAvis = function(to_select, json_file) {
                 .attr("y2", mdsheight + 2 * newSmall);
         }
 
+        // seralize the visualization state using fragment identifiers -- http://en.wikipedia.org/wiki/Fragment_identifier
         // location.hash to controls the state of the vis
         window.addEventListener("popstate", function(e) {
             //debugger;
@@ -1184,10 +1195,6 @@ LDAvis = function(to_select, json_file) {
             document.getElementById(topicID).value = vis_state.topic = 0;
             state_save(true);
         }
-
-
-        // functions used to seralize the visualization state using fragment identifiers -- http://en.wikipedia.org/wiki/Fragment_identifier
-        // Implementation heavily influenced by Carlos -- https://github.com/cscheid/mlb-hall-of-fame-voting/blob/master/index.js
 
     });
 
