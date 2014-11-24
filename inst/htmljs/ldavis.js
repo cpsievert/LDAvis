@@ -1,53 +1,81 @@
+// Create, dispatch event
+// Taken from http://stackoverflow.com/questions/21924004/why-doesnt-jquery-fire-the-input-event-on-val-input-set
+// Creating an artificial event to trigger the topic change when the button is clicked
+function eventDispatcher(el){
+    var evt = new UIEvent('input');
+    el.dispatchEvent(evt)
+}
+
+// function to increment/decrement topic from click on button:
+// I'm defining this here because it needs to be loaded before the top div:
+function changeTopic(obj, K) {
+    var contentObj = document.getElementById("lda-topic");
+    var value = parseInt(contentObj.value);
+    if (obj.id == "topicdown") {
+	value--;
+    }
+    if (obj.id == "topicup") {
+	value++;
+    }
+    if (obj.id == "topicclear") {
+	value = 0;
+    }
+    value = Math.max(0, Math.min(K, value));
+    document.getElementById("lda-topic").value = value;
+    eventDispatcher(document.getElementById("lda-topic"));
+}
+
+
 LDAvis = function(to_select, json_file) {
 
     // This section sets up the logic for event handling
     var current_clicked = {
-            what: "nothing",
-            element: undefined
-        },
-        current_hover = {
-            what: "nothing",
-            element: undefined
-        },
-        old_winning_state = {
-            what: "nothing",
-            element: undefined
-        },
-        vis_state = {
-            lambda: 1,
-            topic: 0,
-            term: ""
-        };
+        what: "nothing",
+        element: undefined
+    },
+    current_hover = {
+        what: "nothing",
+        element: undefined
+    },
+    old_winning_state = {
+        what: "nothing",
+        element: undefined
+    },
+    vis_state = {
+        lambda: 1,
+        topic: 0,
+        term: ""
+    };
 
     // Set up a few 'global' variables to hold the data:
     var K, // number of topics 
-        R, // number of terms to display in bar chart
-        mdsData, // (x,y) locations and topic proportions
-        mdsData3, // topic proportions for all terms in the viz
-        lamData, // all terms that are among the top-R most relevant for all topics, lambda values
-        lambda = {
-            old: 1,
-            current: 1
-        },
-        color1 = "#1f77b4", // baseline color for default topic circles and overall term frequencies
-        color2 = "#d62728"; // 'highlight' color for selected topics and term-topic frequencies
+    R, // number of terms to display in bar chart
+    mdsData, // (x,y) locations and topic proportions
+    mdsData3, // topic proportions for all terms in the viz
+    lamData, // all terms that are among the top-R most relevant for all topics, lambda values
+    lambda = {
+        old: 1,
+        current: 1
+    },
+    color1 = "#1f77b4", // baseline color for default topic circles and overall term frequencies
+    color2 = "#d62728"; // 'highlight' color for selected topics and term-topic frequencies
 
     // Set the duration of each half of the transition:
     var duration = 750;
 
     // Set global margins used for everything
     var margin = {
-            top: 30,
-            right: 30,
-            bottom: 70,
-            left: 30
-        },
-        mdswidth = 530,
-        mdsheight = 530,
-        barwidth = 530,
-        barheight = 530,
-        termwidth = 90, // width to add between two panels to display terms
-        mdsarea = mdsheight * mdswidth;
+        top: 30,
+        right: 30,
+        bottom: 70,
+        left: 30
+    },
+    mdswidth = 530,
+    mdsheight = 530,
+    barwidth = 530,
+    barheight = 530,
+    termwidth = 90, // width to add between two panels to display terms
+    mdsarea = mdsheight * mdswidth;
 
     // a circle with this radius would be equal in area to the scatterplot
     //var rTotal = Math.sqrt(mdsarea / Math.PI);
@@ -61,7 +89,7 @@ LDAvis = function(to_select, json_file) {
 
     // opacity of topic circles:
     var base_opacity = 0.2,
-        highlight_opacity = 0.6;
+    highlight_opacity = 0.6;
 
     // topic/lambda selection names are specific to *this* vis
     var topic_select = to_select + "-topic";
@@ -89,6 +117,7 @@ LDAvis = function(to_select, json_file) {
             return 0;
         };
     }
+
 
     // The actual read-in of the data and main code:
     d3.json(json_file, function(error, data) {
@@ -157,8 +186,10 @@ LDAvis = function(to_select, json_file) {
                 document.getElementById(lambdaID).value = vis_state.lambda;
             });
 
+        // When the topic input changes, update the visualization:
         d3.select(topic_select)
             .on("input", function() {
+		//debugger;
                 if (vis_state.topic > 0 && vis_state.topic != this.value) {
                     topic_off(document.getElementById(topicID + vis_state.topic));
                 }
@@ -172,7 +203,7 @@ LDAvis = function(to_select, json_file) {
             return d.x;
         }); //d3.extent returns min and max of an array
         var xdiff = xrange[1] - xrange[0],
-            xpad = 0.10;
+        xpad = 0.10;
         var xScale = d3.scale.linear()
             .range([0, mdswidth])
             .domain([xrange[0] - xpad * xdiff, xrange[1] + xpad * xdiff]);
@@ -181,7 +212,7 @@ LDAvis = function(to_select, json_file) {
             return d.y;
         });
         var ydiff = yrange[1] - yrange[0],
-            ypad = 0.10;
+        ypad = 0.10;
         var yScale = d3.scale.linear()
             .range([mdsheight, 0])
             .domain([yrange[0] - ypad * ydiff, yrange[1] + ypad * ydiff]);
@@ -204,6 +235,11 @@ LDAvis = function(to_select, json_file) {
             .attr("y2", mdsheight / 2)
             .attr("stroke", "gray")
             .attr("opacity", 0.3);
+	mdsplot.append("text") // label axis
+	    .attr("x", 0)
+	    .attr("y", mdsheight/2 - 5)
+	    .text("PC1")
+	    .attr("fill", "gray");
 
         mdsplot.append("line") // draw y-axis
             .attr("x1", mdswidth / 2)
@@ -212,13 +248,18 @@ LDAvis = function(to_select, json_file) {
             .attr("y2", mdsheight)
             .attr("stroke", "gray")
             .attr("opacity", 0.3);
+	mdsplot.append("text") // label axis
+	    .attr("x", mdswidth/2 + 5)
+	    .attr("y", 7)
+	    .text("PC2")
+	    .attr("fill", "gray");
 
-	   // new definitions based on fixing the sum of the areas of the default topic circles:
-	   var newSmall = Math.sqrt(0.02*mdsarea*circle_prop/Math.PI);
-	   var newMedium = Math.sqrt(0.05*mdsarea*circle_prop/Math.PI);
-	   var newLarge = Math.sqrt(0.10*mdsarea*circle_prop/Math.PI);
-	   var cx = 10 + newLarge,
-            cx2 = cx + 1.5 * newLarge;
+	// new definitions based on fixing the sum of the areas of the default topic circles:
+	var newSmall = Math.sqrt(0.02*mdsarea*circle_prop/Math.PI);
+	var newMedium = Math.sqrt(0.05*mdsarea*circle_prop/Math.PI);
+	var newLarge = Math.sqrt(0.10*mdsarea*circle_prop/Math.PI);
+	var cx = 10 + newLarge,
+        cx2 = cx + 1.5 * newLarge;
 	
         // circle guide inspired from
         // http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html?_r=0
@@ -340,14 +381,26 @@ LDAvis = function(to_select, json_file) {
             });
 
         // Add the clear selection clickable text:
+        // svg.append("text")
+        //     .text("Click to clear selection")
+        //     .attr("x", 40)
+        //     .attr("y", 20)
+        //     .attr("cursor", "pointer")
+        //     .on("click", function() {
+        //         state_reset();
+        //     });
+
+        // Add the clear selection clickable text:
         svg.append("text")
-            .text("Click to clear selection")
-            .attr("x", 40)
-            .attr("y", 20)
-            .attr("cursor", "pointer")
-            .on("click", function() {
-                state_reset();
-            });
+            .text("Intertopic Distance Map (via multidimensional scaling)")
+            .attr("x", mdswidth/2 + margin.left)
+            .attr("y", 30)
+	    .style("font-size", "16px")
+	    .style("text-anchor", "middle");
+            // .attr("cursor", "pointer")
+            // .on("click", function() {
+            //     state_reset();
+            // });
 
         // establish layout and vars for bar chart
         var barDefault2 = lamData.filter(function(d) {
@@ -373,33 +426,45 @@ LDAvis = function(to_select, json_file) {
             .attr("transform", "translate(" + +(mdswidth + margin.left + termwidth) + "," + 2 * margin.top + ")")
             .attr("id", "bar-freqs");
 
-        // bar chart legend/guide
-        var barguide = {"width": 15, "height": 10};
+        // bar chart legend/guide:
+        var barguide = {"width": 100, "height": 15};
         d3.select("#bar-freqs").append("rect")
-            .attr("x", barwidth/2)
-            .attr("y", mdsheight)
+            .attr("x", 0)
+            .attr("y", mdsheight + 10)
             .attr("height", barguide.height)
             .attr("width", barguide.width)
             .style("fill", color1)
             .attr("opacity", 0.4);
         d3.select("#bar-freqs").append("text")
-            .attr("x", barwidth/2 + barguide.width + 5)
-            .attr("y", mdsheight + barguide.height/2)
+            .attr("x", barguide.width + 5)
+            .attr("y", mdsheight + 10 + barguide.height/2)
             .style("dominant-baseline", "middle")
             .text("Overall term frequency");
 
         d3.select("#bar-freqs").append("rect")
-            .attr("x", barwidth/2)
-            .attr("y", mdsheight + barguide.height + 5)
+            .attr("x", 0)
+            .attr("y", mdsheight + 10 + barguide.height + 5)
             .attr("height", barguide.height)
-            .attr("width", barguide.width)
+            .attr("width", barguide.width/2)
             .style("fill", color2)
-            .attr("opacity", 1);
+            .attr("opacity", 0.8);
         d3.select("#bar-freqs").append("text")
-            .attr("x", barwidth/2 + barguide.width + 5)
-            .attr("y", mdsheight + (3/2)*barguide.height + 5)
+            .attr("x", barguide.width/2 + 5)
+            .attr("y", mdsheight + 10 + (3/2)*barguide.height + 5)
             .style("dominant-baseline", "middle")
             .text("Term frequency within the selected topic");
+
+	// footnotes:
+        d3.select("#bar-freqs").append("text")
+            .attr("x", 0)
+            .attr("y", mdsheight + 10 + (6/2)*barguide.height + 5)
+            .style("dominant-baseline", "middle")
+            .text("1. saliency(term w) = frequency(w) * [sum_t p(t | w) * log(p(t | w)/p(t))]; see Chuang et. al (2012) 'Termite'");
+        d3.select("#bar-freqs").append("text")
+            .attr("x", 0)
+            .attr("y", mdsheight + 10 + (8/2)*barguide.height + 5)
+            .style("dominant-baseline", "middle")
+            .text("2. relevance(term w | topic t) = lambda * p(w | t) + (1 - lambda) * p(w | t)/p(w); see Sievert & Shirley (2013) 'LDAvis'");
 
         // Bind 'default' data to 'default' bar chart
         var basebars = chart.selectAll(".bar-totals")
@@ -444,31 +509,33 @@ LDAvis = function(to_select, json_file) {
                 }
                 term_on(this);
             })
-            // .on("click", function(d) {
-            // 	var old_term = termID + vis_state.term;
-            // 	if (vis_state.term != "" && old_term != this.id) {
-            // 	    term_off(document.getElementById(old_term));
-            // 	}
-            // 	vis_state.term = d.Term;
-            // 	state_save(true);
-            // 	term_on(this);
-            // 	debugger;
-            // })
+        // .on("click", function(d) {
+        // 	var old_term = termID + vis_state.term;
+        // 	if (vis_state.term != "" && old_term != this.id) {
+        // 	    term_off(document.getElementById(old_term));
+        // 	}
+        // 	vis_state.term = d.Term;
+        // 	state_save(true);
+        // 	term_on(this);
+        // 	debugger;
+        // })
             .on("mouseout", function(d) {
                 if (vis_state.term != d.Term) term_off(this);
                 if (vis_state.term != "") term_on(document.getElementById(termID + vis_state.term));
             });
 
-        // append text with info relevant to topic of interest
-        chart.append("text")
+        var title = chart.append("text")
             .attr("x", barwidth/2)
             .attr("y", -30)
             .attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
             .style("text-anchor", "middle")
             .style("font-size", "16px")
-            .style("text-decoration", "underline")
-            .text("Most Salient Terms");
-
+            .text("Top-" + R + " Most Salient Terms");
+	title.append("tspan")
+	    .attr("baseline-shift", "super")	    
+	    .attr("font-size", "12px")
+	    .text("(1)");
+	
         // barchart axis adapted from http://bl.ocks.org/mbostock/1166403
         var xAxis = d3.svg.axis().scale(x)
             .orient("top")
@@ -479,12 +546,12 @@ LDAvis = function(to_select, json_file) {
         chart.attr("class", "xaxis")
             .call(xAxis);
 
-	   // dynamically create the topic and lambda input forms at the top of the page:
+	// dynamically create the topic and lambda input forms at the top of the page:
         function init_forms(topicID, lambdaID, visID) {
 
             // create container div for topic and lambda input:
-	       var inputDiv = document.createElement("div");
-	       inputDiv.setAttribute("id", "top");
+	    var inputDiv = document.createElement("div");
+	    inputDiv.setAttribute("id", "top");
 
             // insert the input container just before the vis:
             var visDiv = document.getElementById(visID);
@@ -492,14 +559,13 @@ LDAvis = function(to_select, json_file) {
 
 	    // topic input container:
             var topicDiv = document.createElement("div");
-	        topicDiv.setAttribute("id", "topicInput");
-	        topicDiv.setAttribute("style", "background-color: #ffffff; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
-	        inputDiv.appendChild(topicDiv);
+	    topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
+	    inputDiv.appendChild(topicDiv);
 
             var topicLabel = document.createElement("label");
             topicLabel.setAttribute("for", topicID);
             topicLabel.setAttribute("style", "font-family: sans-serif; font-size: 14px");
-            topicLabel.innerHTML = "Enter a topic number: <span id='" + topicID + "-value'></span>";
+            topicLabel.innerHTML = "Selected Topic: <span id='" + topicID + "-value'></span>";
             topicDiv.appendChild(topicLabel);
 
             var topicInput = document.createElement("input");
@@ -512,69 +578,98 @@ LDAvis = function(to_select, json_file) {
             topicInput.id = topicID;
             topicDiv.appendChild(topicInput);
 
-            // lambda inputs
+ 	    var topicDown = document.createElement("button");
+	    topicDown.id = "topicdown";
+	    topicDown.setAttribute("style", "margin-left: 5px");
+	    topicDown.setAttribute("onclick", "changeTopic(this, " + K + ");");
+	    topicDown.innerHTML = "Previous Topic";
+            topicDiv.appendChild(topicDown);
+
+	    var topicUp = document.createElement("button");
+	    topicUp.id = "topicup";
+	    topicUp.setAttribute("style", "margin-left: 5px");
+	    topicUp.setAttribute("onclick", "changeTopic(this, " + K + ");");
+	    topicUp.innerHTML = "Next Topic";
+            topicDiv.appendChild(topicUp);
+
+	    var topicClear = document.createElement("button");
+	    topicClear.id = "topicclear";
+	    topicClear.setAttribute("style", "margin-left: 5px");
+	    topicClear.setAttribute("onclick", "changeTopic(this, " + K + ");");
+	    topicClear.innerHTML = "Clear Topic";
+            topicDiv.appendChild(topicClear);
+
+           // lambda inputs
     	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
-    	    var lambdaDivWidth = termwidth + barwidth;
+    	    var lambdaDivWidth = barwidth;
     	    var lambdaDiv = document.createElement("div");
     	    lambdaDiv.setAttribute("id", "lambdaInput");
-    	    lambdaDiv.setAttribute("style", "background-color: #ffffff; position: absolute; top: 10px; left: " + lambdaDivLeft + "px; height: 40px; width: " + lambdaDivWidth + "px");
+    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: " + lambdaDivLeft + "px; height: 40px; width: " + lambdaDivWidth + "px");
     	    inputDiv.appendChild(lambdaDiv);
 
-    	    var lambdaZero = document.createElement("span");
-    	    lambdaZero.innerHTML = "High Lift";
-    	    lambdaZero.setAttribute("style", "background-color: #ffffff; height: 40px; width: 60px; font-family: sans-serif; font-size: 14px; position: absolute; top: 0px; left: 0px");
+    	    var lambdaZero = document.createElement("div");
+    	    lambdaZero.setAttribute("style", "padding: 5px; height: 20px; width: 220px; font-family: sans-serif; position: absolute; top: 0px; left: 0px;");
+	    lambdaZero.setAttribute("id", "lambdaZero");
     	    lambdaDiv.appendChild(lambdaZero);
+	    var xx = d3.select("#lambdaZero")
+		.append("text")
+		.attr("x", 0)
+		.attr("y", 0)
+		.style("font-size", "14px")
+		.text("Slide to adjust relevance metric:");
+	    var yy = d3.select("#lambdaZero")
+		.append("text")
+		.attr("x", 125)
+		.attr("y", -5)
+		.style("font-size", "10px")
+		.style("position", "absolute")
+		.text("(2)");
+	    
+            var lambdaLabel = document.createElement("label");
+            lambdaLabel.setAttribute("for", lambdaID);
+	    lambdaLabel.setAttribute("style", "height: 20px; width: 200px; position: absolute; top: 25px; left: 90px; font-family: sans-serif; font-size: 14px");
+            lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
+            lambdaDiv.appendChild(lambdaLabel);
 
     	    var sliderDiv = document.createElement("div");
     	    sliderDiv.setAttribute("id", "sliderdiv");
-    	    sliderDiv.setAttribute("style", "background-color: #ffffff; height: 40px; position: absolute; top:0px; left: 65px; width: 200px");
+    	    sliderDiv.setAttribute("style", "padding: 5px; height: 40px; position: absolute; top:0px; left: 240px; width: 250px");
     	    lambdaDiv.appendChild(sliderDiv);
 
             var lambdaInput = document.createElement("input");
-            lambdaInput.setAttribute("style", "width: 200px; margin: 0px");
+            lambdaInput.setAttribute("style", "width: 250px; margin: 0px");
             lambdaInput.type = "range";
             lambdaInput.min = 0;
             lambdaInput.max = 1;
             lambdaInput.step = 0.01;
             lambdaInput.value = 1;
             lambdaInput.id = lambdaID;
-	        lambdaInput.setAttribute("list", "ticks"); // to enable automatic ticks (with no labels, see below)
+	    lambdaInput.setAttribute("list", "ticks"); // to enable automatic ticks (with no labels, see below)
             sliderDiv.appendChild(lambdaInput);
 
-	       // Create the svg to contain the slider scale:
-	        var scaleContainer = d3.select("#sliderdiv").append("svg")
-            .attr("width", 200)
-            .attr("height", 25);
+	    // Create the svg to contain the slider scale:
+	    var scaleContainer = d3.select("#sliderdiv").append("svg")
+		.attr("width", 250)
+		.attr("height", 25);
 
             var sliderScale = d3.scale.linear()
-		    .domain([0, 1])
-		    .range([7.5, 192.5])  // trimmed by 7.5px on each side to match the input type=range slider:
-		    .nice();
+		.domain([0, 1])
+		.range([7.5, 242.5])  // trimmed by 7.5px on each side to match the input type=range slider:
+		.nice();
 
             // adapted from http://bl.ocks.org/mbostock/1166403
             var sliderAxis = d3.svg.axis()
-		    .scale(sliderScale)
-            .orient("bottom")
-            .tickSize(10)
-            .tickSubdivide(true)
-            .ticks(6);
+		.scale(sliderScale)
+		.orient("bottom")
+		.tickSize(10)
+		.tickSubdivide(true)
+		.ticks(6);
 
-	       // group to contain the elements of the slider axis:
-	        var sliderAxisGroup = scaleContainer.append("g")
-		    .attr("class", "slideraxis")
-            .call(sliderAxis);
+	    // group to contain the elements of the slider axis:
+	    var sliderAxisGroup = scaleContainer.append("g")
+		.attr("class", "slideraxis")
+		.call(sliderAxis);
 	    
-	        var lambdaOne = document.createElement("span");
-	        lambdaOne.innerHTML = "High Probability";
-	        lambdaOne.setAttribute("style", "background-color: #ffffff; height: 40px; width: 100px; font-family: sans-serif; font-size: 14px; position: absolute; top: 0px; left: 270px");
-	        lambdaDiv.appendChild(lambdaOne);
-
-            var lambdaLabel = document.createElement("label");
-            lambdaLabel.setAttribute("for", lambdaID);
-	        lambdaLabel.setAttribute("style", "background-color: #ffffff; height: 40px; width: 80px; position: absolute; top: 0px; left: 375px; font-family: sans-serif; font-size: 14px");
-            lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
-            lambdaDiv.appendChild(lambdaLabel);
-
 	    // Another strategy for tick marks on the slider; simpler, but not labels
 	    // var sliderTicks = document.createElement("datalist");
 	    // sliderTicks.setAttribute("id", "ticks");
@@ -683,15 +778,15 @@ LDAvis = function(to_select, json_file) {
                     }
                     term_on(this);
                 })
-                // .on("click", function(d) {
-                //     var old_term = termID + vis_state.term;
-                //     if (vis_state.term != "" && old_term != this.id) {
-                // 	term_off(document.getElementById(old_term));
-                //     }
-                //     vis_state.term = d.Term;
-                //     state_save(true);
-                //     term_on(this);
-                // })
+            // .on("click", function(d) {
+            //     var old_term = termID + vis_state.term;
+            //     if (vis_state.term != "" && old_term != this.id) {
+            // 	term_off(document.getElementById(old_term));
+            //     }
+            //     vis_state.term = d.Term;
+            //     state_save(true);
+            //     term_on(this);
+            // })
                 .on("mouseout", function(d) {
                     if (vis_state.term != d.Term) term_off(this);
                     if (vis_state.term != "") term_on(document.getElementById(termID + vis_state.term));
@@ -868,43 +963,46 @@ LDAvis = function(to_select, json_file) {
         // function to update bar chart when a topic is selected
         // the circle argument should be the appropriate circle element
         function topic_on(circle) {
-            //debugger;
             if (circle == null) return null;
-            // grab data bound to this element
+            
+	    // grab data bound to this element
             var d = circle.__data__
             var Freq = Math.round(d.Freq * 10) / 10,
-                topics = d.topics;
-            // change opacity and fill of the selected circle
+            topics = d.topics;
+            
+	    // change opacity and fill of the selected circle
             circle.style.opacity = highlight_opacity;
             circle.style.fill = color2;
-            // Remove 'old' bar chart title
+            
+	    // Remove 'old' bar chart title
             var text = d3.select(".bubble-tool");
             text.remove();
-            // append text with info relevant to topic of interest
+            
+	    // append text with info relevant to topic of interest
             d3.select("#bar-freqs")
-            .append("text")
-            .attr("x", barwidth/2)
-            .attr("y", -30)
-            .attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
-            .style("text-anchor", "middle")
-            .style("font-size", "16px")
-            .style("text-decoration", "underline")
-            .text(Freq + "% of tokens come from topic " + topics);
-
+		.append("text")
+		.attr("x", barwidth/2)
+		.attr("y", -30)
+		.attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
+		.style("text-anchor", "middle")
+		.style("font-size", "16px")
+		//.text(Freq + "% of tokens come from topic " + topics);
+		.text("Top-" + R + " Most Relevant Terms for Topic " + topics);
+	    
             // grab the bar-chart data for this topic only:
             var dat2 = lamData.filter(function(d) {
                 return d.Category == "Topic" + topics
             });
-
+	    
             // define relevance:
             for (var i = 0; i < dat2.length; i++) {
                 dat2[i].relevance = lambda.current * dat2[i].logprob +
                     (1 - lambda.current) * dat2[i].loglift;
             }
-
+	    
             // sort by relevance:
             dat2.sort(fancysort("relevance"));
-
+	    
             // truncate to the top R tokens:
             var dat3 = dat2.slice(0, R);
 
@@ -991,7 +1089,24 @@ LDAvis = function(to_select, json_file) {
             circle.style.fill = color1;
 
             // change the bar chart "title"
-            d3.selectAll(".bubble-tool").text("Most Salient Terms");
+            // var title = chart.append("text")
+	    // 	.attr("x", barwidth/2)
+	    // 	.attr("y", -30)
+	    // 	.attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
+	    // 	.style("text-anchor", "middle")
+	    // 	.style("font-size", "16px")
+	    // 	.text("Top-" + R + " Most Salient Terms");
+	    // title.append("tspan")
+	    // 	.attr("baseline-shift", "super")	    
+	    // 	.attr("font-size", 12)
+	    // 	.text(1);
+
+            var title = d3.selectAll(".bubble-tool")
+		.text("Top-" + R + " Most Salient Terms");
+	    title.append("tspan")
+	     	.attr("baseline-shift", "super")	    
+	     	.attr("font-size", 12)
+	     	.text(1);
 
             // remove the red bars
             d3.selectAll(".overlay").remove();
@@ -1110,7 +1225,7 @@ LDAvis = function(to_select, json_file) {
                 .text("Conditional topic distribution given term = '" + term.innerHTML + "'");
             // Size of the big circle changes
             //d3.select(".circleGuideLabelBig")
-                //.text("Total frequency (100% of occurences)");
+            //.text("Total frequency (100% of occurences)");
             // Average size changes
             // var rAvg = rScaleCond(1 / K);
             // d3.select(".circleGuideLabelSmall")
@@ -1157,7 +1272,7 @@ LDAvis = function(to_select, json_file) {
                 .attr("y2", mdsheight + 2 * newSmall);
         }
 
-        // seralize the visualization state using fragment identifiers -- http://en.wikipedia.org/wiki/Fragment_identifier
+        // serialize the visualization state using fragment identifiers -- http://en.wikipedia.org/wiki/Fragment_identifier
         // location.hash to controls the state of the vis
         window.addEventListener("popstate", function(e) {
             //debugger;
