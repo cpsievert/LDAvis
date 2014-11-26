@@ -1,7 +1,7 @@
 #' Create the JSON object to read into the javascript visualization
 #' 
 #' This function creates the JSON object that feeds the visualization template.
-#' For a more detailed overview, see \code{vi}
+#' For a more detailed overview, see \code{vignette("details", package = "LDAvis")}
 #' 
 #' @param phi matrix, with each row containing the distribution over terms 
 #' for a topic, with as many rows as there are topics in the model, and as 
@@ -64,7 +64,7 @@
 #' data(AP, package="LDAvis")
 #'
 #' # create the json object:
-#' json <- newJSON(phi = AP$phi, theta = AP$theta, alpha = AP$alpha, 
+#' json <- createJSON(phi = AP$phi, theta = AP$theta, alpha = AP$alpha, 
 #'                beta = AP$beta, doc.length = AP$doc.length, 
 #'                vocab = AP$vocab, term.frequency = AP$term.frequency, 
 #'                R = 30, print.progress = TRUE)
@@ -84,7 +84,7 @@
 #' serVis(json, as.gist = TRUE)
 #'}
 
-newJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(), 
+createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(), 
                     beta = numeric(), doc.length = integer(), 
                     vocab = character(), term.frequency = integer(), R = 30, 
                     quiet = FALSE) {

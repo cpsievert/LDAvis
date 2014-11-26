@@ -1,9 +1,11 @@
-#' Serve the javascript version of LDAvis
+#' View/share LDAvis
 #' 
-#' This function will place the necessary html/js/css files (located in 
-#' system.file("html", package = "LDAvis"))
-#' in a directory specified by the argument out.dir. Then, if appropriate, 
+#' Then, if appropriate, 
 #' the function will prompt your browser to serve the visualization.
+#' 
+#' @details This function will place the necessary html/js/css files (located in 
+#' \code{system.file("htmljs", package = "LDAvis")}) in a directory specified 
+#' by the argument \code{out.dir}.
 #' 
 #' @param json character string output from the \link{createjson} function.
 #'
@@ -17,11 +19,11 @@
 #' @param as.gist should the vis be uploaded as a gist? If so, make sure your 
 #' 'github.username' and 'github.password' are set in \link{options}.
 #'
-#' @param ... arguments passed onto gistr::gist_create if as.gist is TRUE
+#' @param ... arguments passed onto \code{gistr::gist_create}
 #'
 #' @return An invisible object.
 #' 
-#' @seealso \link{newJSON}
+#' @seealso \link{createJSON}
 #' @export
 #' @author Carson Sievert
 #' 
