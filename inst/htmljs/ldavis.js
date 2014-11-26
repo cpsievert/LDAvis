@@ -1,31 +1,3 @@
-// Create, dispatch event
-// Taken from http://stackoverflow.com/questions/21924004/why-doesnt-jquery-fire-the-input-event-on-val-input-set
-// Creating an artificial event to trigger the topic change when the button is clicked
-function eventDispatcher(el){
-    var evt = new UIEvent('input');
-    el.dispatchEvent(evt)
-}
-
-// function to increment/decrement topic from click on button:
-// I'm defining this here because it needs to be loaded before the top div:
-function changeTopic(obj, K) {
-    var contentObj = document.getElementById("lda-topic");
-    var value = parseInt(contentObj.value);
-    if (obj.id == "topicdown") {
-	   value--;
-    }
-    if (obj.id == "topicup") {
-	   value++;
-    }
-    if (obj.id == "topicclear") {
-	   value = 0;
-    }
-    value = Math.max(0, Math.min(K, value));
-    document.getElementById("lda-topic").value = value;
-    eventDispatcher(document.getElementById("lda-topic"));
-}
-
-
 LDAvis = function(to_select, json_file) {
 
     // This section sets up the logic for event handling
@@ -76,12 +48,9 @@ LDAvis = function(to_select, json_file) {
     barheight = 530,
     termwidth = 90, // width to add between two panels to display terms
     mdsarea = mdsheight * mdswidth;
-
-    // a circle with this radius would be equal in area to the scatterplot
-    //var rTotal = Math.sqrt(mdsarea / Math.PI);
     // controls how big the maximum circle can be
-    //var rMax = rTotal / 5;  // for mdswidth and mdsheight = 530, rMax = 59.8
-    var rMax = 60;  // just hard code it for now; doesn't depend on data, only on mds width and height:
+    // doesn't depend on data, only on mds width and height:
+    var rMax = 60;  
 
     // proportion of area of MDS plot to which the sum of default topic circle areas is set
     var circle_prop = 0.25;
@@ -101,6 +70,9 @@ LDAvis = function(to_select, json_file) {
     var topicID = visID + "-topic";
     var lambdaID = visID + "-lambda";
     var termID = visID + "-term";
+    var topicDown = topicID + "-down";
+    var topicUp = topicID + "-up";
+    var topicClear = topicID + "-clear";
 
     //////////////////////////////////////////////////////////////////////////////
 
@@ -186,17 +158,48 @@ LDAvis = function(to_select, json_file) {
                 document.getElementById(lambdaID).value = vis_state.lambda;
             });
 
-        // When the topic input changes, update the visualization:
-        d3.select(topic_select)
-            .on("input", function() {
-		//debugger;
-                if (vis_state.topic > 0 && vis_state.topic != this.value) {
-                    topic_off(document.getElementById(topicID + vis_state.topic));
-                }
-                vis_state.topic = this.value;
-                topic_on(document.getElementById(topicID + vis_state.topic));
+        d3.select("#" + topicUp)
+            .on("click", function() {          
+                var value_old = document.getElementById(topicID).value;
+                var value_new = Math.min(K, +value_old + 1).toFixed(0);
+                // increment the value in the input box
+                document.getElementById(topicID).value = value_new;
+                topic_off(document.getElementById(topicID + value_old));
+                topic_on(document.getElementById(topicID + value_new));
+                vis_state.topic = value_new;
                 state_save(true);
-            });
+            })
+
+        d3.select("#" + topicDown)
+            .on("click", function() {
+                var value_old = document.getElementById(topicID).value;
+                var value_new = Math.max(1, +value_old - 1).toFixed(0);
+                // increment the value in the input box
+                document.getElementById(topicID).value = value_new;
+                topic_off(document.getElementById(topicID + value_old));
+                topic_on(document.getElementById(topicID + value_new));
+                vis_state.topic = value_new;
+                state_save(true);
+            })
+
+        d3.select("#" + topicID)
+            .on("keyup", function() {
+                topic_off(document.getElementById(topicID + vis_state.topic))
+                var value_new = document.getElementById(topicID).value;
+                if (!isNaN(value_new) && value_new > 0) {
+                    value_new = Math.min(K, Math.max(1, value_new))
+                    topic_on(document.getElementById(topicID + value_new));
+                    vis_state.topic = value_new;
+                    state_save(true);
+                    document.getElementById(topicID).value = vis_state.topic;
+                }
+            })
+
+        d3.select("#" + topicClear)
+            .on("click", function() {
+                state_reset();
+                state_save(true);
+            })
 
         // create linear scaling to pixels (and add some padding on outer region of scatterplot)
         var xrange = d3.extent(mdsData, function(d) {
@@ -380,27 +383,12 @@ LDAvis = function(to_select, json_file) {
                 if (vis_state.topic > 0) topic_on(document.getElementById(topicID + vis_state.topic));
             });
 
-        // Add the clear selection clickable text:
-        // svg.append("text")
-        //     .text("Click to clear selection")
-        //     .attr("x", 40)
-        //     .attr("y", 20)
-        //     .attr("cursor", "pointer")
-        //     .on("click", function() {
-        //         state_reset();
-        //     });
-
-        // Add the clear selection clickable text:
         svg.append("text")
             .text("Intertopic Distance Map (via multidimensional scaling)")
             .attr("x", mdswidth/2 + margin.left)
             .attr("y", 30)
-	    .style("font-size", "16px")
-	    .style("text-anchor", "middle");
-            // .attr("cursor", "pointer")
-            // .on("click", function() {
-            //     state_reset();
-            // });
+	       .style("font-size", "16px")
+	       .style("text-anchor", "middle");
 
         // establish layout and vars for bar chart
         var barDefault2 = lamData.filter(function(d) {
@@ -536,6 +524,11 @@ LDAvis = function(to_select, json_file) {
                 //if (vis_state.term != "") term_on(document.getElementById(termID + vis_state.term));
             });
 
+        d3.select("#topicup")
+            .on("click", function() {
+
+            })
+
         var title = chart.append("text")
             .attr("x", barwidth/2)
             .attr("y", -30)
@@ -570,7 +563,7 @@ LDAvis = function(to_select, json_file) {
             var visDiv = document.getElementById(visID);
             document.body.insertBefore(inputDiv, visDiv);
 
-	    // topic input container:
+	       // topic input container:
             var topicDiv = document.createElement("div");
 	       topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
 	       inputDiv.appendChild(topicDiv);
@@ -591,26 +584,23 @@ LDAvis = function(to_select, json_file) {
             topicInput.id = topicID;
             topicDiv.appendChild(topicInput);
 
- 	    var topicDown = document.createElement("button");
-	    topicDown.id = "topicdown";
-	    topicDown.setAttribute("style", "margin-left: 5px");
-	    topicDown.setAttribute("onclick", "changeTopic(this, " + K + ");");
-	    topicDown.innerHTML = "Previous Topic";
-            topicDiv.appendChild(topicDown);
+ 	    var previous = document.createElement("button");
+	    previous.setAttribute("id", topicDown);
+	    previous.setAttribute("style", "margin-left: 5px");
+	    previous.innerHTML = "Previous Topic";
+            topicDiv.appendChild(previous);
 
-	    var topicUp = document.createElement("button");
-	    topicUp.id = "topicup";
-	    topicUp.setAttribute("style", "margin-left: 5px");
-	    topicUp.setAttribute("onclick", "changeTopic(this, " + K + ");");
-	    topicUp.innerHTML = "Next Topic";
-            topicDiv.appendChild(topicUp);
+	    var next = document.createElement("button");
+	    next.setAttribute("id", topicUp);
+	    next.setAttribute("style", "margin-left: 5px");
+	    next.innerHTML = "Next Topic";
+            topicDiv.appendChild(next);
 
-	    var topicClear = document.createElement("button");
-	    topicClear.id = "topicclear";
-	    topicClear.setAttribute("style", "margin-left: 5px");
-	    topicClear.setAttribute("onclick", "changeTopic(this, " + K + ");");
-	    topicClear.innerHTML = "Clear Topic";
-            topicDiv.appendChild(topicClear);
+	    var clear = document.createElement("button");
+	    clear.setAttribute("id", topicClear);
+	    clear.setAttribute("style", "margin-left: 5px");
+	    clear.innerHTML = "Clear Topic";
+            topicDiv.appendChild(clear);
 
            // lambda inputs
     	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
@@ -1101,22 +1091,9 @@ LDAvis = function(to_select, json_file) {
             circle.style.opacity = base_opacity;
             circle.style.fill = color1;
 
-            // change the bar chart "title"
-            // var title = chart.append("text")
-	    // 	.attr("x", barwidth/2)
-	    // 	.attr("y", -30)
-	    // 	.attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
-	    // 	.style("text-anchor", "middle")
-	    // 	.style("font-size", "16px")
-	    // 	.text("Top-" + R + " Most Salient Terms");
-	    // title.append("tspan")
-	    // 	.attr("baseline-shift", "super")	    
-	    // 	.attr("font-size", 12)
-	    // 	.text(1);
-
             var title = d3.selectAll(".bubble-tool")
-		.text("Top-" + R + " Most Salient Terms");
-	    title.append("tspan")
+		      .text("Top-" + R + " Most Salient Terms");
+	        title.append("tspan")
 	     	.attr("baseline-shift", "super")	    
 	     	.attr("font-size", 12)
 	     	.text(1);
@@ -1236,20 +1213,6 @@ LDAvis = function(to_select, json_file) {
             // Alter the guide
             d3.select(".circleGuideTitle")
                 .text("Conditional topic distribution given term = '" + term.innerHTML + "'");
-            // Size of the big circle changes
-            //d3.select(".circleGuideLabelBig")
-            //.text("Total frequency (100% of occurences)");
-            // Average size changes
-            // var rAvg = rScaleCond(1 / K);
-            // d3.select(".circleGuideLabelSmall")
-            //     .attr("y", mdsheight + 2 * rAvg)
-            //     .text("Average frequency (" + (100 * (1 / K)).toFixed(1) + "% of occurences)");
-            // d3.select(".circleGuideSmall")
-            //     .attr("r", rAvg)
-            //     .attr("cy", mdsheight + rAvg);
-            // d3.select(".lineGuideSmall")
-            //     .attr("y1", mdsheight + 2 * rAvg)
-            //     .attr("y2", mdsheight + 2 * rAvg);
         }
 
         function term_off(term) {
@@ -1288,6 +1251,7 @@ LDAvis = function(to_select, json_file) {
 
         // serialize the visualization state using fragment identifiers -- http://en.wikipedia.org/wiki/Fragment_identifier
         // location.hash holds the address information
+        
         var params = location.hash.split("&");
         vis_state.topic = params[0].split("=")[1];
         vis_state.lambda = params[1].split("=")[1];
