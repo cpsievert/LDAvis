@@ -12,13 +12,13 @@ function changeTopic(obj, K) {
     var contentObj = document.getElementById("lda-topic");
     var value = parseInt(contentObj.value);
     if (obj.id == "topicdown") {
-	value--;
+	   value--;
     }
     if (obj.id == "topicup") {
-	value++;
+	   value++;
     }
     if (obj.id == "topicclear") {
-	value = 0;
+	   value = 0;
     }
     value = Math.max(0, Math.min(K, value));
     document.getElementById("lda-topic").value = value;
@@ -455,16 +455,24 @@ LDAvis = function(to_select, json_file) {
             .text("Term frequency within the selected topic");
 
 	// footnotes:
-        d3.select("#bar-freqs").append("text")
+        d3.select("#bar-freqs")
+            .append("a")
+            .attr("xlink:href", "http://vis.stanford.edu/files/2012-Termite-AVI.pdf")
+            .attr("target", "_blank")
+            .append("text")
             .attr("x", 0)
             .attr("y", mdsheight + 10 + (6/2)*barguide.height + 5)
             .style("dominant-baseline", "middle")
-            .text("1. saliency(term w) = frequency(w) * [sum_t p(t | w) * log(p(t | w)/p(t))]; see Chuang et. al (2012) 'Termite'");
-        d3.select("#bar-freqs").append("text")
+            .text("1. saliency(term w) = frequency(w) * [sum_t p(t | w) * log(p(t | w)/p(t))]; see Chuang et. al (2012)");
+        d3.select("#bar-freqs")
+            .append("a")
+            .attr("xlink:href", "http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf")
+            .attr("target", "_blank")
+            .append("text")
             .attr("x", 0)
             .attr("y", mdsheight + 10 + (8/2)*barguide.height + 5)
             .style("dominant-baseline", "middle")
-            .text("2. relevance(term w | topic t) = lambda * p(w | t) + (1 - lambda) * p(w | t)/p(w); see Sievert & Shirley (2013) 'LDAvis'");
+            .text("2. relevance(term w | topic t) = lambda * p(w | t) + (1 - lambda) * p(w | t)/p(w); see Sievert & Shirley (2013)");
 
         // Bind 'default' data to 'default' bar chart
         var basebars = chart.selectAll(".bar-totals")
@@ -503,11 +511,12 @@ LDAvis = function(to_select, json_file) {
                 return d.Term;
             })
             .on("mouseover", function(d) {
-                var old_term = termID + vis_state.term;
-                if (vis_state.term != "" && old_term != this.id) {
-                    term_off(document.getElementById(old_term));
+                if (vis_state.term != "" && vis_state.term != this.innerHTML) {
+                    term_off(document.getElementById(termID + vis_state.term));
                 }
+                vis_state.term = this.innerHTML;
                 term_on(this);
+                state_save(true);
             })
         // .on("click", function(d) {
         // 	var old_term = termID + vis_state.term;
@@ -520,8 +529,11 @@ LDAvis = function(to_select, json_file) {
         // 	debugger;
         // })
             .on("mouseout", function(d) {
-                if (vis_state.term != d.Term) term_off(this);
-                if (vis_state.term != "") term_on(document.getElementById(termID + vis_state.term));
+                vis_state.term = "";
+                term_off(this);
+                state_save(true);
+                //if (vis_state.term != d.Term) term_off(this);
+                //if (vis_state.term != "") term_on(document.getElementById(termID + vis_state.term));
             });
 
         var title = chart.append("text")
@@ -531,10 +543,11 @@ LDAvis = function(to_select, json_file) {
             .style("text-anchor", "middle")
             .style("font-size", "16px")
             .text("Top-" + R + " Most Salient Terms");
-	title.append("tspan")
-	    .attr("baseline-shift", "super")	    
-	    .attr("font-size", "12px")
-	    .text("(1)");
+	       
+        title.append("tspan")
+	       .attr("baseline-shift", "super")	    
+	       .attr("font-size", "12px")
+	       .text("(1)");
 	
         // barchart axis adapted from http://bl.ocks.org/mbostock/1166403
         var xAxis = d3.svg.axis().scale(x)
@@ -546,12 +559,12 @@ LDAvis = function(to_select, json_file) {
         chart.attr("class", "xaxis")
             .call(xAxis);
 
-	// dynamically create the topic and lambda input forms at the top of the page:
+	   // dynamically create the topic and lambda input forms at the top of the page:
         function init_forms(topicID, lambdaID, visID) {
 
             // create container div for topic and lambda input:
-	    var inputDiv = document.createElement("div");
-	    inputDiv.setAttribute("id", "top");
+	       var inputDiv = document.createElement("div");
+	       inputDiv.setAttribute("id", "top");
 
             // insert the input container just before the vis:
             var visDiv = document.getElementById(visID);
@@ -559,8 +572,8 @@ LDAvis = function(to_select, json_file) {
 
 	    // topic input container:
             var topicDiv = document.createElement("div");
-	    topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
-	    inputDiv.appendChild(topicDiv);
+	       topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
+	       inputDiv.appendChild(topicDiv);
 
             var topicLabel = document.createElement("label");
             topicLabel.setAttribute("for", topicID);
@@ -1272,20 +1285,16 @@ LDAvis = function(to_select, json_file) {
                 .attr("y2", mdsheight + 2 * newSmall);
         }
 
-        // serialize the visualization state using fragment identifiers -- http://en.wikipedia.org/wiki/Fragment_identifier
-        // location.hash to controls the state of the vis
-        window.addEventListener("popstate", function(e) {
-            //debugger;
-            var params = location.hash.split("&");
-            vis_state.topic = params[0].split("=")[1];
-            vis_state.lambda = params[1].split("=")[1];
-            vis_state.term = params[2].split("=")[1];
-            if (!isNaN(vis_state.topic)) topic_on(document.getElementById(topicID + vis_state.topic));
-            var termElem = document.getElementById(termID + vis_state.term);
-            if (termElem !== undefined) term_on(termElem);
-            state_save(true);
-        });
 
+        // serialize the visualization state using fragment identifiers -- http://en.wikipedia.org/wiki/Fragment_identifier
+        // location.hash holds the address information
+        var params = location.hash.split("&");
+        vis_state.topic = params[0].split("=")[1];
+        vis_state.lambda = params[1].split("=")[1];
+        vis_state.term = params[2].split("=")[1];
+        if (!isNaN(vis_state.topic)) topic_on(document.getElementById(topicID + vis_state.topic));
+        var termElem = document.getElementById(termID + vis_state.term);
+        if (termElem !== undefined) term_on(termElem);
 
         function state_url() {
             return location.origin + location.pathname + "#topic=" + vis_state.topic +
@@ -1312,6 +1321,8 @@ LDAvis = function(to_select, json_file) {
         }
 
     });
+
+
 
 }
 
