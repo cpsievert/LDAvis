@@ -2,5 +2,4 @@
 
 export(newJSON)
 export(runShiny)
-export(runVis)
 export(serVis)
