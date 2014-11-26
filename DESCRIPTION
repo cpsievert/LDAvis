@@ -1,6 +1,6 @@
 Package: LDAvis
 Title: Interactive visualization of topic models
-Version: 0.1
+Version: 0.2
 Authors@R: c(person("Carson", "Sievert", role = "aut", email =
     "cpsievert1@gmail.com"), person("Kenny", "Shirley", role = c("aut", "cre"),
     email = "kshirley@research.att.com"))
@@ -8,19 +8,18 @@ Description: Interactive visualization of topic models.
 Depends:
     R (>= 2.15)
 Imports:
-    shiny (>= 0.10),
     MASS,
     proxy,
-    plyr (>= 1.8.1),
-    reshape2,
     RJSONIO
 License: MIT
 Suggests:
     mallet,
+    lda,
     topicmodels,
     servr,
     gistr,
+    shiny,
     knitr,
-    rmarkdown
+    rmarkdown,
 Roxygen: list(wrap = TRUE)
 VignetteBuilder: knitr

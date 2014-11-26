@@ -28,7 +28,7 @@
 #' @examples
 #' 
 #' \dontrun{
-#' help(newJSON, package = "LDAvis")
+#' help(createJSON, package = "LDAvis")
 #' }
 
 serVis <- function(json, out.dir = tempfile(), open.browser = interactive(), 

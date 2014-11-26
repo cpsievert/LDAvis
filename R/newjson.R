@@ -1,6 +1,7 @@
 #' Create the JSON object to read into the javascript visualization
 #' 
 #' This function creates the JSON object that feeds the visualization template.
+#' For a more detailed overview, see \code{vi}
 #' 
 #' @param phi matrix, with each row containing the distribution over terms 
 #' for a topic, with as many rows as there are topics in the model, and as 
@@ -31,7 +32,7 @@
 #' of the interactive viz. Default is 30. Recommended to be roughly
 #' between 10 and 50.
 #' 
-#' @param print.progress logical; should the function print progress to 
+#' @param quiet logical; should the function print progress to 
 #' the screen during computation?
 #'
 #' @details The function first computes the topic frequencies (across the whole
@@ -48,8 +49,8 @@
 #' Language Learning, Visualization, and Interfaces.
 #' \url{http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf}
 #'
-#' @return a JSON object in R that can be written to a file to feed the
-#' interactive visualization
+#' @return A string containing JSON content which can be written to a file 
+#' or feed into \link{serVis} for easy viewing/sharing.
 #' 
 #' @seealso \link{serVis}
 #' @export
@@ -86,7 +87,7 @@
 newJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(), 
                     beta = numeric(), doc.length = integer(), 
                     vocab = character(), term.frequency = integer(), R = 30, 
-                    print.progress=FALSE) {
+                    quiet = FALSE) {
 
   # check input dimensions:
   if (dim(phi)[2] != length(vocab)) stop("Number of terms in vocabulary does 
