@@ -238,10 +238,10 @@ LDAvis = function(to_select, json_file) {
             .attr("y2", mdsheight / 2)
             .attr("stroke", "gray")
             .attr("opacity", 0.3);
-	mdsplot.append("text") // label axis
+	mdsplot.append("text") // label x-axis
 	    .attr("x", 0)
 	    .attr("y", mdsheight/2 - 5)
-	    .text("PC1")
+	    .text(data['plot.opts'].xlab)
 	    .attr("fill", "gray");
 
         mdsplot.append("line") // draw y-axis
@@ -251,10 +251,10 @@ LDAvis = function(to_select, json_file) {
             .attr("y2", mdsheight)
             .attr("stroke", "gray")
             .attr("opacity", 0.3);
-	mdsplot.append("text") // label axis
+	mdsplot.append("text") // label y-axis
 	    .attr("x", mdswidth/2 + 5)
 	    .attr("y", 7)
-	    .text("PC2")
+	    .text(data['plot.opts'].ylab)
 	    .attr("fill", "gray");
 
 	// new definitions based on fixing the sum of the areas of the default topic circles:
@@ -440,7 +440,7 @@ LDAvis = function(to_select, json_file) {
             .attr("x", barguide.width/2 + 5)
             .attr("y", mdsheight + 10 + (3/2)*barguide.height + 5)
             .style("dominant-baseline", "middle")
-            .text("Term frequency within the selected topic");
+            .text("Estimated term frequency within the selected topic");
 
 	// footnotes:
         d3.select("#bar-freqs")

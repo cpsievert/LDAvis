@@ -24,9 +24,17 @@
 #' @param R integer, the number of terms to display in the barcharts
 #' of the interactive viz. Default is 30. Recommended to be roughly
 #' between 10 and 50.
+#' @param lambda.seq a sequence of values (for lambda) from 0 to 1.
+#' @param mds.method a function that takes \code{phi} as an input and outputs
+#' a K by 2 data.frame (or matrix). The output approximates the distance
+#' between topics. See \link{jsPCA} for details on the default method.
 #' @param cluster a cluster object created from the \link{parallel} package. 
 #' If supplied, computations are performed using \link{parallel::parLapply} instead
 #' of \link{lapply}.
+#' @param plot.opts a named list used to customize various plot elements. 
+#' By default, the x and y axes are labeled "PC1" and "PC2" 
+#' (principal components 1 and 2), since \link{jsPCA} is the default
+#' scaling method.
 #'
 #' @details The function first computes the topic frequencies (across the whole
 #' corpus), and then it reorders the topics in decreasing order of 
@@ -76,14 +84,32 @@
 #' json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length, 
 #'                    vocab, term.frequency))
 #' )
+#' #   user  system elapsed 
+#' #  8.701   0.475   9.342 
+#' library("parallel")
+#' cl <- makeCluster(detectCores()-1)
+#' cl # socket cluster with 7 nodes on host ‘localhost’
+#' system.time(
+#' json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length, 
+#'                    vocab, term.frequency, cluster = cl))
+#' )
+#' #   user  system elapsed 
+#' #  1.696   0.281   4.895
+#' 
+#' # why does this freeze up? Too many dimensions?
+#' #library("tsne")
+#' #json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length, 
+#' #                vocab, term.frequency, mds.method = tsne))
+#' #serVis(json)
 #' 
 #'}
 
 createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(), 
                     beta = numeric(), doc.length = integer(), vocab = character(), 
-                    term.frequency = integer(), R = 30, lambda.seq = seq(0, 1, by = .01),
-                    dist.measure = jensenShannon, mds.method = cmdscale, cluster,
-                    plot.opts = list(xlab = "PCA1", ylab = "PCA2", ticks = FALSE), ...) {
+                    term.frequency = integer(), R = 30, lambda.seq = seq(0, 1, by = .01), 
+                    mds.method = jsPCA, cluster, 
+                    plot.opts = list(xlab = "PC1", ylab = "PC2", ticks = FALSE), 
+                    ...) {
   N <- sum(doc.length)
   dp <- dim(phi)
   dt <- dim(theta)
@@ -126,13 +152,15 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   topic.frequency <- topic.frequency[o]
   topic.proportion <- topic.proportion[o]
   
-  # multi-dimensional scaling on phi matrix
-  dist.mat <- proxy::dist(x = phi, method = dist.measure)
-  fit.cmd <- mds.method(dist.mat, k = 2)
-  x <- fit.cmd[, 1]
-  y <- fit.cmd[, 2]
-  lab <- 1:K
-  mds.df <- data.frame(x, y, topics = lab, Freq = topic.proportion*100, 
+  mds.res <- mds.method(phi)
+  if (is.matrix(mds.res)) {
+    colnames(mds.res) <- c("x", "y")
+  } else if (is.data.frame(mds.res)) {
+    names(mds.res) <- c("x", "y")
+  } else {
+    warning("Result of mds.method should be a matrix of data.frame.")
+  }
+  mds.df <- data.frame(mds.res, topics = seq_len(K), Freq = topic.proportion*100, 
                        cluster = 1, stringsAsFactors = FALSE)
   # note: cluster (should?) be deprecated soon.
   
@@ -166,7 +194,6 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   topic_seq <- rep(seq_len(K), each = R)
   category <- paste0("Topic", topic_seq)
   lift <- phi/term.proportion
-  
   # Collect R most relevant terms for each topic/lambda combination
   # Note that relevance is re-computed in the browser, so we only need
   # to send each possible term/topic combination to the browser
@@ -180,11 +207,10 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
                loglift = round(log(lift[indices]), 4),
                stringsAsFactors = FALSE)
   }
-
   if (missing(cluster)) {
     tinfo <- lapply(as.list(lambda.seq), find_relevance)
   } else {
-    tinfo <- parLapply(cluster, as.list(lambda.seq), find_relevance)
+    tinfo <- parallel::parLapply(cluster, as.list(lambda.seq), find_relevance)
   }
   tinfo <- unique(do.call("rbind", tinfo))
   tinfo$Total <- term.frequency[match(tinfo$Term, vocab)]
@@ -214,14 +240,27 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   dd[, "Freq"] <- dd[, "Freq"]/term.frequency[match(dd[, "Term"], vocab)]
   token.table <- dd[order(dd[, 1], dd[, 2]), ]
   RJSONIO::toJSON(list(mdsDat = mds.df, tinfo = tinfo, 
-                       token.table = token.table, R = R))
+                       token.table = token.table, R = R, plot.opts = plot.opts))
 }
 
 
-
-# compute distance between topics:
-# this determines the layout of the circles on the left panel of the vis
-jensenShannon <- function(x, y) {
-  m <- 0.5*(x + y)
-  0.5*sum(x*log(x/m)) + 0.5*sum(y*log(y/m))
+#' Dimension reduction via Jensen-Shannon Divergence & Principal Components
+#' 
+#' @param phi matrix, with each row containing the distribution over terms 
+#' for a topic, with as many rows as there are topics in the model, and as 
+#' many columns as there are terms in the vocabulary.
+#' 
+#' @export
+jsPCA <- function(phi) {
+  # first, we compute a pairwise distance between topic distributions
+  # using a symmetric version of KL-divergence
+  # http://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence
+  jensenShannon <- function(x, y) {
+    m <- 0.5*(x + y)
+    0.5*sum(x*log(x/m)) + 0.5*sum(y*log(y/m))
+  }
+  dist.mat <- proxy::dist(x = phi, method = jensenShannon)
+  # then, we reduce the K by K proximity matrix down to K by 2 using PCA
+  pca.fit <- cmdscale(dist.mat, k = 2)
+  data.frame(x = pca.fit[,1], y = pca.fit[,2])
 }

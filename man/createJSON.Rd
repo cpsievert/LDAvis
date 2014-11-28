@@ -6,8 +6,8 @@
 createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   beta = numeric(), doc.length = integer(), vocab = character(),
   term.frequency = integer(), R = 30, lambda.seq = seq(0, 1, by = 0.01),
-  dist.measure = jensenShannon, mds.method = cmdscale, cluster,
-  plot.opts = list(xlab = "PCA1", ylab = "PCA2", ticks = FALSE), ...)
+  mds.method = jsPCA, cluster, plot.opts = list(xlab = "PC1", ylab = "PC2",
+  ticks = FALSE), ...)
 }
 \arguments{
   \item{phi}{matrix, with each row containing the
@@ -44,10 +44,23 @@ createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   barcharts of the interactive viz. Default is 30.
   Recommended to be roughly between 10 and 50.}
 
+  \item{lambda.seq}{a sequence of values (for lambda) from
+  0 to 1.}
+
+  \item{mds.method}{a function that takes \code{phi} as an
+  input and outputs a K by 2 data.frame (or matrix). The
+  output approximates the distance between topics. See
+  \link{jsPCA} for details on the default method.}
+
   \item{cluster}{a cluster object created from the
   \link{parallel} package. If supplied, computations are
   performed using \link{parallel::parLapply} instead of
   \link{lapply}.}
+
+  \item{plot.opts}{a named list used to customize various
+  plot elements. By default, the x and y axes are labeled
+  "PC1" and "PC2" (principal components 1 and 2), since
+  \link{jsPCA} is the default scaling method.}
 }
 \value{
 A string containing JSON content which can be written to a
@@ -97,6 +110,23 @@ system.time(
 json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length,
                    vocab, term.frequency))
 )
+#   user  system elapsed
+#  8.701   0.475   9.342
+library("parallel")
+cl <- makeCluster(detectCores()-1)
+cl # socket cluster with 7 nodes on host ‘localhost’
+system.time(
+json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length,
+                   vocab, term.frequency, cluster = cl))
+)
+#   user  system elapsed
+#  1.696   0.281   4.895
+
+# why does this freeze up? Too many dimensions?
+#library("tsne")
+#json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length,
+#                vocab, term.frequency, mds.method = tsne))
+#serVis(json)
 
 }
 }
