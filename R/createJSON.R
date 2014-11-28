@@ -24,7 +24,8 @@
 #' @param R integer, the number of terms to display in the barcharts
 #' of the interactive viz. Default is 30. Recommended to be roughly
 #' between 10 and 50.
-#' @param lambda.seq a sequence of values (for lambda) from 0 to 1.
+#' @param lambda.step a value between 0 and 1. 
+#' Determines the grid of lambda values to iterate over when computing relevance. 
 #' @param mds.method a function that takes \code{phi} as an input and outputs
 #' a K by 2 data.frame (or matrix). The output approximates the distance
 #' between topics. See \link{jsPCA} for details on the default method.
@@ -106,7 +107,7 @@
 
 createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(), 
                     beta = numeric(), doc.length = integer(), vocab = character(), 
-                    term.frequency = integer(), R = 30, lambda.seq = seq(0, 1, by = .01), 
+                    term.frequency = integer(), R = 30, lambda.step = 0.1,
                     mds.method = jsPCA, cluster, 
                     plot.opts = list(xlab = "PC1", ylab = "PC2", ticks = FALSE), 
                     ...) {
@@ -207,6 +208,7 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
                loglift = round(log(lift[indices]), 4),
                stringsAsFactors = FALSE)
   }
+  lambda.seq <- seq(0, 1, by=lambda.step)
   if (missing(cluster)) {
     tinfo <- lapply(as.list(lambda.seq), find_relevance)
   } else {
@@ -239,8 +241,13 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   # Normalize token frequencies:
   dd[, "Freq"] <- dd[, "Freq"]/term.frequency[match(dd[, "Term"], vocab)]
   token.table <- dd[order(dd[, 1], dd[, 2]), ]
+  
+  
+  
   RJSONIO::toJSON(list(mdsDat = mds.df, tinfo = tinfo, 
-                       token.table = token.table, R = R, plot.opts = plot.opts))
+                       token.table = token.table, R = R, 
+                       lambda.step = lambda.step,
+                       plot.opts = plot.opts))
 }
 
 

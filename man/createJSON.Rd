@@ -5,7 +5,7 @@
 \usage{
 createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   beta = numeric(), doc.length = integer(), vocab = character(),
-  term.frequency = integer(), R = 30, lambda.seq = seq(0, 1, by = 0.01),
+  term.frequency = integer(), R = 30, lambda.step = seq(0, 1, by = 0.01),
   mds.method = jsPCA, cluster, plot.opts = list(xlab = "PC1", ylab = "PC2",
   ticks = FALSE), ...)
 }
@@ -44,8 +44,9 @@ createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   barcharts of the interactive viz. Default is 30.
   Recommended to be roughly between 10 and 50.}
 
-  \item{lambda.seq}{a sequence of values (for lambda) from
-  0 to 1.}
+  \item{lambda.step}{a value between 0 and 1. Determines
+  the grid of lambda values to iterate over when computing
+  relevance.}
 
   \item{mds.method}{a function that takes \code{phi} as an
   input and outputs a K by 2 data.frame (or matrix). The

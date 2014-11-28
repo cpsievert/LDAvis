@@ -244,13 +244,13 @@ LDAvis = function(to_select, json_file) {
 	    .text(data['plot.opts'].xlab)
 	    .attr("fill", "gray");
 
-        mdsplot.append("line") // draw y-axis
-            .attr("x1", mdswidth / 2)
-            .attr("x2", mdswidth / 2)
-            .attr("y1", 0)
-            .attr("y2", mdsheight)
-            .attr("stroke", "gray")
-            .attr("opacity", 0.3);
+    mdsplot.append("line") // draw y-axis
+        .attr("x1", mdswidth / 2)
+        .attr("x2", mdswidth / 2)
+        .attr("y1", 0)
+        .attr("y2", mdsheight)
+        .attr("stroke", "gray")
+        .attr("opacity", 0.3);
 	mdsplot.append("text") // label y-axis
 	    .attr("x", mdswidth/2 + 5)
 	    .attr("y", 7)
@@ -615,18 +615,18 @@ LDAvis = function(to_select, json_file) {
 	    lambdaZero.setAttribute("id", "lambdaZero");
     	    lambdaDiv.appendChild(lambdaZero);
 	    var xx = d3.select("#lambdaZero")
-		.append("text")
-		.attr("x", 0)
-		.attr("y", 0)
-		.style("font-size", "14px")
-		.text("Slide to adjust relevance metric:");
+		  .append("text")
+		  .attr("x", 0)
+		  .attr("y", 0)
+		  .style("font-size", "14px")
+		  .text("Slide to adjust relevance metric:");
 	    var yy = d3.select("#lambdaZero")
-		.append("text")
-		.attr("x", 125)
-		.attr("y", -5)
-		.style("font-size", "10px")
-		.style("position", "absolute")
-		.text("(2)");
+		  .append("text")
+		  .attr("x", 125)
+		  .attr("y", -5)
+		  .style("font-size", "10px")
+		  .style("position", "absolute")
+		  .text("(2)");
 	    
             var lambdaLabel = document.createElement("label");
             lambdaLabel.setAttribute("for", lambdaID);
@@ -644,7 +644,7 @@ LDAvis = function(to_select, json_file) {
             lambdaInput.type = "range";
             lambdaInput.min = 0;
             lambdaInput.max = 1;
-            lambdaInput.step = 0.01;
+            lambdaInput.step = data['lambda.step'];
             lambdaInput.value = 1;
             lambdaInput.id = lambdaID;
 	    lambdaInput.setAttribute("list", "ticks"); // to enable automatic ticks (with no labels, see below)
@@ -655,13 +655,13 @@ LDAvis = function(to_select, json_file) {
 		.attr("width", 250)
 		.attr("height", 25);
 
-            var sliderScale = d3.scale.linear()
+        var sliderScale = d3.scale.linear()
 		.domain([0, 1])
 		.range([7.5, 242.5])  // trimmed by 7.5px on each side to match the input type=range slider:
 		.nice();
 
             // adapted from http://bl.ocks.org/mbostock/1166403
-            var sliderAxis = d3.svg.axis()
+        var sliderAxis = d3.svg.axis()
 		.scale(sliderScale)
 		.orient("bottom")
 		.tickSize(10)
