@@ -12,14 +12,14 @@ Alternatively, you can decompress the zip ball or tar ball and run `R CMD INSTAL
 
 ### Getting started
 
-Once installed, we recommend visiting the main help page:
+Once installed, we recommend a visit to the main help page:
 
 ```s
 library(LDAvis)
-help(createJSON)
+help(createJSON, package = "LDAvis")
 ``` 
 
-The documentation and example on the bottom of that page should provide a quick sense of how to create your own visualizations. If you want more details about the setup and it's connection to the visual components, see the vignette:
+The documentation and example on the bottom of that page should provide a quick sense of how to create (and share) your own visualizations. If you want more details about the setup and it's connection to visual components, see the vignette:
 
 ```s
 vignette("details", package = "LDAvis")

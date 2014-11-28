@@ -5,7 +5,10 @@
 \usage{
 createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   beta = numeric(), doc.length = integer(), vocab = character(),
-  term.frequency = integer(), R = 30, quiet = FALSE)
+  term.frequency = integer(), R = 30, lambda.seq = seq(0, 1, by = 0.01),
+  dist.measure = jensenShannon, mds.method = cmdscale,
+  quiet = interactive(), plot.opts = list(xlab = "PCA1", ylab = "PCA2",
+  ticks = FALSE), ...)
 }
 \arguments{
   \item{phi}{matrix, with each row containing the
@@ -29,7 +32,7 @@ createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   topic.}
 
   \item{doc.length}{integer vector containing the number of
-  tokens in each document in the corpus.}
+  tokens in each document of the corpus.}
 
   \item{vocab}{character vector of the terms in the
   vocabulary (in the same order as the columns of
@@ -42,8 +45,7 @@ createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   barcharts of the interactive viz. Default is 30.
   Recommended to be roughly between 10 and 50.}
 
-  \item{quiet}{logical; should the function print progress
-  to the screen during computation?}
+  \item{quiet}{should progress be printed to the screen?}
 }
 \value{
 A string containing JSON content which can be written to a
@@ -59,10 +61,10 @@ The function first computes the topic frequencies (across
 the whole corpus), and then it reorders the topics in
 decreasing order of frequency. The main computation is to
 loop through the topics and through 101 values of lambda
-(0, 0.01, 0.02, .., 1) to compute the R most
+(0, 0.01, 0.02, .., 1) to compute the \code{R} most
 \emph{relevant} terms for each topic and value of lambda.
-If \code{print.progress = TRUE} progress in this loop
-(which can take a minute or two) will print to the screen.
+If \code{quiet = FALSE} progress in this loop (which can
+take a minute or two) will print to the screen.
 }
 \examples{
 # This example uses news article data from D = 2246 Associated Press
@@ -76,7 +78,7 @@ data(AP, package="LDAvis")
 json <- createJSON(phi = AP$phi, theta = AP$theta, alpha = AP$alpha,
                beta = AP$beta, doc.length = AP$doc.length,
                vocab = AP$vocab, term.frequency = AP$term.frequency,
-               R = 30, print.progress = TRUE)
+               R = 30, quiet = TRUE)
 # By default, serVis will attempt to run a local file server
 # in a temporary directory (and prompt your browser to open)
 serVis(json) # press ESC or Ctrl-C to kill
