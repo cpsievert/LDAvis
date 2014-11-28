@@ -24,7 +24,9 @@
 #' @param R integer, the number of terms to display in the barcharts
 #' of the interactive viz. Default is 30. Recommended to be roughly
 #' between 10 and 50.
-#' @param quiet should progress be printed to the screen?
+#' @param cluster a cluster object created from the \link{parallel} package. 
+#' If supplied, computations are performed using \link{parallel::parLapply} instead
+#' of \link{lapply}.
 #'
 #' @details The function first computes the topic frequencies (across the whole
 #' corpus), and then it reorders the topics in decreasing order of 
@@ -54,12 +56,8 @@
 #' data(AP, package="LDAvis")
 #'
 #' # create the json object:
-#' json <- createJSON(phi = AP$phi, theta = AP$theta, alpha = AP$alpha, 
-#'                beta = AP$beta, doc.length = AP$doc.length, 
-#'                vocab = AP$vocab, term.frequency = AP$term.frequency, 
-#'                R = 30, quiet = TRUE)
-#' # By default, serVis will attempt to run a local file server 
-#' # in a temporary directory (and prompt your browser to open)
+#' json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length, 
+#'                    vocab, term.frequency))
 #' serVis(json) # press ESC or Ctrl-C to kill
 #' 
 #' # You may want to just write the JSON and other dependency files 
@@ -72,12 +70,19 @@
 #' # If you have a GitHub account, you can even publish as a gist
 #' # which allows you to easily share with others!
 #' serVis(json, as.gist = TRUE)
+#' 
+#' # Run createJSON on a cluster of machines to speed it up
+#' system.time(
+#' json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length, 
+#'                    vocab, term.frequency))
+#' )
+#' 
 #'}
 
 createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(), 
                     beta = numeric(), doc.length = integer(), vocab = character(), 
                     term.frequency = integer(), R = 30, lambda.seq = seq(0, 1, by = .01),
-                    dist.measure = jensenShannon, mds.method = cmdscale, quiet = interactive(),
+                    dist.measure = jensenShannon, mds.method = cmdscale, cluster,
                     plot.opts = list(xlab = "PCA1", ylab = "PCA2", ticks = FALSE), ...) {
   N <- sum(doc.length)
   dp <- dim(phi)
@@ -146,7 +151,8 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   # compute the distinctiveness and saliency of the terms:
   # this determines the R terms that are displayed when no topic is selected
   topic.given.term <- phi/rowSums(phi)  # (W x K)
-  kernel <- topic.given.term * log(sweep(topic.given.term, MARGIN=2, topic.proportion, `/`))
+  kernel <- topic.given.term * log(sweep(topic.given.term, MARGIN=2, 
+                                         topic.proportion, `/`))
   distinctiveness <- rowSums(kernel)
   saliency <- term.proportion * distinctiveness
 
@@ -156,27 +162,31 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   default <- data.frame(Term = default.terms, logprob = R:1, loglift = R:1, 
                         Freq = counts, Total = counts, Category = "Default", 
                         stringsAsFactors = FALSE)
-  # could apply over an array speed up things?
-  #l.array <- array(lambda.seq, dim = c(1, 1, n.lambda))
   
   topic_seq <- rep(seq_len(K), each = R)
   category <- paste0("Topic", topic_seq)
   lift <- phi/term.proportion
-  tinfo <- NULL
+  
   # Collect R most relevant terms for each topic/lambda combination
   # Note that relevance is re-computed in the browser, so we only need
   # to send each possible term/topic combination to the browser
-  for (i in lambda.seq) {
+  find_relevance <- function(i) {
     relevance <- i*log(phi) + (1 - i)*log(lift)
     idx <- apply(relevance, 2, function(x) order(x, decreasing = TRUE)[seq_len(R)])
     # for matrices, we pick out elements by their row/column index
     indices <- cbind(c(idx), topic_seq)
-    df <- data.frame(Term = vocab[idx], Category = category,
-                    logprob = round(log(phi[indices]), 4),
-                    loglift = round(log(lift[indices]), 4),
-                    stringsAsFactors = FALSE)
-    tinfo <- unique(rbind(df, tinfo))
+    data.frame(Term = vocab[idx], Category = category,
+               logprob = round(log(phi[indices]), 4),
+               loglift = round(log(lift[indices]), 4),
+               stringsAsFactors = FALSE)
   }
+
+  if (missing(cluster)) {
+    tinfo <- lapply(as.list(lambda.seq), find_relevance)
+  } else {
+    tinfo <- parLapply(cluster, as.list(lambda.seq), find_relevance)
+  }
+  tinfo <- unique(do.call("rbind", tinfo))
   tinfo$Total <- term.frequency[match(tinfo$Term, vocab)]
   rownames(term.topic.frequency) <- paste0("Topic", seq_len(K))
   tinfo$Freq <- term.topic.frequency[as.matrix(tinfo[c("Category", "Term")])]
@@ -206,6 +216,8 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   RJSONIO::toJSON(list(mdsDat = mds.df, tinfo = tinfo, 
                        token.table = token.table, R = R))
 }
+
+
 
 # compute distance between topics:
 # this determines the layout of the circles on the left panel of the vis

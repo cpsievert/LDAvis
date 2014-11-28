@@ -6,9 +6,8 @@
 createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   beta = numeric(), doc.length = integer(), vocab = character(),
   term.frequency = integer(), R = 30, lambda.seq = seq(0, 1, by = 0.01),
-  dist.measure = jensenShannon, mds.method = cmdscale,
-  quiet = interactive(), plot.opts = list(xlab = "PCA1", ylab = "PCA2",
-  ticks = FALSE), ...)
+  dist.measure = jensenShannon, mds.method = cmdscale, cluster,
+  plot.opts = list(xlab = "PCA1", ylab = "PCA2", ticks = FALSE), ...)
 }
 \arguments{
   \item{phi}{matrix, with each row containing the
@@ -45,7 +44,10 @@ createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   barcharts of the interactive viz. Default is 30.
   Recommended to be roughly between 10 and 50.}
 
-  \item{quiet}{should progress be printed to the screen?}
+  \item{cluster}{a cluster object created from the
+  \link{parallel} package. If supplied, computations are
+  performed using \link{parallel::parLapply} instead of
+  \link{lapply}.}
 }
 \value{
 A string containing JSON content which can be written to a
@@ -75,12 +77,8 @@ take a minute or two) will print to the screen.
 data(AP, package="LDAvis")
 
 # create the json object:
-json <- createJSON(phi = AP$phi, theta = AP$theta, alpha = AP$alpha,
-               beta = AP$beta, doc.length = AP$doc.length,
-               vocab = AP$vocab, term.frequency = AP$term.frequency,
-               R = 30, quiet = TRUE)
-# By default, serVis will attempt to run a local file server
-# in a temporary directory (and prompt your browser to open)
+json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length,
+                   vocab, term.frequency))
 serVis(json) # press ESC or Ctrl-C to kill
 
 # You may want to just write the JSON and other dependency files
@@ -93,6 +91,13 @@ browseURL("http://localhost:8000")
 # If you have a GitHub account, you can even publish as a gist
 # which allows you to easily share with others!
 serVis(json, as.gist = TRUE)
+
+# Run createJSON on a cluster of machines to speed it up
+system.time(
+json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length,
+                   vocab, term.frequency))
+)
+
 }
 }
 \references{

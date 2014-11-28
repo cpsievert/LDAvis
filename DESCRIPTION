@@ -9,7 +9,8 @@ Imports:
     MASS,
     proxy,
     RJSONIO,
-    servr
+    servr,
+    parallel
 License: MIT
 Suggests:
     mallet,
