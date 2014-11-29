@@ -11,13 +11,15 @@ before_install:
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
 
-# system requirements for rJava 
+# system requirements for rJava and topicmodels packages
 # http://stackoverflow.com/questions/16438073/unable-to-install-rjava-in-r-3-0-in-ubuntu-13-04?rq=1
+# http://stackoverflow.com/questions/24172188/how-can-i-install-topicmodels-package-in-r
 install:
   - sudo apt-get install libgsl0ldbl
   - sudo apt-get install openjdk-7-*
   - sudo R CMD javareconf
   - ./travis-tool.sh install_deps
+  - ./travis-tool.sh install_github ropensci/gistr
   
 script: ./travis-tool.sh run_tests
 
