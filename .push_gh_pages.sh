@@ -11,7 +11,7 @@ for files in '*.tar.gz'; do
         tar xfz $files
 done
 
-Rscript -e "knitr::knit2html(\"reviews/reviews.Rmd\")"
+Rscript -e "setwd(\"LDAvis/inst/examples\"); knitr::knit2html(\"reviews/reviews.Rmd\")"
 
 cd out
 git init
