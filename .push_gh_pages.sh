@@ -11,10 +11,12 @@ for files in '*.tar.gz'; do
         tar xfz $files
 done
 
+Rscript -e "knitr::knit2html(\"newsgroups/newsgroups.Rmd\"")"
+
 cd out
 git init
-git config user.name "cpsievert-travis"
-git config user.email "travis"
+git config user.name "cpsievert"
+git config user.email "cpsievert1@gmail.com"
 cp ../LDAvis/inst/examples/ .
 
 git add .

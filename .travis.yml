@@ -10,7 +10,7 @@ language: c
 # http://rmflight.github.io/posts/2014/11/travis_ci_gh_pages.html
 env:
   global:
-- secure: "eeQ2ZA/wd3eOMADtKtAXbdneCVBfFf/sEcNmbzcavNYsXjerhH4H8kk2vj8E1+O6aQ8kw3P29ZvpC3BM3cWEMUg0RO9yiAaz3PF3gc1nXEjg7iZr93h8kUe5VfSCKdLJcXzir3J3uhzBGdR11ARj0ZVsn+oYKc5/obNguhIJoeI="
+  - secure: "eeQ2ZA/wd3eOMADtKtAXbdneCVBfFf/sEcNmbzcavNYsXjerhH4H8kk2vj8E1+O6aQ8kw3P29ZvpC3BM3cWEMUg0RO9yiAaz3PF3gc1nXEjg7iZr93h8kUe5VfSCKdLJcXzir3J3uhzBGdR11ARj0ZVsn+oYKc5/obNguhIJoeI="
 
 before_install:
   - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
