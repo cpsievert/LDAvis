@@ -10,8 +10,14 @@ before_install:
   - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
+
+# system requirements for rJava 
+# http://stackoverflow.com/questions/16438073/unable-to-install-rjava-in-r-3-0-in-ubuntu-13-04?rq=1
 install:
+  - sudo apt-get install openjdk-7-*
+  - sudo R CMD javareconf
   - ./travis-tool.sh install_deps
+  
 script: ./travis-tool.sh run_tests
 
 after_failure:
