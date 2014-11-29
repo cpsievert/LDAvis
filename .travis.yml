@@ -13,9 +13,9 @@ before_install:
 
 # system requirements for rJava and topicmodels packages
 # http://stackoverflow.com/questions/16438073/unable-to-install-rjava-in-r-3-0-in-ubuntu-13-04?rq=1
-# http://stackoverflow.com/questions/24172188/how-can-i-install-topicmodels-package-in-r
+# http://stackoverflow.com/questions/25759007/error-installing-topicmodels-package-non-zero-exit-status-ubuntu
 install:
-  - sudo apt-get install libgsl0ldbl
+  - sudo apt-get install libgsl0-dev
   - sudo apt-get install openjdk-7-*
   - sudo R CMD javareconf
   - ./travis-tool.sh install_deps
