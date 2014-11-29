@@ -1,7 +1,6 @@
 #!/bin/bash
 
 rm -rf out || exit 0;
-mkdir out;
 
 GH_REPO="@github.com/cpsievert/LDAvis.git"
 
@@ -11,13 +10,13 @@ for files in '*.tar.gz'; do
         tar xfz $files
 done
 
-Rscript -e "setwd(\"LDAvis/inst/examples\"); knitr::knit2html(\"reviews.Rmd\")"
+Rscript -e "setwd('LDAvis/inst/examples'); for (i in list.files()) knitr::knit2html(paste0(i, '/', i, '.Rmd')"
+cp -r ../LDAvis/inst/examples/ .
 
-cd out
+cd examples
 git init
 git config user.name "cpsievert"
 git config user.email "cpsievert1@gmail.com"
-cp -r ../LDAvis/inst/examples/ .
 
 git add .
 git commit -m "deployed to github pages"

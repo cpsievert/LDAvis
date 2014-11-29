@@ -27,6 +27,7 @@ install:
   - sudo R CMD javareconf
   - ./travis-tool.sh install_deps
   - ./travis-tool.sh install_github ropensci/gistr
+  - ./travis-tool.sh install_github cpsievert/moviereviews
   
 script: 
   - ./travis-tool.sh run_tests
