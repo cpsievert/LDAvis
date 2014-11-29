@@ -30,12 +30,13 @@
 #' a K by 2 data.frame (or matrix). The output approximates the distance
 #' between topics. See \link{jsPCA} for details on the default method.
 #' @param cluster a cluster object created from the \link{parallel} package. 
-#' If supplied, computations are performed using \link{parallel::parLapply} instead
+#' If supplied, computations are performed using \link{parLapply} instead
 #' of \link{lapply}.
 #' @param plot.opts a named list used to customize various plot elements. 
 #' By default, the x and y axes are labeled "PC1" and "PC2" 
 #' (principal components 1 and 2), since \link{jsPCA} is the default
 #' scaling method.
+#' @param ... not currently used.
 #'
 #' @details The function first computes the topic frequencies (across the whole
 #' corpus), and then it reorders the topics in decreasing order of 

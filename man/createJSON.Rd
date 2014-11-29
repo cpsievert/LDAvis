@@ -5,7 +5,7 @@
 \usage{
 createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   beta = numeric(), doc.length = integer(), vocab = character(),
-  term.frequency = integer(), R = 30, lambda.step = seq(0, 1, by = 0.01),
+  term.frequency = integer(), R = 30, lambda.step = 0.1,
   mds.method = jsPCA, cluster, plot.opts = list(xlab = "PC1", ylab = "PC2",
   ticks = FALSE), ...)
 }
@@ -55,13 +55,15 @@ createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
 
   \item{cluster}{a cluster object created from the
   \link{parallel} package. If supplied, computations are
-  performed using \link{parallel::parLapply} instead of
+  performed using \link{parLapply} instead of
   \link{lapply}.}
 
   \item{plot.opts}{a named list used to customize various
   plot elements. By default, the x and y axes are labeled
   "PC1" and "PC2" (principal components 1 and 2), since
   \link{jsPCA} is the default scaling method.}
+
+  \item{...}{not currently used.}
 }
 \value{
 A string containing JSON content which can be written to a
