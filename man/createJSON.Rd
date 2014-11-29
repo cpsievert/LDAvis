@@ -3,11 +3,10 @@
 \alias{createJSON}
 \title{Create the JSON object to read into the javascript visualization}
 \usage{
-createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
-  beta = numeric(), doc.length = integer(), vocab = character(),
-  term.frequency = integer(), R = 30, lambda.step = 0.1,
-  mds.method = jsPCA, cluster, plot.opts = list(xlab = "PC1", ylab = "PC2",
-  ticks = FALSE), ...)
+createJSON(phi = matrix(), theta = matrix(), doc.length = integer(),
+  vocab = character(), term.frequency = integer(), R = 30,
+  lambda.step = 0.1, mds.method = jsPCA, cluster, plot.opts = list(xlab =
+  "PC1", ylab = "PC2", ticks = FALSE), ...)
 }
 \arguments{
   \item{phi}{matrix, with each row containing the
@@ -20,22 +19,12 @@ createJSON(phi = matrix(), theta = matrix(), alpha = numeric(),
   as many rows as there are documents in the corpus, and as
   many columns as there are topics in the model.}
 
-  \item{alpha}{numeric vector with as many elements as
-  there are topics in the model, containing the parameters
-  of the Dirichlet prior distribution over topics for each
-  document.}
-
-  \item{beta}{numeric vector with as many elements as there
-  are terms in the vocabulary, containing the parameters of
-  the Dirichlet prior distribution over terms for each
-  topic.}
-
   \item{doc.length}{integer vector containing the number of
   tokens in each document of the corpus.}
 
   \item{vocab}{character vector of the terms in the
   vocabulary (in the same order as the columns of
-  \code{phi} and the elements of \code{beta}).}
+  \code{phi}).}
 
   \item{term.frequency}{integer vector containing the
   frequency of each term in the vocabulary.}
@@ -93,8 +82,7 @@ take a minute or two) will print to the screen.
 data(AP, package="LDAvis")
 
 # create the json object:
-json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length,
-                   vocab, term.frequency))
+json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
 serVis(json) # press ESC or Ctrl-C to kill
 
 # You may want to just write the JSON and other dependency files
@@ -110,8 +98,7 @@ serVis(json, as.gist = TRUE)
 
 # Run createJSON on a cluster of machines to speed it up
 system.time(
-json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length,
-                   vocab, term.frequency))
+json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
 )
 #   user  system elapsed
 #  8.701   0.475   9.342
@@ -119,16 +106,16 @@ library("parallel")
 cl <- makeCluster(detectCores()-1)
 cl # socket cluster with 7 nodes on host ‘localhost’
 system.time(
-json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length,
-                   vocab, term.frequency, cluster = cl))
+json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency,
+                             cluster = cl))
 )
 #   user  system elapsed
 #  1.696   0.281   4.895
 
 # why does this freeze up? Too many dimensions?
 #library("tsne")
-#json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length,
-#                vocab, term.frequency, mds.method = tsne))
+#json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency,
+#                      mds.method = tsne))
 #serVis(json)
 
 }

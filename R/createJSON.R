@@ -9,16 +9,10 @@
 #' @param theta matrix, with each row containing the probability distribution
 #' over topics for a document, with as many rows as there are documents in the
 #' corpus, and as many columns as there are topics in the model.
-#' @param alpha numeric vector with as many elements as there are topics in the
-#' model, containing the parameters of the Dirichlet prior distribution
-#' over topics for each document.
-#' @param beta numeric vector with as many elements as there are terms in the
-#' vocabulary, containing the parameters of the Dirichlet prior distribution
-#' over terms for each topic.
 #' @param doc.length integer vector containing the number of tokens in each
 #' document of the corpus.
 #' @param vocab character vector of the terms in the vocabulary (in the same
-#' order as the columns of \code{phi} and the elements of \code{beta}).
+#' order as the columns of \code{phi}).
 #' @param term.frequency integer vector containing the frequency of each term 
 #' in the vocabulary.
 #' @param R integer, the number of terms to display in the barcharts
@@ -66,8 +60,7 @@
 #' data(AP, package="LDAvis")
 #'
 #' # create the json object:
-#' json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length, 
-#'                    vocab, term.frequency))
+#' json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
 #' serVis(json) # press ESC or Ctrl-C to kill
 #' 
 #' # You may want to just write the JSON and other dependency files 
@@ -83,8 +76,7 @@
 #' 
 #' # Run createJSON on a cluster of machines to speed it up
 #' system.time(
-#' json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length, 
-#'                    vocab, term.frequency))
+#' json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
 #' )
 #' #   user  system elapsed 
 #' #  8.701   0.475   9.342 
@@ -92,26 +84,25 @@
 #' cl <- makeCluster(detectCores()-1)
 #' cl # socket cluster with 7 nodes on host ‘localhost’
 #' system.time(
-#' json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length, 
-#'                    vocab, term.frequency, cluster = cl))
+#' json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency, 
+#'                              cluster = cl))
 #' )
 #' #   user  system elapsed 
 #' #  1.696   0.281   4.895
 #' 
 #' # why does this freeze up? Too many dimensions?
 #' #library("tsne")
-#' #json <- with(AP, createJSON(phi, theta, alpha, beta, doc.length, 
-#' #                vocab, term.frequency, mds.method = tsne))
+#' #json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency, 
+#' #                      mds.method = tsne))
 #' #serVis(json)
 #' 
 #'}
 
-createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(), 
-                    beta = numeric(), doc.length = integer(), vocab = character(), 
-                    term.frequency = integer(), R = 30, lambda.step = 0.1,
-                    mds.method = jsPCA, cluster, 
-                    plot.opts = list(xlab = "PC1", ylab = "PC2", ticks = FALSE), 
-                    ...) {
+createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(), 
+                       vocab = character(), term.frequency = integer(), R = 30, 
+                       lambda.step = 0.1, mds.method = jsPCA, cluster, 
+                       plot.opts = list(xlab = "PC1", ylab = "PC2", ticks = FALSE), 
+                       ...) {
   N <- sum(doc.length)
   dp <- dim(phi)
   dt <- dim(theta)
@@ -120,9 +111,7 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   if (dp[1] != K) stop("Number of rows of phi does not match 
       number of columns of theta; both should be equal to the number of topics 
       in the model.")
-  if (length(alpha) != K) stop("Length of alpha not equal to number
-      of columns of theta; both should be equal to the number of topics in the 
-      model.")
+  
   D <- length(doc.length)
   if (D != dt[1]) stop("Length of doc.length not equal 
       to the number of rows in theta; both should be equal to the number of 
@@ -131,8 +120,6 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   if (dp[2] != W) stop("Number of terms in vocabulary does 
       not match the number of columns of phi (where each row of phi is a
       probability distribution of terms for a given topic).")
-  if (length(beta) != W) stop("Length of beta not equal to the 
-      number of terms in the vocabulary.")
   if (length(term.frequency) != W) stop("Length of term.frequency 
       not equal to the number of terms in the vocabulary.")
   # check that conditional distributions are normalized
@@ -150,7 +137,6 @@ createJSON <- function(phi = matrix(), theta = matrix(), alpha = numeric(),
   o <- order(topic.proportion, decreasing = TRUE)
   phi <- phi[o, ]
   theta <- theta[, o]
-  alpha <- alpha[o]
   topic.frequency <- topic.frequency[o]
   topic.proportion <- topic.proportion[o]
   
