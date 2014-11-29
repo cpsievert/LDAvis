@@ -6,9 +6,16 @@
 
 language: c
 
+# OAUTH token which allows us to push rendered HTML back to github
+# http://rmflight.github.io/posts/2014/11/travis_ci_gh_pages.html
+env:
+  global:
+- secure: "eeQ2ZA/wd3eOMADtKtAXbdneCVBfFf/sEcNmbzcavNYsXjerhH4H8kk2vj8E1+O6aQ8kw3P29ZvpC3BM3cWEMUg0RO9yiAaz3PF3gc1nXEjg7iZr93h8kUe5VfSCKdLJcXzir3J3uhzBGdR11ARj0ZVsn+oYKc5/obNguhIJoeI="
+
 before_install:
   - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
   - chmod 755 ./travis-tool.sh
+  - chmod 755 ./.push_gh_pages.sh
   - ./travis-tool.sh bootstrap
 
 # system requirements for rJava and topicmodels packages
@@ -21,7 +28,9 @@ install:
   - ./travis-tool.sh install_deps
   - ./travis-tool.sh install_github ropensci/gistr
   
-script: ./travis-tool.sh run_tests
+script: 
+  - ./travis-tool.sh run_tests
+  - ./.push_gh_pages.sh
 
 after_failure:
   - ./travis-tool.sh dump_logs
