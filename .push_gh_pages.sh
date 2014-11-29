@@ -16,7 +16,7 @@ git config user.name "cpsievert"
 git config user.email "cpsievert1@gmail.com"
 
 # compile demo html pages and commit
-Rscript -e "for (i in list.files()) knitr::knit2html(input=paste0(i, '/', i, '.Rmd'), output=i); file.copy(paste0(i, '.html'), 'index.html')"
+Rscript -e "devtools::install('../LDAvis'); a <- Sys.glob(file.path('*', '*.Rmd')); b <- sub('Rmd$', 'html', a); mapply(knitr::knit2html, a, b)"
 git add .
 git commit -m "deployed to github pages"
 
