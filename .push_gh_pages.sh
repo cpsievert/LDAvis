@@ -17,7 +17,7 @@ cd out
 git init
 git config user.name "cpsievert"
 git config user.email "cpsievert1@gmail.com"
-cp ../LDAvis/inst/examples/ .
+cp -r ../LDAvis/inst/examples/ .
 
 git add .
 git commit -m "deployed to github pages"
