@@ -11,7 +11,7 @@ for files in '*.tar.gz'; do
         tar xfz $files
 done
 
-Rscript -e "knitr::knit2html(\"newsgroups/newsgroups.Rmd\"")"
+Rscript -e "knitr::knit2html(\"newsgroups/newsgroups.Rmd\")"
 
 cd out
 git init
