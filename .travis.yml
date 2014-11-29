@@ -14,6 +14,7 @@ before_install:
 # system requirements for rJava 
 # http://stackoverflow.com/questions/16438073/unable-to-install-rjava-in-r-3-0-in-ubuntu-13-04?rq=1
 install:
+  - sudo apt-get install libgsl0ldbl
   - sudo apt-get install openjdk-7-*
   - sudo R CMD javareconf
   - ./travis-tool.sh install_deps
