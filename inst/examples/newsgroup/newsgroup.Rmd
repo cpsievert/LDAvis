@@ -38,10 +38,10 @@ json <- with(TwentyNewsgroups,
                 doc.length = doc.length, term.frequency = term.frequency))
 ```
 
-Now that we have `json`, we can use `serVis` function to spit out files required to view the interactive webpage. One can even use this function to upload files as [a gist]() which can then be viewed via [bl.ocks.org]().
+Now, the `serVis` function can take `json` and serve the result in a variety of ways. Here I will write `json` to a file within the 'vis' directory (along with other HTML and JavaScript required to render the page). You can see the result [here](http://cpsievert.github.io/LDAvis/newsgroup/vis)
 
 ```{r serVis}
-serVis(json, out.dir = "newsgroup", open.browser = FALSE)
+serVis(json, out.dir = "vis", open.browser = FALSE)
 ```
 
 TODO: demo different scaling methods (possibly with shiny?)

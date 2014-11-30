@@ -100,11 +100,9 @@ json <- createJSON(phi = phi, theta = theta, doc.length = doc.length,
                    vocab = vocab, term.frequency = term.frequency)
 ```
 
-Now, the `serVis` function can take `json` and serve the result in a variety of ways. Here I will write `json` to a file within the 'vis' directory (along with other HTML and JavaScript required to render the page). You can see the result [here](http://cpsievert.github.io/LDAvis/newsgroup/vis)
+Now, the `serVis` function can take `json` and serve the result in a variety of ways. Here I will write `json` to a file within the 'vis' directory (along with other HTML and JavaScript required to render the page). You can see the result [here](http://cpsievert.github.io/LDAvis/reviews/vis)
 
 ```{r serVis}
 serVis(json, out.dir = 'vis', open.browser = FALSE)
 ```
-
-
 
