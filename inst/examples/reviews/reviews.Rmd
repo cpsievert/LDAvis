@@ -5,7 +5,7 @@ In this document, we fit an <a href='http://en.wikipedia.org/wiki/Latent_Dirichl
 
 ```{r setup, echo = FALSE, message = FALSE}
 library(knitr)
-opts_chunk$set(message = FALSE, warning = FALSE)
+opts_chunk$set(message = FALSE, warning = FALSE, cache = FALSE)
 ```
 
 ### Movie review data

@@ -204,6 +204,7 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   tinfo <- unique(do.call("rbind", tinfo))
   tinfo$Total <- term.frequency[match(tinfo$Term, vocab)]
   rownames(term.topic.frequency) <- paste0("Topic", seq_len(K))
+  colnames(term.topic.frequency) <- vocab
   tinfo$Freq <- term.topic.frequency[as.matrix(tinfo[c("Category", "Term")])]
   tinfo <- rbind(default, tinfo)
   
@@ -228,8 +229,6 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   # Normalize token frequencies:
   dd[, "Freq"] <- dd[, "Freq"]/term.frequency[match(dd[, "Term"], vocab)]
   token.table <- dd[order(dd[, 1], dd[, 2]), ]
-  
-  
   
   RJSONIO::toJSON(list(mdsDat = mds.df, tinfo = tinfo, 
                        token.table = token.table, R = R, 
