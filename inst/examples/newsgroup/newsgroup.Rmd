@@ -25,7 +25,7 @@ with(TwentyNewsgroups, summary(rowSums(phi)))
 
 The second element of this - "theta" - is a matrix and the other main output from an LDA topic model. Each row of this $\theta$ matrix defines a probability mass function over topics for a given document. Consequently, the rows of the $\theta$ matrix must also sum to 1.
 
-```{r sum}
+```{r sum2}
 with(TwentyNewsgroups, summary(rowSums(theta)))
 ```
 
