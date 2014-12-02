@@ -102,7 +102,7 @@
 
 createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(), 
                        vocab = character(), term.frequency = integer(), R = 30, 
-                       lambda.step = 0.1, mds.method = jsPCA, cluster, 
+                       lambda.step = 0.01, mds.method = jsPCA, cluster, 
                        plot.opts = list(xlab = "PC1", ylab = "PC2", 
                                         ticks = FALSE), 
                        ...) {

@@ -499,13 +499,8 @@ LDAvis = function(to_select, json_file) {
             .text(function(d) {
                 return d.Term;
             })
-            .on("mouseover", function(d) {
-                if (vis_state.term != "" && vis_state.term != this.innerHTML) {
-                    term_off(document.getElementById(termID + vis_state.term));
-                }
-                vis_state.term = this.innerHTML;
-                term_on(this);
-                state_save(true);
+            .on("mouseover", function() {
+                term_hover(this);
             })
         // .on("click", function(d) {
         // 	var old_term = termID + vis_state.term;
@@ -517,18 +512,11 @@ LDAvis = function(to_select, json_file) {
         // 	term_on(this);
         // 	debugger;
         // })
-            .on("mouseout", function(d) {
+            .on("mouseout", function() {
                 vis_state.term = "";
                 term_off(this);
                 state_save(true);
-                //if (vis_state.term != d.Term) term_off(this);
-                //if (vis_state.term != "") term_on(document.getElementById(termID + vis_state.term));
             });
-
-        d3.select("#topicup")
-            .on("click", function() {
-
-            })
 
         var title = chart.append("text")
             .attr("x", barwidth/2)
@@ -775,12 +763,8 @@ LDAvis = function(to_select, json_file) {
                 .text(function(d) {
                     return d.Term;
                 })
-                .on("mouseover", function(d) {
-                    var old_term = termID + vis_state.term;
-                    if (vis_state.term != "" && old_term != this.id) {
-                        term_off(document.getElementById(old_term));
-                    }
-                    term_on(this);
+                .on("mouseover", function() {
+                    term_hover(this);
                 })
             // .on("click", function(d) {
             //     var old_term = termID + vis_state.term;
@@ -791,9 +775,10 @@ LDAvis = function(to_select, json_file) {
             //     state_save(true);
             //     term_on(this);
             // })
-                .on("mouseout", function(d) {
-                    if (vis_state.term != d.Term) term_off(this);
-                    if (vis_state.term != "") term_on(document.getElementById(termID + vis_state.term));
+                .on("mouseout", function() {
+                    vis_state.term = "";
+                    term_off(this);
+                    state_save(true);
                 });
 
             var redbarsEnter = redbars.enter().append("rect")
@@ -1158,6 +1143,17 @@ LDAvis = function(to_select, json_file) {
                 .call(xAxis);
         }
 
+        // event definition for mousing over a term
+        function term_hover(term) {
+            var old_term = termID + vis_state.term;
+            if (vis_state.term != "" && old_term != term.id) {
+                term_off(document.getElementById(old_term));
+            }
+            vis_state.term = term.innerHTML;
+            term_on(term);
+            state_save(true);
+        }
+        // updates vis when a term is selected via click or hover
         function term_on(term) {
             if (term == null) return null;
             term.style["font-weight"] = "bold";
@@ -1254,12 +1250,20 @@ LDAvis = function(to_select, json_file) {
         // location.hash holds the address information
         
         var params = location.hash.split("&");
-        vis_state.topic = params[0].split("=")[1];
-        vis_state.lambda = params[1].split("=")[1];
-        vis_state.term = params[2].split("=")[1];
-        if (!isNaN(vis_state.topic)) topic_on(document.getElementById(topicID + vis_state.topic));
-        var termElem = document.getElementById(termID + vis_state.term);
-        if (termElem !== undefined) term_on(termElem);
+        if (params.length > 1) {
+            vis_state.topic = params[0].split("=")[1];
+            vis_state.lambda = params[1].split("=")[1];
+            vis_state.term = params[2].split("=")[1];
+            // impose the value of lambda
+            document.getElementById(lambdaID).value = vis_state.lambda;
+            // select the topic and transition the order of the bars (if approporiate)
+            if (!isNaN(vis_state.topic)) {
+                topic_on(document.getElementById(topicID + vis_state.topic));
+                if (vis_state.lambda < 1) reorder_bars(false);
+            }
+            var termElem = document.getElementById(termID + vis_state.term);
+            if (termElem !== undefined) term_on(termElem);
+        }
 
         function state_url() {
             return location.origin + location.pathname + "#topic=" + vis_state.topic +
