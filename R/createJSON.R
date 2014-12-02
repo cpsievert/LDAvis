@@ -1,7 +1,8 @@
 #' Create the JSON object to read into the javascript visualization
 #' 
 #' This function creates the JSON object that feeds the visualization template.
-#' For a more detailed overview, see \code{vignette("details", package = "LDAvis")}
+#' For a more detailed overview, 
+#' see \code{vignette("details", package = "LDAvis")}
 #' 
 #' @param phi matrix, with each row containing the distribution over terms 
 #' for a topic, with as many rows as there are topics in the model, and as 
@@ -19,7 +20,8 @@
 #' of the interactive viz. Default is 30. Recommended to be roughly
 #' between 10 and 50.
 #' @param lambda.step a value between 0 and 1. 
-#' Determines the grid of lambda values to iterate over when computing relevance. 
+#' Determines the grid of lambda values to iterate over when computing relevance.
+#' Default is 0.01. Recommended to be between 0.01 and 0.1. 
 #' @param mds.method a function that takes \code{phi} as an input and outputs
 #' a K by 2 data.frame (or matrix). The output approximates the distance
 #' between topics. See \link{jsPCA} for details on the default method.
@@ -34,11 +36,10 @@
 #'
 #' @details The function first computes the topic frequencies (across the whole
 #' corpus), and then it reorders the topics in decreasing order of 
-#' frequency. The main computation is to loop through the topics and through
-#' 101 values of lambda (0, 0.01, 0.02, .., 1) to compute the \code{R} most 
+#' frequency. The main computation is to loop through the topics and through the
+#' grid of lambda values (determined by \code{lambda.step})
+#' to compute the \code{R} most 
 #' \emph{relevant} terms for each topic and value of lambda.
-#' If \code{quiet = FALSE} progress in this loop (which can take a minute or two) 
-#' will print to the screen.
 #'
 #' @return A string containing JSON content which can be written to a file 
 #' or feed into \link{serVis} for easy viewing/sharing.
@@ -48,7 +49,7 @@
 #' Visualizing and Interpreting Topics}, ACL Workshop on Interactive 
 #' Language Learning, Visualization, and Interfaces.
 #' \url{http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf}
-
+#'
 #' @export
 #' @examples
 #' 
@@ -102,7 +103,8 @@
 createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(), 
                        vocab = character(), term.frequency = integer(), R = 30, 
                        lambda.step = 0.1, mds.method = jsPCA, cluster, 
-                       plot.opts = list(xlab = "PC1", ylab = "PC2", ticks = FALSE), 
+                       plot.opts = list(xlab = "PC1", ylab = "PC2", 
+                                        ticks = FALSE), 
                        ...) {
   N <- sum(doc.length)
   dp <- dim(phi)
@@ -123,11 +125,14 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
       probability distribution of terms for a given topic).")
   if (length(term.frequency) != W) stop("Length of term.frequency 
       not equal to the number of terms in the vocabulary.")
-  # check that conditional distributions are normalized
-  phi.test <- all.equal(rowSums(phi), rep(1, K))
-  theta.test <- all.equal(rowSums(theta), rep(1, dt[1]))
+
+  # check that conditional distributions are normalized:
+  phi.test <- all.equal(rowSums(phi), rep(1, K), check.attributes = FALSE)
+  theta.test <- all.equal(rowSums(theta), rep(1, dt[1]), 
+                          check.attributes = FALSE)
   if (!isTRUE(phi.test)) stop("Columns of phi don't all sum to 1.")
   if (!isTRUE(theta.test)) stop("Rows of theta don't all sum to 1.")
+
   # compute counts of tokens across K topics (length-K vector):
   # (this determines the areas of the default topic circles when no term is 
   # highlighted)
@@ -147,13 +152,13 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   } else if (is.data.frame(mds.res)) {
     names(mds.res) <- c("x", "y")
   } else {
-    warning("Result of mds.method should be a matrix of data.frame.")
+    warning("Result of mds.method should be a matrix or data.frame.")
   }
   mds.df <- data.frame(mds.res, topics = seq_len(K), Freq = topic.proportion*100, 
                        cluster = 1, stringsAsFactors = FALSE)
   # note: cluster (should?) be deprecated soon.
   
-  # marginal distribution over terms (width of gray bars)
+  # marginal distribution over terms (width of blue bars)
   term.proportion <- term.frequency/sum(term.frequency)
   # token counts for each term-topic combination (widths of red bars)
   term.topic.frequency <- phi * topic.frequency
@@ -188,7 +193,8 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   # to send each possible term/topic combination to the browser
   find_relevance <- function(i) {
     relevance <- i*log(phi) + (1 - i)*log(lift)
-    idx <- apply(relevance, 2, function(x) order(x, decreasing = TRUE)[seq_len(R)])
+    idx <- apply(relevance, 2, 
+                 function(x) order(x, decreasing = TRUE)[seq_len(R)])
     # for matrices, we pick out elements by their row/column index
     indices <- cbind(c(idx), topic_seq)
     data.frame(Term = vocab[idx], Category = category,
