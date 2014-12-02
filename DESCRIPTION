@@ -23,3 +23,5 @@ Suggests:
 Enhances: gistr
 Roxygen: list(wrap = TRUE)
 VignetteBuilder: knitr
+URL: https://github.com/cpsievert/LDAvis
+BugReports: https://github.com/cpsievert/LDAvis/issues
