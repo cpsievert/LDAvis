@@ -122,7 +122,8 @@ LDAvis = function(to_select, json_file) {
         }
 
         // large data for the widths of bars in bar-charts. 6 columns: Term, logprob, loglift, Freq, Total, Category
-        // Conatins all possible terms for topics in (1, 2, ..., k) and lambda in (0, 0.01, 0.02, ..., 1).
+        // Contains all possible terms for topics in (1, 2, ..., k) and lambda in the user-supplied grid of lambda values
+	// which defaults to (0, 0.01, 0.02, ..., 0.99, 1).
         lamData = [];
         for (var i = 0; i < data['tinfo'].Term.length; i++) {
             var obj = {};
@@ -451,7 +452,7 @@ LDAvis = function(to_select, json_file) {
             .attr("x", 0)
             .attr("y", mdsheight + 10 + (6/2)*barguide.height + 5)
             .style("dominant-baseline", "middle")
-            .text("1. saliency(term w) = frequency(w) * [sum_t p(t | w) * log(p(t | w)/p(t))]; see Chuang et. al (2012)");
+            .text("1. saliency(term w) = frequency(w) * [sum_t p(t | w) * log(p(t | w)/p(t))] for topics t; see Chuang et. al (2012)");
         d3.select("#bar-freqs")
             .append("a")
             .attr("xlink:href", "http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf")
