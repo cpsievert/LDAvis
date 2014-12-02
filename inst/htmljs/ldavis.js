@@ -226,6 +226,12 @@ LDAvis = function(to_select, json_file) {
             .attr("width", mdswidth + barwidth + margin.left + termwidth + margin.right)
             .attr("height", mdsheight + 2 * margin.top + margin.bottom + 2 * rMax);
 
+        // Clicking anywhere on the div container should clear the selection
+        d3.select(to_select).on("click", function() {
+            state_reset();
+            state_save(true);
+        })
+
         // Create a group for the mds plot
         var mdsplot = svg.append("g")
             .attr("id", "leftpanel")
@@ -239,30 +245,30 @@ LDAvis = function(to_select, json_file) {
             .attr("y2", mdsheight / 2)
             .attr("stroke", "gray")
             .attr("opacity", 0.3);
-	mdsplot.append("text") // label x-axis
-	    .attr("x", 0)
-	    .attr("y", mdsheight/2 - 5)
-	    .text(data['plot.opts'].xlab)
-	    .attr("fill", "gray");
+    	mdsplot.append("text") // label x-axis
+    	    .attr("x", 0)
+    	    .attr("y", mdsheight/2 - 5)
+    	    .text(data['plot.opts'].xlab)
+    	    .attr("fill", "gray");
 
-    mdsplot.append("line") // draw y-axis
-        .attr("x1", mdswidth / 2)
-        .attr("x2", mdswidth / 2)
-        .attr("y1", 0)
-        .attr("y2", mdsheight)
-        .attr("stroke", "gray")
-        .attr("opacity", 0.3);
-	mdsplot.append("text") // label y-axis
-	    .attr("x", mdswidth/2 + 5)
-	    .attr("y", 7)
-	    .text(data['plot.opts'].ylab)
-	    .attr("fill", "gray");
+        mdsplot.append("line") // draw y-axis
+            .attr("x1", mdswidth / 2)
+            .attr("x2", mdswidth / 2)
+            .attr("y1", 0)
+            .attr("y2", mdsheight)
+            .attr("stroke", "gray")
+            .attr("opacity", 0.3);
+    	mdsplot.append("text") // label y-axis
+    	    .attr("x", mdswidth/2 + 5)
+    	    .attr("y", 7)
+    	    .text(data['plot.opts'].ylab)
+    	    .attr("fill", "gray");
 
-	// new definitions based on fixing the sum of the areas of the default topic circles:
-	var newSmall = Math.sqrt(0.02*mdsarea*circle_prop/Math.PI);
-	var newMedium = Math.sqrt(0.05*mdsarea*circle_prop/Math.PI);
-	var newLarge = Math.sqrt(0.10*mdsarea*circle_prop/Math.PI);
-	var cx = 10 + newLarge,
+    	// new definitions based on fixing the sum of the areas of the default topic circles:
+    	var newSmall = Math.sqrt(0.02*mdsarea*circle_prop/Math.PI);
+    	var newMedium = Math.sqrt(0.05*mdsarea*circle_prop/Math.PI);
+    	var newLarge = Math.sqrt(0.10*mdsarea*circle_prop/Math.PI);
+    	var cx = 10 + newLarge,
         cx2 = cx + 1.5 * newLarge;
 	
         // circle guide inspired from
@@ -370,6 +376,9 @@ LDAvis = function(to_select, json_file) {
                 topic_on(this);
             })
             .on("click", function(d) {
+                // prevent click event defined on the div container from firing 
+                // http://bl.ocks.org/jasondavies/3186840
+                d3.event.stopPropagation();
                 var old_topic = topicID + vis_state.topic;
                 if (vis_state.topic > 0 && old_topic != this.id) {
                     topic_off(document.getElementById(old_topic));
@@ -584,12 +593,13 @@ LDAvis = function(to_select, json_file) {
 	    next.setAttribute("style", "margin-left: 5px");
 	    next.innerHTML = "Next Topic";
             topicDiv.appendChild(next);
-
+        /*
 	    var clear = document.createElement("button");
 	    clear.setAttribute("id", topicClear);
 	    clear.setAttribute("style", "margin-left: 5px");
 	    clear.innerHTML = "Clear Topic";
             topicDiv.appendChild(clear);
+        */
 
            // lambda inputs
     	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
