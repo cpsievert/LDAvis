@@ -90,11 +90,12 @@
 #' #   user  system elapsed 
 #' #  1.696   0.281   4.895
 #' 
-#' # why does this freeze up? Too many dimensions?
-#' #library("tsne")
-#' #json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency, 
-#' #                      mds.method = tsne))
-#' #serVis(json)
+#' # another scaling method (svd + tsne)
+#' library("tsne")
+#' svd_tsne <- function(x) tsne(svd(x)$u)
+#' json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency, 
+#'                       mds.method = svd_tsne, plot.opts = list(xlab="", ylab="")))
+#' serVis(json)
 #' 
 #'}
 
