@@ -17,9 +17,9 @@ Suggests:
     mallet,
     lda,
     topicmodels,
-    gistr,
     shiny,
     knitr,
     rmarkdown
+Enhances: gistr
 Roxygen: list(wrap = TRUE)
 VignetteBuilder: knitr

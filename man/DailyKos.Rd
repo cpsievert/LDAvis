@@ -12,7 +12,7 @@
   \item{term.frequency}{term.frequency, a numeric vector of observed term frequencies}
 }}
 \source{
-\url{}
+\url{http://www.dailykos.com/}
 }
 \usage{
 DailyKos

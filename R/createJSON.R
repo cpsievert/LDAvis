@@ -57,10 +57,9 @@
 #' # articles tokenized and shared by David Blei: 
 #' # http://www.cs.princeton.edu/~blei/lda-c/index.html
 #' \dontrun{
-#' # load the AP data:
 #' data(AP, package="LDAvis")
 #'
-#' # create the json object:
+#' # create the json object, start a local file server, open in default browser
 #' json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
 #' serVis(json) # press ESC or Ctrl-C to kill
 #' 
@@ -83,7 +82,7 @@
 #' #  8.701   0.475   9.342 
 #' library("parallel")
 #' cl <- makeCluster(detectCores()-1)
-#' cl # socket cluster with 7 nodes on host ‘localhost’
+#' cl # socket cluster with 7 nodes on host 'localhost'
 #' system.time(
 #' json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency, 
 #'                              cluster = cl))
