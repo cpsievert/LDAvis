@@ -63,11 +63,10 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
   servd <- requireNamespace('servr')
   if (open.browser) {
     if (!servd) {
-      message("If the visualization doesn't render, consider installing the 
-              servr package -- \n install.packages('servr') \n",
-              "Alternatively, you could configure your default browser to allow 
-              access to local files, \n", 
-              "as some browsers block this by default") 
+      message("If the visualization doesn't render, install the servr package\n",
+               "and re-run serVis: \n install.packages('servr') \n",
+              "Alternatively, you could configure your default browser to allow\n", 
+              "access to local files as some browsers block this by default") 
       browseURL(sprintf("%s/index.html", out.dir))
     } else {
       servr::httd(dir = out.dir)
