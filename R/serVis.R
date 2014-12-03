@@ -16,8 +16,9 @@
 #' attempt to create a local file server via the servr package.
 #' This is necessary since the javascript needs to access local files and most 
 #' browsers will not allow this.
-#' @param as.gist should the vis be uploaded as a gist? If so, make sure your 
-#' 'github.username' and 'github.password' are set in \link{options}.
+#' @param as.gist should the vis be uploaded as a gist? Will prompt for an 
+#' interactive login if the GITHUB_PAT environment variable is not set. For more
+#' details, see \url{https://github.com/ropensci/gistr#authentication}.
 #' @param ... arguments passed onto \code{gistr::gist_create}
 #' 
 #' @return An invisible object.
@@ -48,13 +49,11 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
     gistd <- requireNamespace('gistr')
     if (!gistd) {
       warning("Please run `devtools::install_github('rOpenSci/gistr')` 
-              to upload vis to https://gist.github.com")
+              to upload files to https://gist.github.com")
     } else {
       gist <- gistr::gist_create(file.path(out.dir, list.files(out.dir)), ...)
-      elem <- strsplit(gist, split = "/")[[1]]
-      gist.code <- elem[length(elem)]
-      url_name <- paste("http://bl.ocks.org", getOption("github.username"), 
-                        gist.code, sep = "/")
+      if (interactive()) print(gist)
+      url_name <- paste("http://bl.ocks.org", gist$id, sep = "/")
       if (open.browser) browseURL(url_name)
     }
     return(invisible())
@@ -72,4 +71,5 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
       servr::httd(dir = out.dir)
     }
   }
+  return(invisible())
 }

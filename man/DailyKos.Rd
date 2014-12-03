@@ -12,7 +12,7 @@
   \item{term.frequency}{term.frequency, a numeric vector of observed term frequencies}
 }}
 \source{
-\url{http://www.dailykos.com/}
+\url{https://archive.ics.uci.edu/ml/datasets/Bag+of+Words}
 }
 \usage{
 DailyKos

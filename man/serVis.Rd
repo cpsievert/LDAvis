@@ -18,9 +18,10 @@ serVis(json, out.dir = tempfile(), open.browser = interactive(),
   needs to access local files and most browsers will not
   allow this.}
 
-  \item{as.gist}{should the vis be uploaded as a gist? If
-  so, make sure your 'github.username' and
-  'github.password' are set in \link{options}.}
+  \item{as.gist}{should the vis be uploaded as a gist? Will
+  prompt for an interactive login if the GITHUB_PAT
+  environment variable is not set. For more details, see
+  \url{https://github.com/ropensci/gistr#authentication}.}
 
   \item{...}{arguments passed onto
   \code{gistr::gist_create}}

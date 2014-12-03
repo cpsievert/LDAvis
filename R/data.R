@@ -34,5 +34,5 @@
 #'   \item{vocab}{vocab, a character vector containing the unique terms}
 #'   \item{term.frequency}{term.frequency, a numeric vector of observed term frequencies}
 #' }
-#' @source \url{http://www.dailykos.com/}
+#' @source \url{https://archive.ics.uci.edu/ml/datasets/Bag+of+Words}
 "DailyKos"

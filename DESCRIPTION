@@ -4,7 +4,8 @@ Version: 0.2
 Authors@R: c(person("Carson", "Sievert", role = c("aut", "cre"), email =
     "cpsievert1@gmail.com"), person("Kenny", "Shirley", role = c("aut", "cre"),
     email = "kshirley@research.att.com"))
-Description: Interactive visualization of topic models using d3.js. The aim of the visualization is to help users interpret topical meaning.
+Description: Interactive visualization of topic models using d3.js. The aim of
+    the visualization is to help users interpret topical meaning.
 Depends:
     R (>= 2.10)
 Imports:
@@ -16,12 +17,12 @@ Suggests:
     mallet,
     lda,
     topicmodels,
+    gistr (>= 0.0.8.99),
     servr,
-    gistr,
     shiny,
     knitr,
     rmarkdown
-Additional_repositories: https://github.com/ropensci/gistr
+LazyData: true
 Roxygen: list(wrap = TRUE)
 VignetteBuilder: knitr
 URL: https://github.com/cpsievert/LDAvis
