@@ -138,9 +138,6 @@ LDAvis = function(to_select, json_file) {
         // http://bl.ocks.org/d3noob/10633704
         init_forms(topicID, lambdaID, visID);
 
-        // http://jsfiddle.net/AmanVirdi/hbP3y/
-        // kenny look at link above to create custom 'spinner' for topic increment/decrement buttons
-
         // When the value of lambda changes, update the visualization
         d3.select(lambda_select)
             .on("mouseup", function() {
@@ -207,19 +204,32 @@ LDAvis = function(to_select, json_file) {
             return d.x;
         }); //d3.extent returns min and max of an array
         var xdiff = xrange[1] - xrange[0],
-        xpad = 0.10;
-        var xScale = d3.scale.linear()
-            .range([0, mdswidth])
-            .domain([xrange[0] - xpad * xdiff, xrange[1] + xpad * xdiff]);
-
+        xpad = 0.05;
         var yrange = d3.extent(mdsData, function(d) {
             return d.y;
         });
         var ydiff = yrange[1] - yrange[0],
-        ypad = 0.10;
-        var yScale = d3.scale.linear()
-            .range([mdsheight, 0])
-            .domain([yrange[0] - ypad * ydiff, yrange[1] + ypad * ydiff]);
+        ypad = 0.05;
+
+	if (xdiff > ydiff) {
+            var xScale = d3.scale.linear()
+		.range([0, mdswidth])
+		.domain([xrange[0] - xpad * xdiff, xrange[1] + xpad * xdiff]);
+	    
+            var yScale = d3.scale.linear()
+		.range([mdsheight, 0])
+		//.domain([yrange[0] - ypad * ydiff, yrange[1] + ypad * ydiff]);
+		.domain([yrange[0] - 0.5*(xdiff - ydiff) - ypad*xdiff, yrange[1] + 0.5*(xdiff - ydiff) + ypad*xdiff]);
+	} else {
+            var xScale = d3.scale.linear()
+		.range([0, mdswidth])
+		// .domain([xrange[0] - xpad * xdiff, xrange[1] + xpad * xdiff]);
+		.domain([xrange[0] - 0.5*(ydiff - xdiff) - xpad*ydiff, xrange[1] + 0.5*(ydiff - xdiff) + xpad*ydiff]);
+	    
+            var yScale = d3.scale.linear()
+		.range([mdsheight, 0])
+		.domain([yrange[0] - ypad * ydiff, yrange[1] + ypad * ydiff]);
+	}
 
         // Create new svg element (that will contain everything):
         var svg = d3.select(to_select).append("svg")
@@ -397,8 +407,8 @@ LDAvis = function(to_select, json_file) {
             .text("Intertopic Distance Map (via multidimensional scaling)")
             .attr("x", mdswidth/2 + margin.left)
             .attr("y", 30)
-	       .style("font-size", "16px")
-	       .style("text-anchor", "middle");
+	    .style("font-size", "16px")
+	    .style("text-anchor", "middle");
 
         // establish layout and vars for bar chart
         var barDefault2 = lamData.filter(function(d) {
@@ -534,11 +544,11 @@ LDAvis = function(to_select, json_file) {
             .style("text-anchor", "middle")
             .style("font-size", "16px")
             .text("Top-" + R + " Most Salient Terms");
-	       
+	
         title.append("tspan")
-	       .attr("baseline-shift", "super")	    
-	       .attr("font-size", "12px")
-	       .text("(1)");
+	    .attr("baseline-shift", "super")	    
+	    .attr("font-size", "12px")
+	    .text("(1)");
 	
         // barchart axis adapted from http://bl.ocks.org/mbostock/1166403
         var xAxis = d3.svg.axis().scale(x)
@@ -550,21 +560,21 @@ LDAvis = function(to_select, json_file) {
         chart.attr("class", "xaxis")
             .call(xAxis);
 
-	   // dynamically create the topic and lambda input forms at the top of the page:
+	// dynamically create the topic and lambda input forms at the top of the page:
         function init_forms(topicID, lambdaID, visID) {
 
             // create container div for topic and lambda input:
-	       var inputDiv = document.createElement("div");
-	       inputDiv.setAttribute("id", "top");
+	    var inputDiv = document.createElement("div");
+	    inputDiv.setAttribute("id", "top");
 
             // insert the input container just before the vis:
             var visDiv = document.getElementById(visID);
             document.body.insertBefore(inputDiv, visDiv);
 
-	       // topic input container:
+	    // topic input container:
             var topicDiv = document.createElement("div");
-	       topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
-	       inputDiv.appendChild(topicDiv);
+	    topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
+	    inputDiv.appendChild(topicDiv);
 
             var topicLabel = document.createElement("label");
             topicLabel.setAttribute("for", topicID);
@@ -593,20 +603,20 @@ LDAvis = function(to_select, json_file) {
 	    next.setAttribute("style", "margin-left: 5px");
 	    next.innerHTML = "Next Topic";
             topicDiv.appendChild(next);
-        /*
-	    var clear = document.createElement("button");
-	    clear.setAttribute("id", topicClear);
-	    clear.setAttribute("style", "margin-left: 5px");
-	    clear.innerHTML = "Clear Topic";
-            topicDiv.appendChild(clear);
-        */
+            /*
+	      var clear = document.createElement("button");
+	      clear.setAttribute("id", topicClear);
+	      clear.setAttribute("style", "margin-left: 5px");
+	      clear.innerHTML = "Clear Topic";
+              topicDiv.appendChild(clear);
+            */
 
-           // lambda inputs
+            // lambda inputs
     	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
     	    var lambdaDivWidth = barwidth;
     	    var lambdaDiv = document.createElement("div");
     	    lambdaDiv.setAttribute("id", "lambdaInput");
-    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: " + lambdaDivLeft + "px; height: 40px; width: " + lambdaDivWidth + "px");
+    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: " + lambdaDivLeft + "px; height: 50px; width: " + lambdaDivWidth + "px");
     	    inputDiv.appendChild(lambdaDiv);
 
     	    var lambdaZero = document.createElement("div");
@@ -614,22 +624,22 @@ LDAvis = function(to_select, json_file) {
 	    lambdaZero.setAttribute("id", "lambdaZero");
     	    lambdaDiv.appendChild(lambdaZero);
 	    var xx = d3.select("#lambdaZero")
-		  .append("text")
-		  .attr("x", 0)
-		  .attr("y", 0)
-		  .style("font-size", "14px")
-		  .text("Slide to adjust relevance metric:");
+		.append("text")
+		.attr("x", 0)
+		.attr("y", 0)
+		.style("font-size", "14px")
+		.text("Slide to adjust relevance metric:");
 	    var yy = d3.select("#lambdaZero")
-		  .append("text")
-		  .attr("x", 125)
-		  .attr("y", -5)
-		  .style("font-size", "10px")
-		  .style("position", "absolute")
-		  .text("(2)");
+		.append("text")
+		.attr("x", 125)
+		.attr("y", -5)
+		.style("font-size", "10px")
+		.style("position", "absolute")
+		.text("(2)");
 	    
             var lambdaLabel = document.createElement("label");
             lambdaLabel.setAttribute("for", lambdaID);
-	    lambdaLabel.setAttribute("style", "height: 20px; width: 200px; position: absolute; top: 25px; left: 90px; font-family: sans-serif; font-size: 14px");
+	    lambdaLabel.setAttribute("style", "height: 20px; width: 60px; position: absolute; top: 25px; left: 90px; font-family: sans-serif; font-size: 14px");
             lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
             lambdaDiv.appendChild(lambdaLabel);
 
@@ -639,7 +649,7 @@ LDAvis = function(to_select, json_file) {
     	    lambdaDiv.appendChild(sliderDiv);
 
             var lambdaInput = document.createElement("input");
-            lambdaInput.setAttribute("style", "width: 250px; margin: 0px");
+            lambdaInput.setAttribute("style", "width: 250px; margin-top: -20px; margin-left: 0px; margin-right: 0px");
             lambdaInput.type = "range";
             lambdaInput.min = 0;
             lambdaInput.max = 1;
@@ -654,13 +664,13 @@ LDAvis = function(to_select, json_file) {
 		.attr("width", 250)
 		.attr("height", 25);
 
-        var sliderScale = d3.scale.linear()
+            var sliderScale = d3.scale.linear()
 		.domain([0, 1])
 		.range([7.5, 242.5])  // trimmed by 7.5px on each side to match the input type=range slider:
 		.nice();
 
             // adapted from http://bl.ocks.org/mbostock/1166403
-        var sliderAxis = d3.svg.axis()
+            var sliderAxis = d3.svg.axis()
 		.scale(sliderScale)
 		.orient("bottom")
 		.tickSize(10)
@@ -670,6 +680,7 @@ LDAvis = function(to_select, json_file) {
 	    // group to contain the elements of the slider axis:
 	    var sliderAxisGroup = scaleContainer.append("g")
 		.attr("class", "slideraxis")
+		.attr("margin-top", "-10px")
 		.call(sliderAxis);
 	    
 	    // Another strategy for tick marks on the slider; simpler, but not labels
@@ -985,7 +996,7 @@ LDAvis = function(to_select, json_file) {
 		.attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
 		.style("text-anchor", "middle")
 		.style("font-size", "16px")
-		//.text(Freq + "% of tokens come from topic " + topics);
+	    //.text(Freq + "% of tokens come from topic " + topics);
 		.text("Top-" + R + " Most Relevant Terms for Topic " + topics);
 	    
             // grab the bar-chart data for this topic only:
@@ -1088,8 +1099,8 @@ LDAvis = function(to_select, json_file) {
             circle.style.fill = color1;
 
             var title = d3.selectAll(".bubble-tool")
-		      .text("Top-" + R + " Most Salient Terms");
-	        title.append("tspan")
+		.text("Top-" + R + " Most Salient Terms");
+	    title.append("tspan")
 	     	.attr("baseline-shift", "super")	    
 	     	.attr("font-size", 12)
 	     	.text(1);

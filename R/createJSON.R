@@ -20,7 +20,8 @@
 #' of the interactive viz. Default is 30. Recommended to be roughly
 #' between 10 and 50.
 #' @param lambda.step a value between 0 and 1. 
-#' Determines the grid of lambda values to iterate over when computing relevance.
+#' Determines the interstep distance in the grid of lambda 
+#' values over which to iterate when computing relevance.
 #' Default is 0.01. Recommended to be between 0.01 and 0.1. 
 #' @param mds.method a function that takes \code{phi} as an input and outputs
 #' a K by 2 data.frame (or matrix). The output approximates the distance
@@ -152,7 +153,7 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
     names(mds.res) <- c("x", "y")
   } else {
     warning("Result of mds.method should be a matrix or data.frame.")
-  }
+  }  
   mds.df <- data.frame(mds.res, topics = seq_len(K), Freq = topic.proportion*100, 
                        cluster = 1, stringsAsFactors = FALSE)
   # note: cluster (should?) be deprecated soon.
