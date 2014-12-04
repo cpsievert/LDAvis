@@ -171,7 +171,7 @@ LDAvis = function(to_select, json_file) {
         d3.select("#" + topicDown)
             .on("click", function() {
                 var value_old = document.getElementById(topicID).value;
-                var value_new = Math.max(1, +value_old - 1).toFixed(0);
+                var value_new = Math.max(0, +value_old - 1).toFixed(0);
                 // increment the value in the input box
                 document.getElementById(topicID).value = value_new;
                 topic_off(document.getElementById(topicID + value_old));
@@ -236,17 +236,25 @@ LDAvis = function(to_select, json_file) {
             .attr("width", mdswidth + barwidth + margin.left + termwidth + margin.right)
             .attr("height", mdsheight + 2 * margin.top + margin.bottom + 2 * rMax);
 
-        // Clicking anywhere on the div container should clear the selection
-        d3.select(to_select).on("click", function() {
-            state_reset();
-            state_save(true);
-        })
-
         // Create a group for the mds plot
         var mdsplot = svg.append("g")
             .attr("id", "leftpanel")
             .attr("class", "points")
             .attr("transform", "translate(" + margin.left + "," + 2 * margin.top + ")");
+
+        // Clicking on the mdsplot should clear the selection
+        mdsplot
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("height", mdsheight)
+            .attr("width", mdswidth)
+            .style("fill", color1)
+            .attr("opacity", 0)
+            .on("click", function() {
+                state_reset();
+                state_save(true);
+            });
 
         mdsplot.append("line") // draw x-axis
             .attr("x1", 0)
@@ -603,13 +611,12 @@ LDAvis = function(to_select, json_file) {
 	    next.setAttribute("style", "margin-left: 5px");
 	    next.innerHTML = "Next Topic";
             topicDiv.appendChild(next);
-            /*
+            
 	      var clear = document.createElement("button");
 	      clear.setAttribute("id", topicClear);
 	      clear.setAttribute("style", "margin-left: 5px");
 	      clear.innerHTML = "Clear Topic";
               topicDiv.appendChild(clear);
-            */
 
             // lambda inputs
     	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
