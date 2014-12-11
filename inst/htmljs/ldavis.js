@@ -1004,7 +1004,7 @@ LDAvis = function(to_select, json_file) {
 		.style("text-anchor", "middle")
 		.style("font-size", "16px")
 	    //.text(Freq + "% of tokens come from topic " + topics);
-		.text("Top-" + R + " Most Relevant Terms for Topic " + topics);
+		.text("Top-" + R + " Most Relevant Terms for Topic " + topics + " (" + Freq + "% of tokens)");
 	    
             // grab the bar-chart data for this topic only:
             var dat2 = lamData.filter(function(d) {
