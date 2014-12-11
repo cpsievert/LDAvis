@@ -24,7 +24,8 @@
 #' @source \url{http://qwone.com/~jason/20Newsgroups/}
 "TwentyNewsgroups"
 
-#' Daily weblog with political analysis on US current events from a liberal perspective.
+#' A set of 2000 movie reviews parsed by Pang and Lee (ACL, 2004), originally
+#' gathered from the IMDB archive of the rec.arts.movies.reviews newsgroup
 #'
 #' @format A list elements extracted from a topic model fit to this data
 #' \describe{
@@ -34,8 +35,8 @@
 #'   \item{vocab}{vocab, a character vector containing the terms}
 #'   \item{term.frequency}{term.frequency, a numeric vector of observed term frequencies}
 #' }
-#' @source \url{https://archive.ics.uci.edu/ml/datasets/Bag+of+Words}
-"DailyKos"
+#' @source \url{http://www.cs.cornell.edu/people/pabo/movie-review-data/}
+"MovieReviews"
 
 #' Jeopardy Questions (including category name and answer)
 #'
