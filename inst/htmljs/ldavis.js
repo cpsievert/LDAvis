@@ -488,7 +488,7 @@ LDAvis = function(to_select, json_file) {
             .attr("x", 0)
             .attr("y", mdsheight + 10 + (8/2)*barguide.height + 5)
             .style("dominant-baseline", "middle")
-            .text("2. relevance(term w | topic t) = lambda * p(w | t) + (1 - lambda) * p(w | t)/p(w); see Sievert & Shirley (2013)");
+            .text("2. relevance(term w | topic t) = lambda * p(w | t) + (1 - lambda) * p(w | t)/p(w); see Sievert & Shirley (2014)");
 
         // Bind 'default' data to 'default' bar chart
         var basebars = chart.selectAll(".bar-totals")
