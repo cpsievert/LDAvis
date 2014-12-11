@@ -1,108 +1,123 @@
 Movie Review Data
 ========================================================
 
-In this document, we fit an <a href='http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation' target='_blank'>LDA topic model</a> to the <a href='http://www.cs.cornell.edu/people/pabo/movie-review-data/' target='_blank'>movie review polarity dataset</a> shared by Pang, Lee, and Vaithyanathan (EMNLP, 2002, where we use 'polarity dataset version 2.0'). To fit the model, we used the R package <a href='http://cran.r-project.org/web/packages/mallet/' target='_blank'>mallet</a> and we visualize the output using <a href='https://github.com/cpsievert/LDAvis' target='_blank'>LDAvis</a>.
+In this document, we fit an <a href='http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation' target='_blank'>LDA topic model</a> to the <a href='http://www.cs.cornell.edu/people/pabo/movie-review-data/' target='_blank'>Cornell Movie Review Data</a> introduced by Pang, Lee, and Vaidyanathan in their 2002 EMNLP paper, where we use 'polarity dataset version 2.0' (introduced in a subsequent Pang and Lee 2004 ACL paper). To fit the model, we used the R package <a href='http://cran.r-project.org/web/packages/lda/' target='_blank'>lda</a> and we visualize the output using <a href='https://github.com/cpsievert/LDAvis' target='_blank'>LDAvis</a>.
 
 ```{r setup, echo = FALSE, message = FALSE}
 library(knitr)
 opts_chunk$set(message = FALSE, warning = FALSE, cache = FALSE)
 ```
 
-### Movie review data
+### The data
+We downloaded the data from http://www.cs.cornell.edu/people/pabo/movie-review-data/, and saved the 'polarity dataset v2.0' in the directory '~/review_polarity'. Then we looped through the files and stored each of the 2,000 reviews as an element of a character vector:
+```{r read_new, eval=FALSE}
+# set the working directory:
+setwd("~/review_polarity/")
 
-We created an R package, <a href='https://github.com/cpsievert/moviereviews' target='_blank'>moviereviews</a>, to provide the movie reviews data as an R object so that it's easy to load and start an analysis. The object `reviews` is a list of character vectors where each character vector corresponds to a review. The elements of a given character vector corresponds to sentences in that particular review. Therefore, we can collapse these character vectors so that each review is contained in a single string.
+# set up a character vector to contain each review as a document:
+reviews <- rep("", 2000)
 
-```{r read}
-# moviereviews can be installed from GitHub via `devtools::install_github("cpsievert/moviereviews")`
-library(moviereviews)
-data(reviews, package = "moviereviews")
-str(reviews[1:2])
-reviews <- sapply(reviews, function(x) paste(x, collapse = ""))
+# loop through the 1000 negative reviews and store them as documents:
+neg <- system("ls txt_sentoken/neg/*", intern=TRUE)
+for (i in 1:1000) reviews[i] <- paste(readLines(neg[i]), collapse = "")
+
+# loop through the 1000 positive reviews and store them as documents:
+pos <- system("ls txt_sentoken/pos/*", intern=TRUE)
+for (i in 1:1000) reviews[i + 1000] <- paste(readLines(pos[i]), collapse = "")
+
+# give the documents names:
+names(reviews) <- c(neg, pos)
 ```
 
 ### Pre-processing
+Before fitting a topic model, we need to tokenize the text. This dataset is already fairly clean, so we only remove punctuation and some common <a href='http://en.wikipedia.org/wiki/Stop_words' target='_blank'>stop words</a>. In particular, we use the english stop words from the <a href='http://en.wikipedia.org/wiki/SMART_Information_Retrieval_System' target= '_blank'>SMART information retrieval system</a>, available in the R package 'tm'.
 
-Anytime we fit a topic model, it's a good idea to do some pre-processing (cleaning of text). This dataset is already fairly clean, so we only remove punctuation and some common <a href='http://en.wikipedia.org/wiki/Stop_words' target='_blank'>stop words</a>. In particular, we use the english stop words from the <a href='http://en.wikipedia.org/wiki/SMART_Information_Retrieval_System' target= '_blank'>SMART information retrieval system</a>.
+```{r collect_stops, eval = FALSE}
+# read in some stopwords:
+library(tm)
+stop <- stopwords("SMART")
 
-```{r collect_stops}
-download.file("http://jmlr.org/papers/volume5/lewis04a/a11-smart-stop-list/english.stop", "stopwords.txt")
+# remove apostrophes, replace puncutation and control characters with space, then lowercase:
+reviews <- gsub("'", "", reviews)
+reviews <- gsub("[[:punct:]]", " ", reviews)
+reviews <- gsub("[[:cntrl:]]", " ", reviews)
+reviews <- tolower(reviews)
+
+# and tokenize on space and output as a list:
+doc.list <- strsplit(reviews, "[[:space:]]+")
+
+# compute the table of terms:
+term.table <- table(unlist(doc.list))
+term.table <- sort(term.table, decreasing = TRUE)
+
+# remove terms that are stop words or occure fewer than 5 times:
+del <- names(term.table) %in% stop | term.table < 5
+term.table <- term.table[!del]
+vocab <- names(term.table)
+
+# now put the documents into the format required by the lda package:
+get.terms <- function(x) {
+  index <- match(x, vocab)
+  index <- index[!is.na(index)]
+  rbind(as.integer(index - 1), as.integer(rep(1, length(index))))
+}
+documents <- lapply(doc.list, get.terms)
 ```
 
-### Using mallet for model fitting
+### Using the R package 'lda' for model fitting
+The object 'documents' is a legnth 2000 list where each element represents one document, according to the specifications of the lda package. After creating this list, we compute a few statistics about the corpus:
 
-The R package mallet provides an interface to the java-based <a href='http://mallet.cs.umass.edu/' target='_blank'>MAchine Learning for LanguagE Toolkit</a>. To get started, we need to import our reviews along with our stop words and document names into mallet.
-
-```{r import}
-library(mallet)
-instance <- mallet.import(names(reviews), reviews, "stopwords.txt")
+```{r corpus, eval = FALSE}
+# Compute some statistics related to the data set:
+D <- length(documents)  # number of documents (2,000)
+W <- length(vocab)  # number of terms in the vocab (14,568)
+doc.length <- sapply(documents, function(x) sum(x[2, ]))  # number of tokens per document [269,  97, 208, 210, 297, ...]
+N <- sum(doc.length)  # total number of tokens in the data (546,827)
+term.frequency <- as.integer(term.table)  # frequencies of terms in the corpus [8939, 5544, 2411, 2410, 2143, ...]
 ```
 
-Next, we initiate a topic model with 25 topics (a reasonable number of topics for a data set of this size, in our experience), load documents into that model instance amd extract the frequency of words that appears in the corpus.
+Next, we set up a topic model with 20 topics, relatively diffuse priors for the topic-term distributions (eta = 0.02) and document-topic distributions (alpha  = 0.02), and we set the collapsed Gibbs sampler to run for 5,000 iterations (slightly conservative to ensure convergence). A visual inspection of fit$log.likelihood shows that the MCMC algorithm has converged after 5,000 iterations.
 
-```{r freqs}
-model <- MalletLDA(num.topics = 25)
-model$loadDocuments(instance)
-freqs <- mallet.word.freqs(model)
+```{r MCMC, eval = FALSE}
+# MCMC and model tuning parameters:
+K <- 20
+G <- 5000
+alpha <- 0.02
+eta <- 0.02
+
+# Fit the model:
+library(lda)
+t1 <- Sys.time()
+fit <- lda.collapsed.gibbs.sampler(documents = documents, K = K, vocab = vocab, 
+                                   num.iterations = G, alpha = alpha, 
+                                   eta = eta, initial = NULL, burnin = 0,
+                                   compute.log.likelihood = TRUE)
+t2 <- Sys.time()
+t2 - t1  # about 24 minutes on laptop
 ```
 
-It's generally a good idea to remove really infrequent words from the model's vocabulary before actually training the model. In this case, we add terms that appear less than 10 times to our list of stopwords and re-import the model instance.
+### Visualizing the fitted model with LDAvis
+To visualize the result using [LDAvis](https://github.com/cpsievert/LDAvis/), we'll need estimates of the document-topic distributions, which we denote by the $D \times K$ matrix $\theta$, and the set of topic-term distributions, which we denote by the $K \times W$ matrix $\phi$. We estimate the "smoothed" versions of these distributions ('smoothed' means that we've incorporated the effect of the prior into the estimate) by cross-tabulating the latent topic assignments from the last iteration of the collapsed Gibbs sampler with the documents and the terms, respectively. A better estimator might average over multiple iterations of the Gibbs sampler (after convergence, assuming that the MCMC is sampling within a local mode and there is no label switching occurring), but we won't worry about that for now.
 
-```{r stops}
-stopwords <- as.character(subset(freqs, term.freq <= 9)$words)
-# 's' and 't' show up frequently and aren't very informative, so they are also included as stopwords
-writeLines(c(readLines("stopwords.txt"), stopwords, "s", "t"),  "stopwords2.txt")
-# Re-'initiate' topic model without the infrequent words
-instance2 <- mallet.import(names(reviews), reviews, "stopwords2.txt")
-model2 <- MalletLDA(num.topics = 25)
-model2$loadDocuments(instance2)
+```{r get_dists, eval = FALSE}
+theta <- t(apply(fit$document_sums + alpha, 2, function(x) x/sum(x)))
+phi <- t(apply(t(fit$topics) + eta, 2, function(x) x/sum(x)))
 ```
 
-Now we're in position to use mallet's train method to fit the topic model.
+We've already computed the number of tokens per document and the frequency of the terms across the entire corpus. We're ready to call the createJSON() function in LDAvis. This function will return a character string representing a JSON object used to populate the visualization. The createJSON() function comptues topic frequencies, intertopic distances, and projects topics onto a two-dimensional plane to represent their similarity to each other. It also loops through a grid of values of a tuning parameter, $0 \leq \lambda \leq 1$, that controls how the terms are ranked for each topic, where terms are listed in decreasing of relevance, where the relevance of term $w$ to topic $t$ is defined as $\lambda p(w \mid t) + (1 - \lambda) p(w \mid t)/p(w)$. Values of $\lambda$ near 1 give high relevance rankings to frequent terms within a given topic, whereas values of $\lambda$ near zero give higher relevance rankings to exclusive terms within a topic. The set of all terms which are ranked among the top-R most relevant terms for each topic are pre-computed by the createJSON() function and sent to the browser to be interactively visualized using D3 as part of the JSON object. Note that to see this example, you could load the 'MovieReviews' data from the LDAvis package, rather than going through the above steps.
 
-```{r fit}
-# takes ~4.5 minutes on a macbook pro with 2GB RAM and a 2.26GHz processor 
-model2$train(2000)
-```
-
-### Visualizing the model with LDAvis
-
-To visualize the result using [LDAvis](https://github.com/cpsievert/LDAvis/), we'll need to extract a number of components from `model2`. Most important of all the "smoothed" estimates of the topic-term ($\phi$) and document-topic ($\theta$) distributions (smoothed means that we've incorporated the effect of the prior into the estimate). Also, note that the distributions should be normalized (since that is what LDAvis will expect).
-
-```{r get_dists}
-phi <- mallet.topic.words(model2, normalized = TRUE, smoothed = TRUE)
-theta <- mallet.doc.topics(model2, normalized = TRUE, smoothed = TRUE)
-```
-
-There are a few more things we need from the training data. The `mallet.word.freqs` function will grab the vocabulary  (all the unique terms) and their observed frequency over the entire corpus.
-
-```{r get_train}
-freqs2 <- mallet.word.freqs(model2)
-vocab <- freqs2$words
-term.frequency <- freqs2$term.freq
-```
-
-We'll also need the number of tokens in each document:
-
-```{r doc.length}
-# TODO: is there a way to extract this info from the mallet instance?
-tokens <- strsplit(reviews, "\\s")
-stops <- readLines("stopwords2.txt")
-tokens <- lapply(tokens, function(x) x[!x %in% stops])
-tokens <- lapply(tokens, function(x) x[!grepl("[[:punct:]]", x)])
-doc.length <- sapply(tokens, length)
-```
-
-At this point, we have all the inputs necessary to use `LDAvis::createJSON`. This function will return a character string representing a JSON object used to inform the visualization.
-
-```{r vis, results='hide'}
+```{r vis, results='hide', eval =FALSE}
 library(LDAvis)
-json <- createJSON(phi = phi, theta = theta, doc.length = doc.length, 
-                   vocab = vocab, term.frequency = term.frequency)
+json <- createJSON(phi = phi, 
+                  theta = theta, 
+                  doc.length = doc.length, 
+                  vocab = vocab, 
+                  term.frequency = term.frequency)
 ```
 
-Now, the `serVis` function can take `json` and serve the result in a variety of ways. Here I will write `json` to a file within the 'vis' directory (along with other HTML and JavaScript required to render the page). You can see the result [here](http://cpsievert.github.io/LDAvis/reviews/vis)
+Last, the `serVis()` function can take `json` and serve the result in a variety of ways. Here we'll write `json` to a file within the 'vis' directory (along with other HTML and JavaScript required to render the page). You can see the result [here](http://cpsievert.github.io/LDAvis/reviews/vis)
 
-```{r serVis}
+```{r serVis, eval = FALSE}
 serVis(json, out.dir = 'vis', open.browser = FALSE)
 ```
 
