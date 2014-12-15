@@ -323,7 +323,7 @@ LDAvis = function(to_select, json_file) {
             .attr("y", mdsheight - 10)
             .attr('class', "circleGuideTitle")
             .style("text-anchor", "left")
-            .style("font-weight", "bold")
+            .style("fontWeight", "bold")
             .text("Marginal topic distribtion");
         d3.select("#leftpanel").append("text")
             .attr("x", cx2 + 10)
@@ -362,7 +362,7 @@ LDAvis = function(to_select, json_file) {
             .attr("opacity", 1)
             .style("text-anchor", "middle")
             .style("font-size", "11px")
-            .style("font-weight", 100)
+            .style("fontWeight", 100)
             .text(function(d) {
                 return d.topics;
             });
@@ -1184,7 +1184,7 @@ LDAvis = function(to_select, json_file) {
         // updates vis when a term is selected via click or hover
         function term_on(term) {
             if (term == null) return null;
-            term.style["font-weight"] = "bold";
+            term.style["fontWeight"] = "bold";
             var d = term.__data__
             var Term = d.Term;
             var dat2 = mdsData3.filter(function(d2) {
@@ -1242,7 +1242,7 @@ LDAvis = function(to_select, json_file) {
 
         function term_off(term) {
             if (term == null) return null;
-            term.style["font-weight"] = "normal";
+            term.style["fontWeight"] = "normal";
 
             d3.selectAll(".dot")
                 .data(mdsData)
