@@ -58,6 +58,8 @@ createJSON(phi = matrix(), theta = matrix(), doc.length = integer(),
 \value{
 A string containing JSON content which can be written to a
 file or feed into \link{serVis} for easy viewing/sharing.
+One element of this string is the new ordering of the
+topics.
 }
 \description{
 This function creates the JSON object that feeds the
@@ -83,6 +85,9 @@ data(AP, package="LDAvis")
 # create the json object, start a local file server, open in default browser
 json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
 serVis(json) # press ESC or Ctrl-C to kill
+
+Look at the new topic ordering (in decreasing order of frequency):
+fromJSON(json)$topic.order
 
 # You may want to just write the JSON and other dependency files
 # to a folder named AP under the working directory
