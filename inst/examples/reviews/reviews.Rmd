@@ -19,7 +19,7 @@ data(reviews, package = "moviereviews")
 
 ### Pre-processing
 
-Before fitting a topic model, we need to tokenize the text. This dataset is already fairly clean, so we only remove punctuation and some common [stop words](http://en.wikipedia.org/wiki/Stop_words). In particular, we use the english stop words from the [SMART information retrieval system](http://en.wikipedia.org/wiki/SMART_Information_Retrieval_System), available in the R package 'tm'.
+Before fitting a topic model, we need to tokenize the text. This dataset is already fairly clean, so we only remove punctuation and some common [stop words](http://en.wikipedia.org/wiki/Stop_words). In particular, we use the english stop words from the [SMART information retrieval system](http://en.wikipedia.org/wiki/SMART_Information_Retrieval_System), available in the R package **tm**.
 
 ```{r collect_stops}
 # read in some stopwords:
@@ -106,7 +106,7 @@ MovieReviews <- list(phi = phi,
                      term.frequency = term.frequency)
 ```
 
-Now we're ready to call the `createJSON()` function in LDAvis. This function will return a character string representing a JSON object used to populate the visualization. The `createJSON()` function comptues topic frequencies, intertopic distances, and projects topics onto a two-dimensional plane to represent their similarity to each other. It also loops through a grid of values of a tuning parameter, $0 \leq \lambda \leq 1$, that controls how the terms are ranked for each topic, where terms are listed in decreasing of *relevance*, where the relevance of term $w$ to topic $t$ is defined as $\lambda p(w \mid t) + (1 - \lambda) p(w \mid t)/p(w)$. Values of $\lambda$ near 1 give high relevance rankings to *frequent* terms within a given topic, whereas values of $\lambda$ near zero give high relevance rankings to *exclusive* terms within a topic. The set of all terms which are ranked among the top-`R` most relevant terms for each topic are pre-computed by the `createJSON()` function and sent to the browser to be interactively visualized using D3 as part of the JSON object.
+Now we're ready to call the `createJSON()` function in **LDAvis**. This function will return a character string representing a JSON object used to populate the visualization. The `createJSON()` function computes topic frequencies, inter-topic distances, and projects topics onto a two-dimensional plane to represent their similarity to each other. It also loops through a grid of values of a tuning parameter, $0 \leq \lambda \leq 1$, that controls how the terms are ranked for each topic, where terms are listed in decreasing of *relevance*, where the relevance of term $w$ to topic $t$ is defined as $\lambda \times p(w \mid t) + (1 - \lambda) \times p(w \mid t)/p(w)$. Values of $\lambda$ near 1 give high relevance rankings to *frequent* terms within a given topic, whereas values of $\lambda$ near zero give high relevance rankings to *exclusive* terms within a topic. The set of all terms which are ranked among the top-`R` most relevant terms for each topic are pre-computed by the `createJSON()` function and sent to the browser to be interactively visualized using D3 as part of the JSON object.
 
 ```{r echo=FALSE, eval=TRUE}
 data("MovieReviews")
