@@ -52,6 +52,11 @@ text {
     display: none;
 }
 
+.xaxis line {
+   opacity: 0.1;
+   stroke-width: 1;
+}
+
 .xaxis path {
     display: none;
 }
