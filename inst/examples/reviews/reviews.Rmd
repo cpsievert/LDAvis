@@ -131,13 +131,16 @@ serVis(json, out.dir = 'vis', open.browser = FALSE)
 
 If you discover something interesting in your data using **LDAvis**, you can share the result via a URL since the state of the visualization is stored in the URL at all times. For example, in the movie review data, you can quickly see that Topic 9 is broadly about comedies by linking directly to the state of LDAvis where the selected Topic is "9" and the value of $\lambda$ is 0.6 with the following URL:
 
-http://cpsievert.github.io/LDAvis/reviews/vis/#topic=9&lambda=0.6&term=
+[http://cpsievert.github.io/LDAvis/reviews/vis/#topic=9&lambda=0.6&term=](http://cpsievert.github.io/LDAvis/reviews/vis/#topic=9&lambda=0.6&term=)
 
-You can also link to the term that is hovered. For example, when you look at the 30 most relevant terms for Topic 3 using a relevance setting of $\lambda = 0.6$, the term "cop" is the 10th bar from the top and the widths of the red and blue bars indicate that there is at least one other topic in which the term "cop" appears frequently. By hovering over "cop", we see from the following state of **LDAvis** that term "cop" also appears frequently in Topic 11:
+You can also link to the term that is hovered. For example, when you look at the 30 most relevant terms for Topic 3 using a relevance setting of $\lambda = 0.6$, the term "cop" is the 10th bar from the top. The widths of the red and blue bars indicate that there is at least one other topic in which the term "cop" appears frequently. By hovering over "cop", we see from the following state of **LDAvis** that term "cop" also appears frequently in Topic 11:
 
 http://cpsievert.github.io/LDAvis/reviews/vis/#topic=3&lambda=0.6&term=cop
 
-We can infer that Topic 3 is about cops in the context of thrillers, detective movies, and crime movies, whereas in Topic 11, cops are discussed in terms of action movies, and some famous actors who have played cops also appear ("van", "damme", "stallone", "seagal", etc.).
+Comparing these two topics, we can see that Topic 3 is about cops in the context of thrillers, detective movies, and crime movies, whereas in Topic 11, cops are discussed in terms of action movies, and some famous actors who have played cops also appear ("van", "damme", "stallone", "seagal", etc.). These two topics both discuss cops, but in slightly different contexts (i.e. slightly different styles of movies).
+
+To encode a state of the visualization in the URL, you must include a string after the "/" of the form "#topic=k&labmda=l&term=s", where "k", "l", and "s" are strings representing the topic to be selected, the value of $\lambda$ to be used in the relevance calculation, and the term to be hovered, respectively. If no term hovering is desired, omit "s" from the URL. The topic, "k", will be forced to an integer in $\{0, 1, .., K\}$, and the value of $\lambda$ will be forced to the interval $[0, 1]$, with non-numeric values returning the default state of the visualization (topic = 0, $\lambda$ = 1, term = "").
+
 
 
 
