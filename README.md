@@ -1,5 +1,7 @@
 ## LDAvis
 
+[![Build Status](https://travis-ci.org/cpsievert/LDAvis.png)](https://travis-ci.org/cpsievert/LDAvis)
+
 R package for interactive topic model visualization.
 
 **LDAvis** is designed to help users interpret the topics in a topic model that has been fit to a corpus of text data. The package extracts information from a fitted LDA topic model to inform an interactive web-based visualization.
@@ -29,7 +31,7 @@ vignette("details", package = "LDAvis")
 
 Note that **LDAvis** itself does not provide facilities for *fitting* the model (only *visualizing* a fitted model). If you want to perform LDA in R, there are several packages, including [mallet](http://cran.r-project.org/web/packages/mallet/index.html), [lda](http://cran.r-project.org/web/packages/lda/index.html), and [topicmodels](http://cran.r-project.org/web/packages/topicmodels/index.html).
 
-If you want to perform LDA with the R package **lda** and *visualize* the result with **LDAvis**, our example of a [20-topic model fit to 2,000 movie reviews](http://cpsievert.github.io/LDAvis/reviews/reviews.html) may be helpful.
+If you want to perform LDA with the R package **lda** and visualize the result with **LDAvis**, our example of a [20-topic model fit to 2,000 movie reviews](http://cpsievert.github.io/LDAvis/reviews/reviews.html) may be helpful.
 
 **LDAvis** does not limit you to topic modeling facilities in R. If you use other tools ([MALLET](http://mallet.cs.umass.edu/) and [gensim](https://radimrehurek.com/gensim/) are popular), we recommend that you visit our [Twenty Newsgroups](http://cpsievert.github.io/LDAvis/newsgroup/newsgroup.html) example to help quickly understand what components **LDAvis** will need.
 
@@ -39,7 +41,7 @@ To share a visualization that you created using **LDAvis**, you can encode the s
 
 "#topic=k&lambda=l&term=s"
 
-to the end of the URL, where "k", "l", and "s" are strings indicating the desired values of the selected topic, the value of $\lambda$, and the selected term, respectively. For more details, see the last section of our [Movie Reviews example](http://cpsievert.github.io/LDAvis/reviews/reviews.html), or for a quick example, see the link here:
+to the end of the URL, where "k", "l", and "s" are strings indicating the desired values of the selected topic, the value of lambda, and the selected term, respectively. For more details, see the last section of our [Movie Reviews example](http://cpsievert.github.io/LDAvis/reviews/reviews.html), or for a quick example, see the link here:
 
 [http://cpsievert.github.io/LDAvis/reviews/vis/#topic=3&lambda=0.6&term=cop](http://cpsievert.github.io/LDAvis/reviews/vis/#topic=3&lambda=0.6&term=cop)
 
