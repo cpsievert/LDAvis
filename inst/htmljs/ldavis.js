@@ -622,18 +622,19 @@ LDAvis = function(to_select, json_file) {
 	    next.innerHTML = "Next Topic";
             topicDiv.appendChild(next);
             
-	      var clear = document.createElement("button");
-	      clear.setAttribute("id", topicClear);
-	      clear.setAttribute("style", "margin-left: 5px");
-	      clear.innerHTML = "Clear Topic";
-              topicDiv.appendChild(clear);
+	    var clear = document.createElement("button");
+	    clear.setAttribute("id", topicClear);
+	    clear.setAttribute("style", "margin-left: 5px");
+	    clear.innerHTML = "Clear Topic";
+            topicDiv.appendChild(clear);
 
             // lambda inputs
     	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
     	    var lambdaDivWidth = barwidth;
     	    var lambdaDiv = document.createElement("div");
     	    lambdaDiv.setAttribute("id", "lambdaInput");
-    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: " + lambdaDivLeft + "px; height: 50px; width: " + lambdaDivWidth + "px");
+    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: " + 
+				   lambdaDivLeft + "px; height: 50px; width: " + lambdaDivWidth + "px");
     	    inputDiv.appendChild(lambdaDiv);
 
     	    var lambdaZero = document.createElement("div");
@@ -655,10 +656,8 @@ LDAvis = function(to_select, json_file) {
 		.text("(2)");
 	    
             var lambdaLabel = document.createElement("label");
-	    //lambdaLabel.setAttribute("id", "lambdaLabel");
             lambdaLabel.setAttribute("for", lambdaID);
 	    lambdaLabel.setAttribute("style", "height: 20px; width: 60px; position: absolute; top: 25px; left: 90px; font-family: sans-serif; font-size: 14px");
-            //debugger;
 	    lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>" + vis_state.lambda + "</span>";
             lambdaDiv.appendChild(lambdaLabel);
 
@@ -720,7 +719,8 @@ LDAvis = function(to_select, json_file) {
         function reorder_bars(increase) {
             // grab the bar-chart data for this topic only:
             var dat2 = lamData.filter(function(d) {
-                return d.Category == "Topic" + Math.min(K, Math.max(0, vis_state.topic)) // fails for negative topic numbers...
+                //return d.Category == "Topic" + Math.min(K, Math.max(0, vis_state.topic)) // fails for negative topic numbers...
+                return d.Category == "Topic" + vis_state.topic;
             });
             // define relevance:
             for (var i = 0; i < dat2.length; i++) {
@@ -1015,7 +1015,6 @@ LDAvis = function(to_select, json_file) {
 		.attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
 		.style("text-anchor", "middle")
 		.style("font-size", "16px")
-	    //.text(Freq + "% of tokens come from topic " + topics);
 		.text("Top-" + R + " Most Relevant Terms for Topic " + topics + " (" + Freq + "% of tokens)");
 	    
             // grab the bar-chart data for this topic only:
@@ -1294,23 +1293,39 @@ LDAvis = function(to_select, json_file) {
             vis_state.topic = params[0].split("=")[1];
             vis_state.lambda = params[1].split("=")[1];
             vis_state.term = params[2].split("=")[1];
-	    // To-Do: (12/16/14) clean up the above three values to lie within accepted ranges [0,1] for lambda, {0, 1, ..., K} for topics
-	    // Maybe allow for subsets of the three to be entered:
+
+	    // Idea: write a function to parse the URL string
+	    // only accept values in [0,1] for lambda, {0, 1, ..., K} for topics (any string is OK for term)
+	    // Allow for subsets of the three to be entered:
 	    // (1) topic only (lambda = 1 term = "")
-	    // (2) lambda only (topic = 0 term = "") visually the same but upon hovering effect of lambda is seen
-	    // (3) term only (topic = 0 lambda = 1)
+	    // (2) lambda only (topic = 0 term = "") visually the same but upon hovering a topic, the effect of lambda will be seen
+	    // (3) term only (topic = 0 lambda = 1) only fires when the term is among the R most salient
 	    // (4) topic + lambda (term = "")
 	    // (5) topic + term (lambda = 1)
-	    // (6) lambda + term (topic = 0)
-	    // (7) topic + lambda + term (all 3, makes sense)
-            // impose the value of lambda
-            document.getElementById(lambdaID).value = Math.min(1, Math.max(0, vis_state.lambda));
-	    document.getElementById(lambdaID + "-value").innerHTML = Math.min(1, Math.max(0, vis_state.lambda));
+	    // (6) lambda + term (topic = 0) visually lambda doesn't make a difference unless a topic is hovered
+	    // (7) topic + lambda + term
+
+	    // Short-term: assume format of "#topic=k&lambda=l&term=s" where k, l, and s are strings (b/c they're from a URL)
+
+	    // Force k (topic identifier) to be an integer between 0 and K:
+	    vis_state.topic = Math.round(Math.min(K, Math.max(0, vis_state.topic)));
+
+	    // Force l (lambda identifier) to be in [0, 1]:
+	    vis_state.lambda = Math.min(1, Math.max(0, vis_state.lambda));
+
+            // impose the value of lambda:
+            document.getElementById(lambdaID).value = vis_state.lambda;
+	    document.getElementById(lambdaID + "-value").innerHTML = vis_state.lambda;
+
             // select the topic and transition the order of the bars (if approporiate)
             if (!isNaN(vis_state.topic)) {
-		document.getElementById(topicID).value = Math.min(K, Math.max(0, vis_state.topic));
-                topic_on(document.getElementById(topicID + Math.min(K, Math.max(0, vis_state.topic))));
-                if (vis_state.lambda < 1) reorder_bars(false);
+		document.getElementById(topicID).value = vis_state.topic;
+		if (vis_state.topic > 0) {
+                    topic_on(document.getElementById(topicID + vis_state.topic));
+		}
+                if (vis_state.lambda < 1 && vis_state.topic > 0) {
+		    reorder_bars(false);
+		}
             }
 	    lambda.current = vis_state.lambda;
             var termElem = document.getElementById(termID + vis_state.term);
