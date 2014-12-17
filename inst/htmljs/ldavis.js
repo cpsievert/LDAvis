@@ -157,7 +157,11 @@ LDAvis = function(to_select, json_file) {
             });
 
         d3.select("#" + topicUp)
-            .on("click", function() {          
+            .on("click", function() {
+		// remove term selection if it exists (from a saved URL)
+		var termElem = document.getElementById(termID + vis_state.term);
+		if (termElem !== undefined) term_off(termElem);
+		vis_state.term = "";
                 var value_old = document.getElementById(topicID).value;
                 var value_new = Math.min(K, +value_old + 1).toFixed(0);
                 // increment the value in the input box
@@ -170,6 +174,10 @@ LDAvis = function(to_select, json_file) {
 
         d3.select("#" + topicDown)
             .on("click", function() {
+		// remove term selection if it exists (from a saved URL)
+		var termElem = document.getElementById(termID + vis_state.term);
+		if (termElem !== undefined) term_off(termElem);
+		vis_state.term = "";
                 var value_old = document.getElementById(topicID).value;
                 var value_new = Math.max(0, +value_old - 1).toFixed(0);
                 // increment the value in the input box
@@ -182,6 +190,10 @@ LDAvis = function(to_select, json_file) {
 
         d3.select("#" + topicID)
             .on("keyup", function() {
+		// remove term selection if it exists (from a saved URL)
+		var termElem = document.getElementById(termID + vis_state.term);
+		if (termElem !== undefined) term_off(termElem);
+		vis_state.term = "";
                 topic_off(document.getElementById(topicID + vis_state.topic))
                 var value_new = document.getElementById(topicID).value;
                 if (!isNaN(value_new) && value_new > 0) {
@@ -218,12 +230,10 @@ LDAvis = function(to_select, json_file) {
 	    
             var yScale = d3.scale.linear()
 		.range([mdsheight, 0])
-		//.domain([yrange[0] - ypad * ydiff, yrange[1] + ypad * ydiff]);
 		.domain([yrange[0] - 0.5*(xdiff - ydiff) - ypad*xdiff, yrange[1] + 0.5*(xdiff - ydiff) + ypad*xdiff]);
 	} else {
             var xScale = d3.scale.linear()
 		.range([0, mdswidth])
-		// .domain([xrange[0] - xpad * xdiff, xrange[1] + xpad * xdiff]);
 		.domain([xrange[0] - 0.5*(ydiff - xdiff) - xpad*ydiff, xrange[1] + 0.5*(ydiff - xdiff) + xpad*ydiff]);
 	    
             var yScale = d3.scale.linear()
@@ -645,9 +655,11 @@ LDAvis = function(to_select, json_file) {
 		.text("(2)");
 	    
             var lambdaLabel = document.createElement("label");
+	    //lambdaLabel.setAttribute("id", "lambdaLabel");
             lambdaLabel.setAttribute("for", lambdaID);
 	    lambdaLabel.setAttribute("style", "height: 20px; width: 60px; position: absolute; top: 25px; left: 90px; font-family: sans-serif; font-size: 14px");
-            lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>1</span>";
+            //debugger;
+	    lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>" + vis_state.lambda + "</span>";
             lambdaDiv.appendChild(lambdaLabel);
 
     	    var sliderDiv = document.createElement("div");
@@ -661,7 +673,7 @@ LDAvis = function(to_select, json_file) {
             lambdaInput.min = 0;
             lambdaInput.max = 1;
             lambdaInput.step = data['lambda.step'];
-            lambdaInput.value = 1;
+            lambdaInput.value = vis_state.lambda;
             lambdaInput.id = lambdaID;
 	    lambdaInput.setAttribute("list", "ticks"); // to enable automatic ticks (with no labels, see below)
             sliderDiv.appendChild(lambdaInput);
@@ -708,7 +720,7 @@ LDAvis = function(to_select, json_file) {
         function reorder_bars(increase) {
             // grab the bar-chart data for this topic only:
             var dat2 = lamData.filter(function(d) {
-                return d.Category == "Topic" + vis_state.topic
+                return d.Category == "Topic" + Math.min(K, Math.max(0, vis_state.topic)) // fails for negative topic numbers...
             });
             // define relevance:
             for (var i = 0; i < dat2.length; i++) {
@@ -1282,13 +1294,25 @@ LDAvis = function(to_select, json_file) {
             vis_state.topic = params[0].split("=")[1];
             vis_state.lambda = params[1].split("=")[1];
             vis_state.term = params[2].split("=")[1];
+	    // To-Do: (12/16/14) clean up the above three values to lie within accepted ranges [0,1] for lambda, {0, 1, ..., K} for topics
+	    // Maybe allow for subsets of the three to be entered:
+	    // (1) topic only (lambda = 1 term = "")
+	    // (2) lambda only (topic = 0 term = "") visually the same but upon hovering effect of lambda is seen
+	    // (3) term only (topic = 0 lambda = 1)
+	    // (4) topic + lambda (term = "")
+	    // (5) topic + term (lambda = 1)
+	    // (6) lambda + term (topic = 0)
+	    // (7) topic + lambda + term (all 3, makes sense)
             // impose the value of lambda
-            document.getElementById(lambdaID).value = vis_state.lambda;
+            document.getElementById(lambdaID).value = Math.min(1, Math.max(0, vis_state.lambda));
+	    document.getElementById(lambdaID + "-value").innerHTML = Math.min(1, Math.max(0, vis_state.lambda));
             // select the topic and transition the order of the bars (if approporiate)
             if (!isNaN(vis_state.topic)) {
-                topic_on(document.getElementById(topicID + vis_state.topic));
+		document.getElementById(topicID).value = Math.min(K, Math.max(0, vis_state.topic));
+                topic_on(document.getElementById(topicID + Math.min(K, Math.max(0, vis_state.topic))));
                 if (vis_state.lambda < 1) reorder_bars(false);
             }
+	    lambda.current = vis_state.lambda;
             var termElem = document.getElementById(termID + vis_state.term);
             if (termElem !== undefined) term_on(termElem);
         }
@@ -1318,8 +1342,12 @@ LDAvis = function(to_select, json_file) {
         }
 
     });
+    // var current_clicked = {
+    //     what: "nothing",
+    //     element: undefined
+    // },
 
-
+    //debugger;
 
 }
 
