@@ -22,32 +22,6 @@ runShiny(phi, term.frequency, vocab, topic.proportion)
   containing the proportion of each topic in the corpus.}
 }
 \description{
-This function calls \link{shiny::shinyApp} to serve the
-visualization. As a result, this will prompt a browser in a
-interactive session or can be used to embed the
-visualization inline in a R markdown document.
-}
-\examples{
-# Example using AP documents from
-# http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
-data("APdata", package = "LDAvis")
-
-# Check the coherence of the input data using the function 'check.inputs()'
-z <- with(APdata, check.inputs(K = 40, W = 10473, phi, term.frequency,
-                               vocab, topic.proportion))
-# Now run the visualization
-with(z, runShiny(phi, term.frequency, vocab, topic.proportion))
-
-# Example using Newsgroup documents from
-# http://qwone.com/~jason/20Newsgroups/
-data("Newsgroupdata", package = "LDAvis")
-z <- with(Newsgroupdata, check.inputs(K = 50, W = 22524, phi, term.frequency,
-                                       vocab, topic.proportion))
-# Set a seed to ensure k-means produces the same clusters everytime
-set.seed(333)
-with(z, runShiny(phi, term.frequency, vocab, topic.proportion))
-}
-\seealso{
-\link{check.inputs}
+This function is deprecated as of version 10.2
 }
 

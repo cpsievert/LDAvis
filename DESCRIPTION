@@ -1,25 +1,28 @@
 Package: LDAvis
-Title: Interactive visualization of topics models
-Version: 0.1
-Authors@R: c(person("Carson", "Sievert", role = "aut", email =
+Title: Interactive visualization of topic models
+Version: 0.2
+Authors@R: c(person("Carson", "Sievert", role = c("aut", "cre"), email =
     "cpsievert1@gmail.com"), person("Kenny", "Shirley", role = c("aut", "cre"),
     email = "kshirley@research.att.com"))
-Description: Interactive visualization of topics models using shiny and D3.
+Description: LDAvis is designed to allow users to more easily interpret the topics in a topic model that has been fit to a corpus of text data. The package extracts information from a fitted LDA topic model to inform an interactive web-based visualization.
 Depends:
-    R (>= 2.15)
+    R (>= 2.10)
 Imports:
-    shiny (>= 0.10),
-    MASS,
     proxy,
-    plyr (>= 1.8.1),
-    reshape2,
-    RJSONIO
-License: MIT
+    RJSONIO,
+    parallel
+License: MIT + file LICENSE
 Suggests:
     mallet,
+    lda,
     topicmodels,
+    gistr (>= 0.0.8.99),
     servr,
-    gistr,
+    shiny,
     knitr,
     rmarkdown
+LazyData: true
 Roxygen: list(wrap = TRUE)
+VignetteBuilder: knitr
+URL: https://github.com/cpsievert/LDAvis
+BugReports: https://github.com/cpsievert/LDAvis/issues

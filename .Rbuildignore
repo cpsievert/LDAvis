@@ -1,0 +1,5 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+.Rhistory
+.travis.yml
+.push_gh_pages.sh

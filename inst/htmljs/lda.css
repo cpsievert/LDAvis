@@ -1,3 +1,9 @@
+/* http://stackoverflow.com/questions/25194631/is-it-possible-to-always-show-up-down-arrows-for-input-number */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {  
+    opacity: 1;
+}
+
 div .tab-content {
     overflow:hidden;
 }
@@ -46,6 +52,11 @@ text {
     display: none;
 }
 
+.xaxis line {
+   opacity: 0.1;
+   stroke-width: 1;
+}
+
 .xaxis path {
     display: none;
 }
@@ -54,3 +65,20 @@ text {
     display: inline-block;
 }
 
+.slideraxis .tick.major {
+    fill: black;
+    stroke: black;
+    stroke-width: 0.4;
+    opacity: 1;
+}
+
+.slideraxis .tick.minor {
+    fill: black;
+    stroke: black;
+    stroke-width: 0.4;
+    opacity: 1;
+}
+
+.slideraxis path {
+    display: none;
+}

@@ -1,0 +1,16 @@
+  CHANGES IN LDAvis VERSION 0.2
+
+MAJOR CHANGES
+
+  - The function runShiny was deprecated. Please use createJSON to create visualizations instead.
+
+    CHANGES IN LDAvis VERSION 0.1
+
+NEW FEATURES
+
+  - first version of LDAvis
+
+MISC
+
+  - in this NEWS file, #n means the issue number on GitHub, e.g. #1 is
+  https://github.com/cpsievert/pitchRx/issues/1

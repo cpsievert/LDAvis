@@ -1,0 +1,42 @@
+# Sample .travis.yml for R projects.
+#
+# See README.md for instructions, or for more configuration options,
+# see the wiki:
+#   https://github.com/craigcitro/r-travis/wiki
+
+language: c
+
+# OAUTH token which allows us to push rendered HTML back to github
+# http://rmflight.github.io/posts/2014/11/travis_ci_gh_pages.html
+env:
+  global:
+  - secure: "eeQ2ZA/wd3eOMADtKtAXbdneCVBfFf/sEcNmbzcavNYsXjerhH4H8kk2vj8E1+O6aQ8kw3P29ZvpC3BM3cWEMUg0RO9yiAaz3PF3gc1nXEjg7iZr93h8kUe5VfSCKdLJcXzir3J3uhzBGdR11ARj0ZVsn+oYKc5/obNguhIJoeI="
+
+before_install:
+  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
+  - chmod 755 ./travis-tool.sh
+  - chmod 755 ./.push_gh_pages.sh
+  - ./travis-tool.sh bootstrap
+
+# system requirements for rJava and topicmodels packages
+# http://stackoverflow.com/questions/16438073/unable-to-install-rjava-in-r-3-0-in-ubuntu-13-04?rq=1
+# http://stackoverflow.com/questions/25759007/error-installing-topicmodels-package-non-zero-exit-status-ubuntu
+install:
+  - sudo apt-get install libgsl0-dev
+  - sudo apt-get install openjdk-7-*
+  - sudo R CMD javareconf
+  - ./travis-tool.sh install_deps
+  - ./travis-tool.sh install_github ropensci/gistr
+  - ./travis-tool.sh install_github cpsievert/moviereviews
+  
+script: 
+  - ./travis-tool.sh run_tests
+  - ./.push_gh_pages.sh
+
+after_failure:
+  - ./travis-tool.sh dump_logs
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change

@@ -3,82 +3,134 @@
 \alias{createJSON}
 \title{Create the JSON object to read into the javascript visualization}
 \usage{
-createJSON(K = integer(), phi = matrix(), term.frequency = integer(),
-  vocab = character(), topic.proportion = numeric(), n.terms = 30,
-  dist.measure = "JS", print.progress = FALSE)
+createJSON(phi = matrix(), theta = matrix(), doc.length = integer(),
+  vocab = character(), term.frequency = integer(), R = 30,
+  lambda.step = 0.01, mds.method = jsPCA, cluster, plot.opts = list(xlab =
+  "PC1", ylab = "PC2", ticks = FALSE), ...)
 }
 \arguments{
-  \item{K}{integer, number of topics in the fitted LDA
-  model}
+  \item{phi}{matrix, with each row containing the
+  distribution over terms for a topic, with as many rows as
+  there are topics in the model, and as many columns as
+  there are terms in the vocabulary.}
 
-  \item{phi}{matrix, term-topic distributions, where there
-  are as many rows as terms in the vocabulary, and K
-  columns, one per topic.}
+  \item{theta}{matrix, with each row containing the
+  probability distribution over topics for a document, with
+  as many rows as there are documents in the corpus, and as
+  many columns as there are topics in the model.}
 
-  \item{term.frequency}{numeric, the frequency of each term
-  in the vocabulary, which can contain non-integer values
-  as a result of smoothing via priors.}
+  \item{doc.length}{integer vector containing the number of
+  tokens in each document of the corpus.}
 
   \item{vocab}{character vector of the terms in the
-  vocabulary (in the same order as the rows of \code{phi})}
+  vocabulary (in the same order as the columns of
+  \code{phi}).}
 
-  \item{topic.proportion}{numeric, the proportion of tokens
-  generated from each topic across the corpus, with length
-  equal to K.}
+  \item{term.frequency}{integer vector containing the
+  frequency of each term in the vocabulary.}
 
-  \item{n.terms}{integer, the number of terms to display in
-  the barcharts of the interactive viz. Default is 30.
-  Recommended to be between 10 and 50.}
+  \item{R}{integer, the number of terms to display in the
+  barcharts of the interactive viz. Default is 30.
+  Recommended to be roughly between 10 and 50.}
 
-  \item{dist.measure}{the measure used to determine the
-  distance between topics. Curent options are "JS" for
-  Jensen-Shannon divergence and "KL" for symmetric
-  Kullback-Leibler divergence.}
+  \item{lambda.step}{a value between 0 and 1. Determines
+  the interstep distance in the grid of lambda values over
+  which to iterate when computing relevance. Default is
+  0.01. Recommended to be between 0.01 and 0.1.}
+
+  \item{mds.method}{a function that takes \code{phi} as an
+  input and outputs a K by 2 data.frame (or matrix). The
+  output approximates the distance between topics. See
+  \link{jsPCA} for details on the default method.}
+
+  \item{cluster}{a cluster object created from the
+  \link{parallel} package. If supplied, computations are
+  performed using \link{parLapply} instead of
+  \link{lapply}.}
+
+  \item{plot.opts}{a named list used to customize various
+  plot elements. By default, the x and y axes are labeled
+  "PC1" and "PC2" (principal components 1 and 2), since
+  \link{jsPCA} is the default scaling method.}
+
+  \item{...}{not currently used.}
 }
 \value{
-an JSON object in R that can be written to a file to feed
-the interactive visualization
+A string containing JSON content which can be written to a
+file or feed into \link{serVis} for easy viewing/sharing.
+One element of this string is the new ordering of the
+topics.
 }
 \description{
 This function creates the JSON object that feeds the
-javascript visualization that is currently stored in
-'path-to-LDAvis/LDAvis/inst/html/'
+visualization template. For a more detailed overview, see
+\code{vignette("details", package = "LDAvis")}
+}
+\details{
+The function first computes the topic frequencies (across
+the whole corpus), and then it reorders the topics in
+decreasing order of frequency. The main computation is to
+loop through the topics and through the grid of lambda
+values (determined by \code{lambda.step}) to compute the
+\code{R} most \emph{relevant} terms for each topic and
+value of lambda.
 }
 \examples{
-# This example uses Newsgroup documents from
-# http://qwone.com/~jason/20Newsgroups/
-
-data("Newsgroupdata", package = "LDAvis")
-
-# Check the inputs and sort topics by frequency:
-z <- check.inputs(K=50, W=22524, phi=Newsgroupdata$phi,
-                  term.frequency=Newsgroupdata$term.frequency,
-                  vocab=Newsgroupdata$vocab,
-                  topic.proportion=Newsgroupdata$topic.proportion)
-
-# Note that the topics have been re-ordered by check.inputs
-with(Newsgroupdata, colnames(phi))
-with(z, colnames(phi))
-# So has topic.proportion
-with(Newsgroupdata, order(topic.proportion))
-with(z, order(topic.proportion))
-
-# Relabel topics so that topic "1" has highest topic proportion.
-colnames(z$phi) <- seq_len(z$K)
+# This example uses news article data from D = 2246 Associated Press
+# articles tokenized and shared by David Blei:
+# http://www.cs.princeton.edu/~blei/lda-c/index.html
 \dontrun{
-# Takes 1-2 minutes to set up the data:
-json <- with(z, createJSON(K=K, phi=phi,
-                 term.frequency=term.frequency, vocab=vocab,
-                 topic.proportion=topic.proportion, n.terms=30))
+data(AP, package="LDAvis")
 
- # Open vis in a browser!
- serVis(json)
- # By default serVis uses a temporary directory
- # Instead, we could write files to current working directory
- serVis(json, out.dir = '.', open.browser = FALSE)
- # If you have a GitHub account and want to quickly share with others!
- serVis(json, as.gist = TRUE)
+# create the json object, start a local file server, open in default browser
+json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
+serVis(json) # press ESC or Ctrl-C to kill
+
+Look at the new topic ordering (in decreasing order of frequency):
+fromJSON(json)$topic.order
+
+# You may want to just write the JSON and other dependency files
+# to a folder named AP under the working directory
+serVis(json, out.dir = 'AP', open.browser = FALSE)
+# then you could use a server of your choice
+system("cd AP && python -m SimpleHTTPServer", wait = FALSE)
+browseURL("http://localhost:8000")
+
+# If you have a GitHub account, you can even publish as a gist
+# which allows you to easily share with others!
+serVis(json, as.gist = TRUE)
+
+# Run createJSON on a cluster of machines to speed it up
+system.time(
+json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
+)
+#   user  system elapsed
+#  8.701   0.475   9.342
+library("parallel")
+cl <- makeCluster(detectCores()-1)
+cl # socket cluster with 7 nodes on host 'localhost'
+system.time(
+json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency,
+                             cluster = cl))
+)
+#   user  system elapsed
+#  1.696   0.281   4.895
+
+# another scaling method (svd + tsne)
+library("tsne")
+svd_tsne <- function(x) tsne(svd(x)$u)
+json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency,
+                      mds.method = svd_tsne, plot.opts = list(xlab="", ylab="")))
+serVis(json)
+
 }
+}
+\references{
+Sievert, C. and Shirley, K. (2014) \emph{LDAvis: A Method
+for Visualizing and Interpreting Topics}, ACL Workshop on
+Interactive Language Learning, Visualization, and
+Interfaces.
+\url{http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf}
 }
 \seealso{
 \link{serVis}
