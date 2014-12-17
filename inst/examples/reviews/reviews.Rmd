@@ -123,9 +123,23 @@ json <- createJSON(phi = MovieReviews$phi,
                    term.frequency = MovieReviews$term.frequency)
 ```
 
-Last, the `serVis()` function can take `json` and serve the result in a variety of ways. Here we'll write `json` to a file within the 'vis' directory (along with other HTML and JavaScript required to render the page). You can see the result [here](http://cpsievert.github.io/LDAvis/reviews/vis)
+The `serVis()` function can take `json` and serve the result in a variety of ways. Here we'll write `json` to a file within the 'vis' directory (along with other HTML and JavaScript required to render the page). You can see the result [here](http://cpsievert.github.io/LDAvis/reviews/vis).
 
 ```{r serVis, eval=TRUE}
 serVis(json, out.dir = 'vis', open.browser = FALSE)
 ```
+
+If you discover something interesting in your data using **LDAvis**, you can share the result via a URL since the state of the visualization is stored in the URL at all times. For example, in the movie review data, you can quickly see that Topic 9 is broadly about comedies by linking directly to the state of LDAvis where the selected Topic is "9" and the value of $\lambda$ is 0.6 with the following URL:
+
+http://cpsievert.github.io/LDAvis/reviews/vis/#topic=9&lambda=0.6&term=
+
+You can also link to the term that is hovered. For example, when you look at the 30 most relevant terms for Topic 3 using a relevance setting of $\lambda = 0.6$, the term "cop" is the 10th bar from the top and the widths of the red and blue bars indicate that there is at least one other topic in which the term "cop" appears frequently. By hovering over "cop", we see from the following state of **LDAvis** that term "cop" also appears frequently in Topic 11:
+
+http://cpsievert.github.io/LDAvis/reviews/vis/#topic=3&lambda=0.6&term=cop
+
+We can infer that Topic 3 is about cops in the context of thrillers, detective movies, and crime movies, whereas in Topic 11, cops are discussed in terms of action movies, and some famous actors who have played cops also appear ("van", "damme", "stallone", "seagal", etc.).
+
+
+
+
 
