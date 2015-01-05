@@ -1,6 +1,6 @@
 ## LDAvis
 
-[![Build Status](https://travis-ci.org/cpsievert/LDAvis.png)](https://travis-ci.org/cpsievert/LDAvis)
+[![Build Status](https://travis-ci.org/cpsievert/LDAvis.png?branch=master)](https://travis-ci.org/cpsievert/LDAvis)
 
 R package for interactive topic model visualization.
 
