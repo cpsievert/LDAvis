@@ -3,3 +3,5 @@
 .Rhistory
 .travis.yml
 .push_gh_pages.sh
+inst/examples/fcc
+inst/examples/twitter.Rmd
