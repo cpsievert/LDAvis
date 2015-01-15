@@ -6,7 +6,7 @@
 createJSON(phi = matrix(), theta = matrix(), doc.length = integer(),
   vocab = character(), term.frequency = integer(), R = 30,
   lambda.step = 0.01, mds.method = jsPCA, cluster, plot.opts = list(xlab =
-  "PC1", ylab = "PC2", ticks = FALSE), ...)
+  "PC1", ylab = "PC2"), ...)
 }
 \arguments{
   \item{phi}{matrix, with each row containing the
@@ -76,18 +76,20 @@ values (determined by \code{lambda.step}) to compute the
 value of lambda.
 }
 \examples{
-# This example uses news article data from D = 2246 Associated Press
-# articles tokenized and shared by David Blei:
-# http://www.cs.princeton.edu/~blei/lda-c/index.html
 \dontrun{
 data(AP, package="LDAvis")
-
 # create the json object, start a local file server, open in default browser
 json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
 serVis(json) # press ESC or Ctrl-C to kill
 
-Look at the new topic ordering (in decreasing order of frequency):
-fromJSON(json)$topic.order
+# createJSON() reorders topics in decreasing order of term frequency
+RJSONIO::fromJSON(json)$topic.order
+
+# now with the Jeopardy example
+data(Jeopardy, package="LDAvis")
+json <- with(Jeopardy,
+ createJSON(phi, theta, doc.length, vocab, term.frequency))
+serVis(json)
 
 # You may want to just write the JSON and other dependency files
 # to a folder named AP under the working directory
@@ -110,8 +112,9 @@ library("parallel")
 cl <- makeCluster(detectCores()-1)
 cl # socket cluster with 7 nodes on host 'localhost'
 system.time(
-json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency,
-                             cluster = cl))
+ json <- with(AP,
+   createJSON(phi, theta, doc.length, vocab, term.frequency,
+     cluster = cl))
 )
 #   user  system elapsed
 #  1.696   0.281   4.895
@@ -120,7 +123,7 @@ json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency,
 library("tsne")
 svd_tsne <- function(x) tsne(svd(x)$u)
 json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency,
-                      mds.method = svd_tsne, plot.opts = list(xlab="", ylab="")))
+ mds.method = svd_tsne, plot.opts = list(xlab="", ylab="")))
 serVis(json)
 
 }
