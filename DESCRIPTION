@@ -4,9 +4,10 @@ Version: 0.2
 Authors@R: c(person("Carson", "Sievert", role = c("aut", "cre"), email =
     "cpsievert1@gmail.com"), person("Kenny", "Shirley", role = "aut",
     email = "kshirley@research.att.com"))
-Description: LDAvis is designed to allow users to more easily interpret the
-    topics in a topic model that has been fit to a corpus of text data. The
-    package extracts information from a fitted LDA topic model to inform an
+Description: This package is designed to allow users to more easily interpret 
+    the topics in a topic model that has been fit to a corpus of text data 
+    using Latent Dirichlet Allocation (LDA). This
+    package uses information from a fitted LDA topic model to inform an
     interactive web-based visualization.
 Depends:
     R (>= 2.10)
