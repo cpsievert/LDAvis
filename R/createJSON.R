@@ -56,25 +56,20 @@
 #' @examples
 #' 
 #' \dontrun{
-#' data(AP, package="LDAvis")
+#' data("TwentyNewsgroups")
 #' # create the json object, start a local file server, open in default browser
-#' json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
-#' serVis(json) # press ESC or Ctrl-C to kill
+#' json <- with(TwentyNewsgroups, 
+#'  createJSON(phi, theta, doc.length, vocab, term.frequency))
+#' serVis(json) # press ESC or Ctrl-C to kill server
 #' 
 #' # createJSON() reorders topics in decreasing order of term frequency
 #' RJSONIO::fromJSON(json)$topic.order
 #' 
-#' # now with the Jeopardy example
-#' data(Jeopardy, package="LDAvis")
-#' json <- with(Jeopardy, 
-#'  createJSON(phi, theta, doc.length, vocab, term.frequency))
-#' serVis(json)
-#' 
 #' # You may want to just write the JSON and other dependency files 
 #' # to a folder named AP under the working directory
-#' serVis(json, out.dir = 'AP', open.browser = FALSE)
+#' serVis(json, out.dir = 'news', open.browser = FALSE)
 #' # then you could use a server of your choice
-#' system("cd AP && python -m SimpleHTTPServer", wait = FALSE)
+#' system("cd news && python -m SimpleHTTPServer", wait = FALSE)
 #' browseURL("http://localhost:8000")
 #'
 #' # If you have a GitHub account, you can even publish as a gist
@@ -83,7 +78,8 @@
 #' 
 #' # Run createJSON on a cluster of machines to speed it up
 #' system.time(
-#' json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
+#'  json <- with(TwentyNewsgroups, 
+#'    createJSON(phi, theta, doc.length, vocab, term.frequency))
 #' )
 #' #   user  system elapsed 
 #' #  8.701   0.475   9.342 
@@ -91,7 +87,7 @@
 #' cl <- makeCluster(detectCores()-1)
 #' cl # socket cluster with 7 nodes on host 'localhost'
 #' system.time(
-#'  json <- with(AP, 
+#'  json <- with(TwentyNewsgroups, 
 #'    createJSON(phi, theta, doc.length, vocab, term.frequency, 
 #'      cluster = cl))
 #' )
@@ -101,8 +97,9 @@
 #' # another scaling method (svd + tsne)
 #' library("tsne")
 #' svd_tsne <- function(x) tsne(svd(x)$u)
-#' json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency, 
-#'  mds.method = svd_tsne, plot.opts = list(xlab="", ylab="")))
+#' json <- with(TwentyNewsgroups, 
+#'  createJSON(phi, theta, doc.length, vocab, term.frequency, 
+#'    mds.method = svd_tsne, plot.opts = list(xlab="", ylab="")))
 #' serVis(json)
 #' 
 #'}

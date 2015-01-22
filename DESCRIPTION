@@ -4,12 +4,12 @@ Version: 0.2
 Authors@R: c(person("Carson", "Sievert", role = c("aut", "cre"), email =
     "cpsievert1@gmail.com"), person("Kenny", "Shirley", role = "aut",
     email = "kshirley@research.att.com"))
-Description: Tools to create an interactive web-based visualization of a 
-    topic model that has been fit to a corpus of text data using 
+Description: Tools to create an interactive web-based visualization of a
+    topic model that has been fit to a corpus of text data using
     Latent Dirichlet Allocation (LDA). Given the estimated paramters of
     the topic model, it computes various summary statistics as input to
-    an interactive visualization built with D3.js that is accessed via 
-    a browser. The goal is to help users interpret the topics in their 
+    an interactive visualization built with D3.js that is accessed via
+    a browser. The goal is to help users interpret the topics in their
     LDA topic model.
 Depends:
     R (>= 2.10)
