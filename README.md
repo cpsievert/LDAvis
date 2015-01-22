@@ -58,7 +58,7 @@ We included one data set in LDAvis, 'TwentyNewsgroups', which consists of a list
 - vocab, a character vector containing the terms
 - term.frequency, a numeric vector of observed term frequencies
 
-We also created a second data-only package called LDAvisData to hold additional example data sets. Currently there are three more examples available there:
+We also created a second data-only package called [LDAvisData](https://github.com/cpsievert/LDAvisData) to hold additional example data sets. Currently there are three more examples available there:
 - Movie Reviews (a 20-topic model fit to 2,000 movie reviews)
 - AP (a 40-topic model fit to approximately 2,246 news articles)
 - Jeopardy (a 100-topic model fit to approximately 20,000 Jeopardy questions)
