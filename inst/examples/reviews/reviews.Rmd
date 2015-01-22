@@ -9,12 +9,11 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE, cache = FALSE, eval = FA
 
 ### The data
 
-For convenience, the R package 'moviereviews' provides the [freely available movie reviews data](http://www.cs.cornell.edu/people/pabo/movie-review-data/) as an R object. The package provides an object named `reviews` which is a character vector of length 2000. Each element of that vector contains a single movie review. Note that `reviews` was created using [this script](https://github.com/cpsievert/moviereviews/blob/master/data-raw/reviews.R). 
+For convenience, the R package 'LDAvisData' provides data used to supplement LDAvis examples. The package provides an object named `reviews` which is a character vector of length 2000. Each element of that vector contains a single movie review. Note that `reviews` was created using [this script](https://github.com/cpsievert/moviereviews/blob/master/data-raw/reviews.R). 
 
 ```{r read_new}
-# moviereviews can be installed from GitHub via 'devtools::install_github("cpsievert/moviereviews")'
-library(moviereviews)
-data(reviews, package = "moviereviews")
+# LDAvisData can be installed from GitHub via 'devtools::install_github("cpsievert/LDAvisData")'
+data(reviews, package = "LDAvisData")
 ```
 
 ### Pre-processing
@@ -109,7 +108,7 @@ MovieReviews <- list(phi = phi,
 Now we're ready to call the `createJSON()` function in **LDAvis**. This function will return a character string representing a JSON object used to populate the visualization. The `createJSON()` function computes topic frequencies, inter-topic distances, and projects topics onto a two-dimensional plane to represent their similarity to each other. It also loops through a grid of values of a tuning parameter, $0 \leq \lambda \leq 1$, that controls how the terms are ranked for each topic, where terms are listed in decreasing of *relevance*, where the relevance of term $w$ to topic $t$ is defined as $\lambda \times p(w \mid t) + (1 - \lambda) \times p(w \mid t)/p(w)$. Values of $\lambda$ near 1 give high relevance rankings to *frequent* terms within a given topic, whereas values of $\lambda$ near zero give high relevance rankings to *exclusive* terms within a topic. The set of all terms which are ranked among the top-`R` most relevant terms for each topic are pre-computed by the `createJSON()` function and sent to the browser to be interactively visualized using D3 as part of the JSON object.
 
 ```{r echo=FALSE, eval=TRUE}
-data("MovieReviews")
+data(MovieReviews, package = "LDAvisData")
 ```
 
 ```{r vis, eval=TRUE}
@@ -140,9 +139,3 @@ http://cpsievert.github.io/LDAvis/reviews/vis/#topic=3&lambda=0.6&term=cop
 Comparing these two topics, we can see that Topic 3 is about cops in the context of thrillers, detective movies, and crime movies, whereas in Topic 11, cops are discussed in terms of action movies, and some famous actors who have played cops also appear ("van", "damme", "stallone", "seagal", etc.). These two topics both discuss cops, but in slightly different contexts (i.e. slightly different styles of movies).
 
 To encode a state of the visualization in the URL, you must include a string after the "/" of the form "#topic=k&labmda=l&term=s", where "k", "l", and "s" are strings representing the topic to be selected, the value of $\lambda$ to be used in the relevance calculation, and the term to be hovered, respectively. If no term hovering is desired, omit "s" from the URL. The topic, "k", will be forced to an integer in $\{0, 1, .., K\}$, and the value of $\lambda$ will be forced to the interval $[0, 1]$, with non-numeric values returning the default state of the visualization (topic = 0, $\lambda$ = 1, term = "").
-
-
-
-
-
-

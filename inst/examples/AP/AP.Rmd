@@ -5,7 +5,7 @@ Associated Press
 
 ```{r}
 library("LDAvis")
-data(AP, package="LDAvis")
+data(AP, package = "LDAvisData")
 json <- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
 serVis(json, out.dir = 'vis', open.browser = FALSE)
 ```

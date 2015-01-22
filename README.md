@@ -48,3 +48,17 @@ to the end of the URL, where "k", "l", and "s" are strings indicating the desire
 ### More documentation
 
 To read about the methodology behind LDAvis, see [our paper](http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf), which we presented at the [2014 ACL Workshop on Interactive Language Learning, Visualization, and Interfaces](http://nlp.stanford.edu/events/illvi2014/) in Baltimore on June 27, 2014.
+
+### Additional data
+
+We included one data set in LDAvis, 'TwentyNewsgroups', which consists of a list with 5 elements:
+- phi, a matrix with the topic-term distributions
+- theta, a matrix with the document-topic distributions
+- doc.length, a numeric vector with token counts for each document
+- vocab, a character vector containing the terms
+- term.frequency, a numeric vector of observed term frequencies
+
+We also created a second data-only package called [LDAvisData](https://github.com/cpsievert/LDAvisData) to hold additional example data sets. Currently there are three more examples available there:
+- Movie Reviews (a 20-topic model fit to 2,000 movie reviews)
+- AP (a 40-topic model fit to approximately 2,246 news articles)
+- Jeopardy (a 100-topic model fit to approximately 20,000 Jeopardy questions)

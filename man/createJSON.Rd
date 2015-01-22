@@ -77,21 +77,30 @@ value of lambda.
 }
 \examples{
 \dontrun{
-data("TwentyNewsgroups")
+data(TwentyNewsgroups, package="LDAvis")
 # create the json object, start a local file server, open in default browser
 json <- with(TwentyNewsgroups,
- createJSON(phi, theta, doc.length, vocab, term.frequency))
-serVis(json) # press ESC or Ctrl-C to kill server
+             createJSON(phi, theta, doc.length, vocab, term.frequency))
+serVis(json) # press ESC or Ctrl-C to kill
 
 # createJSON() reorders topics in decreasing order of term frequency
 RJSONIO::fromJSON(json)$topic.order
 
 # You may want to just write the JSON and other dependency files
-# to a folder named AP under the working directory
-serVis(json, out.dir = 'news', open.browser = FALSE)
+# to a folder named TwentyNewsgroups under the working directory
+serVis(json, out.dir = 'TwentyNewsgroups', open.browser = FALSE)
 # then you could use a server of your choice
-system("cd news && python -m SimpleHTTPServer", wait = FALSE)
+system("cd TwentyNewsgroups && python -m SimpleHTTPServer", wait = FALSE)
 browseURL("http://localhost:8000")
+
+# A different data set: the Jeopardy Questions+Answers data:
+# Install LDAvisData (the associated data package) if not already installed:
+# devtools::install_github("cpsievert/LDAvisData")
+library(LDAvisData)
+data(Jeopardy, package="LDAvisData")
+json <- with(Jeopardy,
+             createJSON(phi, theta, doc.length, vocab, term.frequency))
+serVis(json) # Check out Topic 22 (bodies of water!)
 
 # If you have a GitHub account, you can even publish as a gist
 # which allows you to easily share with others!
@@ -99,29 +108,32 @@ serVis(json, as.gist = TRUE)
 
 # Run createJSON on a cluster of machines to speed it up
 system.time(
- json <- with(TwentyNewsgroups,
-   createJSON(phi, theta, doc.length, vocab, term.frequency))
+json <- with(TwentyNewsgroups,
+             createJSON(phi, theta, doc.length, vocab, term.frequency))
 )
 #   user  system elapsed
-#  8.701   0.475   9.342
+# 14.415   0.800  15.066
 library("parallel")
-cl <- makeCluster(detectCores()-1)
-cl # socket cluster with 7 nodes on host 'localhost'
+cl <- makeCluster(detectCores() - 1)
+cl # socket cluster with 3 nodes on host 'localhost'
 system.time(
  json <- with(TwentyNewsgroups,
    createJSON(phi, theta, doc.length, vocab, term.frequency,
      cluster = cl))
 )
 #   user  system elapsed
-#  1.696   0.281   4.895
+#  2.006   0.361   8.822
 
 # another scaling method (svd + tsne)
 library("tsne")
 svd_tsne <- function(x) tsne(svd(x)$u)
 json <- with(TwentyNewsgroups,
- createJSON(phi, theta, doc.length, vocab, term.frequency,
-   mds.method = svd_tsne, plot.opts = list(xlab="", ylab="")))
-serVis(json)
+             createJSON(phi, theta, doc.length, vocab, term.frequency,
+                        mds.method = svd_tsne,
+                        plot.opts = list(xlab="", ylab="")
+                        )
+             )
+serVis(json) # Results in a different topic layout in the left panel
 
 }
 }

@@ -5,7 +5,7 @@ Jeopardy Data
 
 ```{r}
 library("LDAvis")
-data(Jeopardy, package="LDAvis")
+data(Jeopardy, package = "LDAvisData")
 json <- with(Jeopardy, createJSON(phi, theta, doc.length, vocab, term.frequency))
 serVis(json, out.dir = 'vis', open.browser = FALSE)
 ```
