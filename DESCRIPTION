@@ -6,7 +6,7 @@ Authors@R: c(person("Carson", "Sievert", role = c("aut", "cre"), email =
     email = "kshirley@research.att.com"))
 Description: Tools to create an interactive web-based visualization of a
     topic model that has been fit to a corpus of text data using
-    Latent Dirichlet Allocation (LDA). Given the estimated paramters of
+    Latent Dirichlet Allocation (LDA). Given the estimated parameters of
     the topic model, it computes various summary statistics as input to
     an interactive visualization built with D3.js that is accessed via
     a browser. The goal is to help users interpret the topics in their
