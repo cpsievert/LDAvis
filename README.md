@@ -45,6 +45,10 @@ to the end of the URL, where "k", "l", and "s" are strings indicating the desire
 
 [http://cpsievert.github.io/LDAvis/reviews/vis/#topic=3&lambda=0.6&term=cop](http://cpsievert.github.io/LDAvis/reviews/vis/#topic=3&lambda=0.6&term=cop)
 
+### Video demos
+
+* [Visualizing & Exploring the Twenty Newsgroup Data](http://stat-graphics.org/movies/ldavis.html)
+
 ### More documentation
 
 To read about the methodology behind LDAvis, see [our paper](http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf), which we presented at the [2014 ACL Workshop on Interactive Language Learning, Visualization, and Interfaces](http://nlp.stanford.edu/events/illvi2014/) in Baltimore on June 27, 2014.
