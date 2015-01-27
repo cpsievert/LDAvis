@@ -8,17 +8,23 @@ R package for interactive topic model visualization.
 
 ### Installing the package
 
-If you are familiar with [devtools](http://cran.r-project.org/web/packages/devtools/index.html), it is easiest to install **LDAvis** this way:
+* Stable version on CRAN:
 
-`devtools::install_github("cpsievert/LDAvis", build_vignettes = TRUE)`
+```s
+install.packages("LDAvis")
+```
 
-Alternatively, you can decompress the zip ball or tar ball and run `R CMD INSTALL` on it.
+* Development version on GitHub (with [devtools](http://cran.r-project.org/web/packages/devtools/index.html)):
+
+```s
+devtools::install_github("cpsievert/LDAvis")
+```
 
 ### Getting started
 
 Once installed, we recommend a visit to the main help page:
 
-```
+```s
 library(LDAvis)
 help(createJSON, package = "LDAvis")
 ``` 
