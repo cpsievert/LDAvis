@@ -29,6 +29,8 @@ stop_words <- stopwords("SMART")
 reviews <- gsub("'", "", reviews)  # remove apostrophes
 reviews <- gsub("[[:punct:]]", " ", reviews)  # replace punctuation with space
 reviews <- gsub("[[:cntrl:]]", " ", reviews)  # replace control characters with space
+reviews <- gsub("^[[:space:]]+", "", reviews) # remove whitespace at beginning of documents
+reviews <- gsub("[[:space:]]+$", "", reviews) # remove whitespace at end of documents
 reviews <- tolower(reviews)  # force to lowercase
 
 # tokenize on space and output as a list:

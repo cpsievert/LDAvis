@@ -24,7 +24,7 @@ createJSON(phi = matrix(), theta = matrix(), doc.length = integer(),
 
   \item{vocab}{character vector of the terms in the
   vocabulary (in the same order as the columns of
-  \code{phi}).}
+  \code{phi}). Each term must have at least one character.}
 
   \item{term.frequency}{integer vector containing the
   frequency of each term in the vocabulary.}

@@ -13,7 +13,8 @@
 #' @param doc.length integer vector containing the number of tokens in each
 #' document of the corpus.
 #' @param vocab character vector of the terms in the vocabulary (in the same
-#' order as the columns of \code{phi}).
+#' order as the columns of \code{phi}). Each term must have at least one
+#' character.
 #' @param term.frequency integer vector containing the frequency of each term 
 #' in the vocabulary.
 #' @param R integer, the number of terms to display in the barcharts
@@ -127,8 +128,7 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   # check that certain input dimensions match
   if (dp[1] != K) stop("Number of rows of phi does not match 
       number of columns of theta; both should be equal to the number of topics 
-      in the model.")
-  
+      in the model.")  
   D <- length(doc.length)
   if (D != dt[1]) stop("Length of doc.length not equal 
       to the number of rows in theta; both should be equal to the number of 
@@ -139,6 +139,8 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
       probability distribution of terms for a given topic).")
   if (length(term.frequency) != W) stop("Length of term.frequency 
       not equal to the number of terms in the vocabulary.")
+  if (sum(nchar(vocab) == 0) > 0) stop("One or more terms in the vocabulary
+      has zero characters -- all terms must have at least one character.")
 
   # check that conditional distributions are normalized:
   phi.test <- all.equal(rowSums(phi), rep(1, K), check.attributes = FALSE)
