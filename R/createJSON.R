@@ -139,7 +139,7 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
       probability distribution of terms for a given topic).")
   if (length(term.frequency) != W) stop("Length of term.frequency 
       not equal to the number of terms in the vocabulary.")
-  if (sum(nchar(vocab) == 0) > 0) stop("One or more terms in the vocabulary
+  if (any(nchar(vocab) == 0)) stop("One or more terms in the vocabulary
       has zero characters -- all terms must have at least one character.")
 
   # check that conditional distributions are normalized:
