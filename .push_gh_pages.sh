@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# where would I be without Yihui? https://github.com/yihui/xran/blob/gh-pages/r-xran
+[ "${TRAVIS_PULL_REQUEST}" != "false" ] && exit 0
+
 # remove the examples
 rm -rf examples || exit 0;
 
