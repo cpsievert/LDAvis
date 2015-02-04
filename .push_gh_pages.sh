@@ -16,7 +16,7 @@ git config user.name "cpsievert"
 git config user.email "cpsievert1@gmail.com"
 
 # compile demo html pages and commit
-Rscript -e "devtools::install('../LDAvis'); source('knit_examples.R')"
+R -e "devtools::install('../LDAvis'); source('knit_examples.R')"
 git add .
 git commit -m "deployed to github pages"
 
