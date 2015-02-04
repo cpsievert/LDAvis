@@ -8,7 +8,7 @@ knit_examples <- function() {
   # navigate intp each example and knit individually
   for (i in dirs) {
     setwd(i)
-    knitr::knit2html(paste0(i, ".Rmd"))
+    e <- try(knitr::knit2html(paste0(i, ".Rmd")))
     setwd(old)
   }
 }

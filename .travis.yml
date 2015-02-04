@@ -26,7 +26,7 @@ install:
   - sudo apt-get install openjdk-7-*
   - sudo R CMD javareconf
   - ./travis-tool.sh install_deps
-  - ./travis-tool.sh install_github ropensci/gistr
+  - ./travis-tool.sh r_binary_install gistr
   - ./travis-tool.sh install_github cpsievert/LDAvisData
   
 script: 
