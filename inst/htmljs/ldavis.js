@@ -584,14 +584,15 @@ LDAvis = function(to_select, json_file) {
             // create container div for topic and lambda input:
 	    var inputDiv = document.createElement("div");
 	    inputDiv.setAttribute("id", "top");
+	    inputDiv.setAttribute("style", "height: 40px; top: 10px; display: inline-block");
 
-            // insert the input container just before the vis:
-            var visDiv = document.getElementById(visID);
-            document.body.insertBefore(inputDiv, visDiv);
+      document.getElementById(visID).appendChild(inputDiv);
 
 	    // topic input container:
-            var topicDiv = document.createElement("div");
-	    topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
+      var topicDiv = document.createElement("div");
+	    topicDiv.setAttribute("style", 
+	    "padding: 5px; background-color: #e8e8e8; display: inline-block; left:" + 
+	    margin.left + "px; width: " + mdswidth + "px; height: 40px");
 	    inputDiv.appendChild(topicDiv);
 
             var topicLabel = document.createElement("label");
@@ -633,8 +634,8 @@ LDAvis = function(to_select, json_file) {
     	    var lambdaDivWidth = barwidth;
     	    var lambdaDiv = document.createElement("div");
     	    lambdaDiv.setAttribute("id", "lambdaInput");
-    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: " + 
-				   lambdaDivLeft + "px; height: 50px; width: " + lambdaDivWidth + "px");
+    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; display: inline-block; position: absolute; left: " +
+				   lambdaDivLeft + "px; height: 40px; width: " + lambdaDivWidth + "px");
     	    inputDiv.appendChild(lambdaDiv);
 
     	    var lambdaZero = document.createElement("div");
@@ -700,7 +701,7 @@ LDAvis = function(to_select, json_file) {
 		.attr("class", "slideraxis")
 		.attr("margin-top", "-10px")
 		.call(sliderAxis);
-	    
+            
 	    // Another strategy for tick marks on the slider; simpler, but not labels
 	    // var sliderTicks = document.createElement("datalist");
 	    // sliderTicks.setAttribute("id", "ticks");

@@ -120,7 +120,8 @@
 createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(), 
                        vocab = character(), term.frequency = integer(), R = 30, 
                        lambda.step = 0.01, mds.method = jsPCA, cluster, 
-                       plot.opts = list(xlab = "PC1", ylab = "PC2"), ...) {
+                       plot.opts = list(xlab = "PC1", ylab = "PC2"), 
+                       ...) {
   N <- sum(doc.length)
   dp <- dim(phi)
   dt <- dim(theta)
