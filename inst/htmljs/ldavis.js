@@ -584,15 +584,12 @@ LDAvis = function(to_select, json_file) {
             // create container div for topic and lambda input:
 	    var inputDiv = document.createElement("div");
 	    inputDiv.setAttribute("id", "top");
-	    inputDiv.setAttribute("style", "height: 40px; top: 10px; display: inline-block");
-
-      document.getElementById(visID).appendChild(inputDiv);
+	    inputDiv.setAttribute("style", "width: 1210px"); // to match the width of the main svg element
+	    document.getElementById(visID).appendChild(inputDiv);
 
 	    // topic input container:
-      var topicDiv = document.createElement("div");
-	    topicDiv.setAttribute("style", 
-	    "padding: 5px; background-color: #e8e8e8; display: inline-block; left:" + 
-	    margin.left + "px; width: " + mdswidth + "px; height: 40px");
+	    var topicDiv = document.createElement("div");
+	    topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; display: inline-block; width: " + mdswidth + "px; height: 50px; float: left");
 	    inputDiv.appendChild(topicDiv);
 
             var topicLabel = document.createElement("label");
@@ -630,16 +627,15 @@ LDAvis = function(to_select, json_file) {
             topicDiv.appendChild(clear);
 
             // lambda inputs
-    	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
+    	    //var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
     	    var lambdaDivWidth = barwidth;
     	    var lambdaDiv = document.createElement("div");
     	    lambdaDiv.setAttribute("id", "lambdaInput");
-    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; display: inline-block; position: absolute; left: " +
-				   lambdaDivLeft + "px; height: 40px; width: " + lambdaDivWidth + "px");
+    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; display: inline-block; height: 50px; width: " + lambdaDivWidth + "px; float: right; margin-right: 30px");
     	    inputDiv.appendChild(lambdaDiv);
 
     	    var lambdaZero = document.createElement("div");
-    	    lambdaZero.setAttribute("style", "padding: 5px; height: 20px; width: 220px; font-family: sans-serif; position: absolute; top: 0px; left: 0px;");
+    	    lambdaZero.setAttribute("style", "padding: 5px; height: 20px; width: 220px; font-family: sans-serif; float: left");
 	    lambdaZero.setAttribute("id", "lambdaZero");
     	    lambdaDiv.appendChild(lambdaZero);
 	    var xx = d3.select("#lambdaZero")
@@ -656,15 +652,9 @@ LDAvis = function(to_select, json_file) {
 		.style("position", "absolute")
 		.text("(2)");
 	    
-            var lambdaLabel = document.createElement("label");
-            lambdaLabel.setAttribute("for", lambdaID);
-	    lambdaLabel.setAttribute("style", "height: 20px; width: 60px; position: absolute; top: 25px; left: 90px; font-family: sans-serif; font-size: 14px");
-	    lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>" + vis_state.lambda + "</span>";
-            lambdaDiv.appendChild(lambdaLabel);
-
     	    var sliderDiv = document.createElement("div");
     	    sliderDiv.setAttribute("id", "sliderdiv");
-    	    sliderDiv.setAttribute("style", "padding: 5px; height: 40px; position: absolute; top:0px; left: 240px; width: 250px");
+    	    sliderDiv.setAttribute("style", "padding: 5px; height: 40px; width: 250px; float: right; margin-top: -5px; margin-right: 10px");
     	    lambdaDiv.appendChild(sliderDiv);
 
             var lambdaInput = document.createElement("input");
@@ -677,6 +667,13 @@ LDAvis = function(to_select, json_file) {
             lambdaInput.id = lambdaID;
 	    lambdaInput.setAttribute("list", "ticks"); // to enable automatic ticks (with no labels, see below)
             sliderDiv.appendChild(lambdaInput);
+
+            var lambdaLabel = document.createElement("label");
+	    lambdaLabel.setAttribute("id", "lamlabel");
+            lambdaLabel.setAttribute("for", lambdaID);
+	    lambdaLabel.setAttribute("style", "height: 20px; width: 60px; font-family: sans-serif; font-size: 14px; margin-left: 80px");
+	    lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>" + vis_state.lambda + "</span>";
+            lambdaDiv.appendChild(lambdaLabel);
 
 	    // Create the svg to contain the slider scale:
 	    var scaleContainer = d3.select("#sliderdiv").append("svg")
@@ -1106,7 +1103,7 @@ LDAvis = function(to_select, json_file) {
 
             // redraw x-axis
             d3.selectAll(".xaxis")
-                //.attr("class", "xaxis")
+            //.attr("class", "xaxis")
                 .call(xAxis);
         }
 
