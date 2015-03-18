@@ -1,0 +1,28 @@
+---
+title: "Using LDAvis with shiny & rmarkdown"
+author: "Carson Sievert"
+date: "`r Sys.Date()`"
+output: html_document
+runtime: shiny
+---
+
+This document details how to make **LDAvis** react to [**shiny**](http://cran.r-project.org/web/packages/shiny/index.html) inputs. In theory, any `createJSON()` argument *could* be dynamically altered in a [shiny app](http://shiny.rstudio.com/) or [interactive document](http://rmarkdown.rstudio.com/authoring_shiny.html). In practice, this might not be such a great idea since `createJSON()` can take a few seconds to run (note in this example it's about 5 seconds).
+
+Anyway, here is one way to alter the number of terms shown using a `shiny::sliderInput()`.
+
+```{r}
+library(shiny)
+sliderInput("nTerms", "Number of terms to display", min = 20, max = 40, value = 30)
+```
+
+By wrapping a call to `createJSON()` with `renderVis()`, the output will update whenever the value of `input$nTerms` changes.
+
+```{r}
+library(LDAvis)
+data(TwentyNewsgroups, package = "LDAvis")
+renderVis({
+  with(TwentyNewsgroups, 
+       createJSON(phi, theta, doc.length, vocab, term.frequency, 
+                  R = input$nTerms))
+})
+```

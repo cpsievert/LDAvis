@@ -1,6 +1,6 @@
 #' Run shiny/D3 visualization
 #' 
-#' This function is deprecated as of version 10.2
+#' This function is deprecated as of version 0.2
 #' 
 #' @param phi a matrix with W rows, one for each term in the vocabulary, and K 
 #' columns, one for each topic, where each column sums to one. Each column is the 

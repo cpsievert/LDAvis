@@ -1,3 +1,9 @@
+  CHANGES IN LDAvis VERSION 0.3
+
+NEW FEATURES
+
+  - LDAvis output can now be integrated in shiny apps and interactive rmarkdown documents using the functions renderVis & visOutput.
+
   CHANGES IN LDAvis VERSION 0.2
 
 MAJOR CHANGES
