@@ -3,4 +3,5 @@
 .Rproj.user
 .DS_Store
 inst/examples/*/*
+!inst/examples/*/*.R
 !inst/examples/*/*.Rmd
