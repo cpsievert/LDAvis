@@ -1,45 +1,7 @@
-/* http://stackoverflow.com/questions/25194631/is-it-possible-to-always-show-up-down-arrows-for-input-number */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button {  
-    opacity: 1;
+path {
+  fill: none;
+  stroke: none;
 }
-
-div .tab-content {
-    overflow:hidden;
-}
-
-/*
-http://bl.ocks.org/mbostock/1212215
-*/
-
-.points:not(:hover) .docsize {
-    display: none;
-}
-
-/*
-  http://alignedleft.com/tutorials/d3/axes/
-  .axis path,
-  .axis line {
-  stroke: black;
-  shape-rendering: crispEdges;
-  }
-*/
-
-text {
-    font-family: sans-serif;
-    font-size: 11px;
-}
-
-.axis {
-    shape-rendering: crispEdges;
-}
-
-/*
-  this is the major grid line
-  .x.axis line {
-  stroke: lightgrey;
-  }
-*/
 
 .xaxis .tick.major {
     fill: black;
@@ -48,37 +10,14 @@ text {
     opacity: 0.7;
 }
 
-.xaxis .tick.minor {
-    display: none;
-}
-
-.xaxis line {
-   opacity: 0.1;
-   stroke-width: 1;
-}
-
-.xaxis path {
-    display: none;
-}
-
-.inlineForm {
-    display: inline-block;
-}
-
-.slideraxis .tick.major {
+.slideraxis {
     fill: black;
     stroke: black;
     stroke-width: 0.4;
     opacity: 1;
 }
 
-.slideraxis .tick.minor {
-    fill: black;
-    stroke: black;
-    stroke-width: 0.4;
-    opacity: 1;
-}
-
-.slideraxis path {
-    display: none;
+text {
+    font-family: sans-serif;
+    font-size: 11px;
 }
