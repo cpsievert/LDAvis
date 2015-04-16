@@ -183,7 +183,6 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   err <- as.numeric(term.frequency/colSums(term.topic.frequency))
   # http://stackoverflow.com/questions/3643555/multiply-rows-of-matrix-by-vector
   term.topic.frequency <- sweep(term.topic.frequency, MARGIN=2, err, `*`)
-  
   # Most operations on phi after this point are across topics
   # R has better facilities for column-wise operations
   phi <- t(phi)
@@ -198,10 +197,10 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   # Order the terms for the "default" view by decreasing saliency:
   default.terms <- vocab[order(saliency, decreasing = TRUE)][1:R]
   counts <- as.integer(term.frequency[match(default.terms, vocab)])
-  default <- data.frame(Term = default.terms, logprob = R:1, loglift = R:1, 
+  Rs <- rev(seq_len(R))
+  default <- data.frame(Term = default.terms, logprob = Rs, loglift = Rs, 
                         Freq = counts, Total = counts, Category = "Default", 
                         stringsAsFactors = FALSE)
-  
   topic_seq <- rep(seq_len(K), each = R)
   category <- paste0("Topic", topic_seq)
   lift <- phi/term.proportion

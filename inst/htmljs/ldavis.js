@@ -439,7 +439,7 @@ LDAvis = function(to_select, json_file) {
             }))
             .rangeRoundBands([0, barheight], 0.15);
         var x = d3.scale.linear()
-            .domain([1, d3.max(barDefault2, function(d) {
+            .domain([0, d3.max(barDefault2, function(d) {
                 return d.Total;
             })])
             .range([0, barwidth])
@@ -738,7 +738,7 @@ LDAvis = function(to_select, json_file) {
                 }))
                 .rangeRoundBands([0, barheight], 0.15);
             var x = d3.scale.linear()
-                .domain([1, d3.max(dat3, function(d) {
+                .domain([0, d3.max(dat3, function(d) {
                     return d.Total;
                 })])
                 .range([0, barwidth])
@@ -1039,7 +1039,7 @@ LDAvis = function(to_select, json_file) {
                 }))
                 .rangeRoundBands([0, barheight], 0.15);
             var x = d3.scale.linear()
-                .domain([1, d3.max(dat3, function(d) {
+                .domain([0, d3.max(dat3, function(d) {
                     return d.Total;
                 })])
                 .range([0, barwidth])
@@ -1135,7 +1135,7 @@ LDAvis = function(to_select, json_file) {
                 }))
                 .rangeRoundBands([0, barheight], 0.15);
             var x = d3.scale.linear()
-                .domain([1, d3.max(dat2, function(d) {
+                .domain([0, d3.max(dat2, function(d) {
                     return d.Total;
                 })])
                 .range([0, barwidth])

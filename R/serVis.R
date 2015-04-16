@@ -52,7 +52,7 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
               to upload files to https://gist.github.com")
     } else {
       gist <- gistr::gist_create(file.path(out.dir, list.files(out.dir)), ...)
-      if (interactive()) print(gist)
+      if (interactive()) gist
       url_name <- paste("http://bl.ocks.org", gist$id, sep = "/")
       if (open.browser) browseURL(url_name)
     }

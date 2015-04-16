@@ -1,6 +1,6 @@
 Package: LDAvis
 Title: Interactive Visualization of Topic Models
-Version: 0.3
+Version: 0.3.1
 Authors@R: c(person("Carson", "Sievert", role = c("aut", "cre"), email =
     "cpsievert1@gmail.com"), person("Kenny", "Shirley", role = "aut",
     email = "kshirley@research.att.com"))
