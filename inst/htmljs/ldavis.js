@@ -1,4 +1,8 @@
-LDAvis = function(to_select, json_file) {
+/* Original code taken from https://github.com/cpsievert/LDAvis */
+/* Copyright 2013, AT&T Intellectual Property */
+/* MIT Licence */
+
+LDAvis = function(to_select, data_or_file_name) {
 
     // This section sets up the logic for event handling
     var current_clicked = {
@@ -20,7 +24,7 @@ LDAvis = function(to_select, json_file) {
     };
 
     // Set up a few 'global' variables to hold the data:
-    var K, // number of topics 
+    var K, // number of topics
     R, // number of terms to display in bar chart
     mdsData, // (x,y) locations and topic proportions
     mdsData3, // topic proportions for all terms in the viz
@@ -50,7 +54,7 @@ LDAvis = function(to_select, json_file) {
     mdsarea = mdsheight * mdswidth;
     // controls how big the maximum circle can be
     // doesn't depend on data, only on mds width and height:
-    var rMax = 60;  
+    var rMax = 60;
 
     // proportion of area of MDS plot to which the sum of default topic circle areas is set
     var circle_prop = 0.25;
@@ -76,7 +80,7 @@ LDAvis = function(to_select, json_file) {
 
     //////////////////////////////////////////////////////////////////////////////
 
-    // sort array according to a specified object key name 
+    // sort array according to a specified object key name
     // Note that default is decreasing sort, set decreasing = -1 for increasing
     // adpated from http://stackoverflow.com/questions/16648076/sort-array-on-key-value
     function fancysort(key_name, decreasing) {
@@ -91,8 +95,7 @@ LDAvis = function(to_select, json_file) {
     }
 
 
-    // The actual read-in of the data and main code:
-    d3.json(json_file, function(error, data) {
+    function visualize(data) {
 
         // set the number of topics to global variable K:
         K = data['mdsDat'].x.length;
@@ -227,7 +230,7 @@ LDAvis = function(to_select, json_file) {
             var xScale = d3.scale.linear()
 		.range([0, mdswidth])
 		.domain([xrange[0] - xpad * xdiff, xrange[1] + xpad * xdiff]);
-	    
+
             var yScale = d3.scale.linear()
 		.range([mdsheight, 0])
 		.domain([yrange[0] - 0.5*(xdiff - ydiff) - ypad*xdiff, yrange[1] + 0.5*(xdiff - ydiff) + ypad*xdiff]);
@@ -235,7 +238,7 @@ LDAvis = function(to_select, json_file) {
             var xScale = d3.scale.linear()
 		.range([0, mdswidth])
 		.domain([xrange[0] - 0.5*(ydiff - xdiff) - xpad*ydiff, xrange[1] + 0.5*(ydiff - xdiff) + xpad*ydiff]);
-	    
+
             var yScale = d3.scale.linear()
 		.range([mdsheight, 0])
 		.domain([yrange[0] - ypad * ydiff, yrange[1] + ypad * ydiff]);
@@ -298,7 +301,7 @@ LDAvis = function(to_select, json_file) {
     	var newLarge = Math.sqrt(0.10*mdsarea*circle_prop/Math.PI);
     	var cx = 10 + newLarge,
         cx2 = cx + 1.5 * newLarge;
-	
+
         // circle guide inspired from
         // http://www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html?_r=0
         circleGuide = function(rSize, size) {
@@ -404,7 +407,7 @@ LDAvis = function(to_select, json_file) {
                 topic_on(this);
             })
             .on("click", function(d) {
-                // prevent click event defined on the div container from firing 
+                // prevent click event defined on the div container from firing
                 // http://bl.ocks.org/jasondavies/3186840
                 d3.event.stopPropagation();
                 var old_topic = topicID + vis_state.topic;
@@ -558,16 +561,16 @@ LDAvis = function(to_select, json_file) {
         var title = chart.append("text")
             .attr("x", barwidth/2)
             .attr("y", -30)
-            .attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
+            .attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called
             .style("text-anchor", "middle")
             .style("font-size", "16px")
             .text("Top-" + R + " Most Salient Terms");
-	
+
         title.append("tspan")
-	    .attr("baseline-shift", "super")	    
+	    .attr("baseline-shift", "super")
 	    .attr("font-size", "12px")
 	    .text("(1)");
-	
+
         // barchart axis adapted from http://bl.ocks.org/mbostock/1166403
         var xAxis = d3.svg.axis().scale(x)
             .orient("top")
@@ -619,7 +622,7 @@ LDAvis = function(to_select, json_file) {
 	    next.setAttribute("style", "margin-left: 5px");
 	    next.innerHTML = "Next Topic";
             topicDiv.appendChild(next);
-            
+
 	    var clear = document.createElement("button");
 	    clear.setAttribute("id", topicClear);
 	    clear.setAttribute("style", "margin-left: 5px");
@@ -651,7 +654,7 @@ LDAvis = function(to_select, json_file) {
 		.style("font-size", "10px")
 		.style("position", "absolute")
 		.text("(2)");
-	    
+
     	    var sliderDiv = document.createElement("div");
     	    sliderDiv.setAttribute("id", "sliderdiv");
     	    sliderDiv.setAttribute("style", "padding: 5px; height: 40px; width: 250px; float: right; margin-top: -5px; margin-right: 10px");
@@ -698,7 +701,7 @@ LDAvis = function(to_select, json_file) {
 		.attr("class", "slideraxis")
 		.attr("margin-top", "-10px")
 		.call(sliderAxis);
-            
+
 	    // Another strategy for tick marks on the slider; simpler, but not labels
 	    // var sliderTicks = document.createElement("datalist");
 	    // sliderTicks.setAttribute("id", "ticks");
@@ -991,44 +994,44 @@ LDAvis = function(to_select, json_file) {
         // the circle argument should be the appropriate circle element
         function topic_on(circle) {
             if (circle == null) return null;
-            
+
 	    // grab data bound to this element
             var d = circle.__data__
             var Freq = Math.round(d.Freq * 10) / 10,
             topics = d.topics;
-            
+
 	    // change opacity and fill of the selected circle
             circle.style.opacity = highlight_opacity;
             circle.style.fill = color2;
-            
+
 	    // Remove 'old' bar chart title
             var text = d3.select(".bubble-tool");
             text.remove();
-            
+
 	    // append text with info relevant to topic of interest
             d3.select("#bar-freqs")
 		.append("text")
 		.attr("x", barwidth/2)
 		.attr("y", -30)
-		.attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called  
+		.attr("class", "bubble-tool") //  set class so we can remove it when highlight_off is called
 		.style("text-anchor", "middle")
 		.style("font-size", "16px")
 		.text("Top-" + R + " Most Relevant Terms for Topic " + topics + " (" + Freq + "% of tokens)");
-	    
+
             // grab the bar-chart data for this topic only:
             var dat2 = lamData.filter(function(d) {
                 return d.Category == "Topic" + topics
             });
-	    
+
             // define relevance:
             for (var i = 0; i < dat2.length; i++) {
                 dat2[i].relevance = lambda.current * dat2[i].logprob +
                     (1 - lambda.current) * dat2[i].loglift;
             }
-	    
+
             // sort by relevance:
             dat2.sort(fancysort("relevance"));
-	    
+
             // truncate to the top R tokens:
             var dat3 = dat2.slice(0, R);
 
@@ -1117,7 +1120,7 @@ LDAvis = function(to_select, json_file) {
             var title = d3.selectAll(".bubble-tool")
 		.text("Top-" + R + " Most Salient Terms");
 	    title.append("tspan")
-	     	.attr("baseline-shift", "super")	    
+	     	.attr("baseline-shift", "super")
 	     	.attr("font-size", 12)
 	     	.text(1);
 
@@ -1229,7 +1232,7 @@ LDAvis = function(to_select, json_file) {
                 .transition()
                 .attr("r", function(d) {
                     //return (rScaleCond(d));
-		    return (Math.sqrt(d*mdswidth*mdsheight*word_prop/Math.PI)); 
+		    return (Math.sqrt(d*mdswidth*mdsheight*word_prop/Math.PI));
                 });
 
             // re-bind mdsData so we can handle multiple selection
@@ -1285,7 +1288,7 @@ LDAvis = function(to_select, json_file) {
 
         // serialize the visualization state using fragment identifiers -- http://en.wikipedia.org/wiki/Fragment_identifier
         // location.hash holds the address information
-        
+
         var params = location.hash.split("&");
         if (params.length > 1) {
             vis_state.topic = params[0].split("=")[1];
@@ -1354,7 +1357,13 @@ LDAvis = function(to_select, json_file) {
             state_save(true);
         }
 
-    });
+    }
+
+    if (typeof data_or_file_name === 'string')
+        d3.json(data_or_file_name, function(error, data) {visualize(data);});
+    else
+        visualize(data_or_file_name);
+
     // var current_clicked = {
     //     what: "nothing",
     //     element: undefined
@@ -1363,4 +1372,3 @@ LDAvis = function(to_select, json_file) {
     //debugger;
 
 }
-
