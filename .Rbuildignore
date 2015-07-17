@@ -6,3 +6,8 @@
 cran-comments.md
 inst/examples/fcc
 inst/examples/twitter.Rmd
+vignettes/*.pdf
+vignettes/*.tex
+vignettes/*.log
+vignettes/*.gz
+inst/doc/
