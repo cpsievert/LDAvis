@@ -79,8 +79,7 @@ N_k = \sum_{d=1}^D \theta_{dk}n_d.
 $$
 It is straightforward to verify that $\sum_k N_k = N$.
 \item The width of the \textbf{Red Bar} for topic $k$ and term $w$, denoted $P_{kw}$, is set to $\phi_{kw} \times N_k$ for all topics $k = 1...K$ and terms $w = 1...W$.
-\item The width of the \textbf{Blue Bar} for term $w$ is set to $\sum_k P_{kw}$, the total number of occurrences of term $w$ in the corpus.
-%$M_w$, the user-supplied frequency of term $w$ across the entire corpus.
+\item The width of the \textbf{Blue Bar} for term $w$ is set to $\sum_k P_{kw}$, the total number of occurrences of term $w$ in the corpus (note that prior to version 0.3.2 of LDAvis, this width was set to $M_w$, the user-supplied frequency of term $w$ across the entire corpus).
 \item The area of the \textbf{Topic-Term Circle} for term $w$ and topic $k$, denoted $A^\text{topic-term}_{kw}$, is set to be proportional to $P_{kw}/\sum_k P_{kw}$.
 \end{enumerate}
 
@@ -95,11 +94,6 @@ The same principle holds for the red bars and blue bars -- they visualize freque
 
 \item The centers of the default topic circles are laid out in two dimensions according to a multidimensional scaling (MDS) algorithm that is run on the inter-topic distance matrix. We use Jensen-Shannon divergence to compute distances between topics, and then we use the \texttt{cmdscale()} function in \texttt{R} to implement classical multidimensional scaling. The range of the first coordinate (along the x-axis) is not necessarily equal to that of the second coordinate (along the y-axis); thus we force the aspect ratio to be 1 to preserve the MDS distances. In practice (across the examples we've seen), the ranges of the x and y coordinates are within about 10\% of each other.
 
-\item \textbf{Update: July 6, 2015} A bug was discovered in which the widths of the red topic-term bars did not decrease (as they should have) from term \#1 to term \#R under the relevance ranking with $\lambda = 1$ for at least one example model. In other words, when $\lambda = 1$, there were topics in which a narrow red bar was displayed above a wider red bar, which should never happen. The issue had to do with the way \texttt{LDAvis} was computing topic-term bar widths, and is discussed in detail in a Github issue here:
-
-\texttt{https://github.com/cpsievert/LDAvis/issues/32}
-
-In the end, we implemented a quick fix in which we compute term frequencies implicitly, rather than using those supplied by the user in the \texttt{createJSON()} function. The upside is that the red bar widths are now explicitly controlled to produce the correct visualization. The downside is that the blue bar widths do not necessarily match the user-supplied term frequencies exactly -- in fact, the new version of \texttt{LDAvis} ignores the user-supplied term frequencies entirely. In a few experiments, the differences are small, and decrease (as a proportion of the true term frequencies) as the true term frequencies increase. Please email us or comment at the github issue above with questions and/or comments. Thanks to @bmabey for leading us to this bug.
 \end{enumerate}
 
 
