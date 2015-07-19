@@ -122,19 +122,22 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
                        lambda.step = 0.01, mds.method = jsPCA, cluster, 
                        plot.opts = list(xlab = "PC1", ylab = "PC2"), 
                        ...) {
-  N <- sum(doc.length)
-  dp <- dim(phi)
-  dt <- dim(theta)
-  K <- dt[2]
+  # Set the values of a few summary statistics of the corpus and model:
+  dp <- dim(phi)  # should be K x W
+  dt <- dim(theta)  # should be D x K
+
+  N <- sum(doc.length)  # number of tokens in the data
+  W <- length(vocab)  # number of terms in the vocab
+  D <- length(doc.length)  # number of documents in the data
+  K <- dt[2]  # number of topics in the model
+
   # check that certain input dimensions match
   if (dp[1] != K) stop("Number of rows of phi does not match 
       number of columns of theta; both should be equal to the number of topics 
       in the model.")  
-  D <- length(doc.length)
   if (D != dt[1]) stop("Length of doc.length not equal 
       to the number of rows in theta; both should be equal to the number of 
       documents in the data.")
-  W <- length(vocab)
   if (dp[2] != W) stop("Number of terms in vocabulary does 
       not match the number of columns of phi (where each row of phi is a
       probability distribution of terms for a given topic).")
@@ -163,6 +166,8 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   topic.frequency <- topic.frequency[o]
   topic.proportion <- topic.proportion[o]
   
+  # compute intertopic distances using the specified multidimensional
+  # scaling method:
   mds.res <- mds.method(phi)
   if (is.matrix(mds.res)) {
     colnames(mds.res) <- c("x", "y")
@@ -174,18 +179,31 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   mds.df <- data.frame(mds.res, topics = seq_len(K), Freq = topic.proportion*100, 
                        cluster = 1, stringsAsFactors = FALSE)
   # note: cluster (should?) be deprecated soon.
+
+  # token counts for each term-topic combination (widths of red bars)
+  term.topic.frequency <- phi * topic.frequency  
   
+  # compute term frequencies as column sums of term.topic.frequency
+  # we actually won't use the user-supplied term.frequency vector.
+  # the term frequencies won't match the user-supplied frequencies exactly
+  # this is a work-around to solve the bug described in Issue #32 on github:
+  # https://github.com/cpsievert/LDAvis/issues/32
+  term.frequency <- colSums(term.topic.frequency)
+  stopifnot(all(term.frequency > 0))
+
   # marginal distribution over terms (width of blue bars)
   term.proportion <- term.frequency/sum(term.frequency)
-  # token counts for each term-topic combination (widths of red bars)
-  term.topic.frequency <- phi * topic.frequency
+
+  # Old code to adjust term frequencies. Deprecated for now
   # adjust to match term frequencies exactly (get rid of rounding error)
-  err <- as.numeric(term.frequency/colSums(term.topic.frequency))
+  #err <- as.numeric(term.frequency/colSums(term.topic.frequency))
   # http://stackoverflow.com/questions/3643555/multiply-rows-of-matrix-by-vector
-  term.topic.frequency <- sweep(term.topic.frequency, MARGIN=2, err, `*`)
+  #term.topic.frequency <- sweep(term.topic.frequency, MARGIN=2, err, `*`)
+
   # Most operations on phi after this point are across topics
   # R has better facilities for column-wise operations
   phi <- t(phi)
+
   # compute the distinctiveness and saliency of the terms:
   # this determines the R terms that are displayed when no topic is selected
   topic.given.term <- phi/rowSums(phi)  # (W x K)
@@ -204,6 +222,7 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   topic_seq <- rep(seq_len(K), each = R)
   category <- paste0("Topic", topic_seq)
   lift <- phi/term.proportion
+
   # Collect R most relevant terms for each topic/lambda combination
   # Note that relevance is re-computed in the browser, so we only need
   # to send each possible term/topic combination to the browser

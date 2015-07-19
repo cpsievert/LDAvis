@@ -78,21 +78,22 @@ $$
 N_k = \sum_{d=1}^D \theta_{dk}n_d.
 $$
 It is straightforward to verify that $\sum_k N_k = N$.
-\item The width of the \textbf{Red Bar} for topic $k$ and term $w$, denoted $P_{kw}$, is set to be proportional to $\phi_{kw} \times N_k$ for all topics $k = 1...K$ and terms $w = 1...W$.
-\item The width of the \textbf{Blue Bar} for term $w$, denoted $G_w$, is set to be proportional to $M_w$, the user-supplied frequency of term $w$ across the entire corpus.
-\item The area of the \textbf{Topic-Term Circle} for term $w$ and topic $k$, denoted $A^\text{topic-term}_{wk}$, is set to be proportional to $P_{wk}/\sum_k P_{wk}$.
+\item The width of the \textbf{Red Bar} for topic $k$ and term $w$, denoted $P_{kw}$, is set to $\phi_{kw} \times N_k$ for all topics $k = 1...K$ and terms $w = 1...W$.
+\item The width of the \textbf{Blue Bar} for term $w$ is set to $\sum_k P_{kw}$, the total number of occurrences of term $w$ in the corpus (note that prior to version 0.3.2 of LDAvis, this width was set to $M_w$, the user-supplied frequency of term $w$ across the entire corpus).
+\item The area of the \textbf{Topic-Term Circle} for term $w$ and topic $k$, denoted $A^\text{topic-term}_{kw}$, is set to be proportional to $P_{kw}/\sum_k P_{kw}$.
 \end{enumerate}
 
 \section{Discussion}
 Here we point out a few things about \texttt{LDAvis}:
 \begin{enumerate}
-\item Note that the all the visual elements represent frequencies (of various things in the training data), rather than conditional probabilities. For example, the area of topic-term circle $A^\text{topic-term}_{wk}$ could have been set to be proportional to $\phi_{wk}/\sum_k \phi_{wk}$, but instead we set it to be proportional to $P_{wk}/\sum_k P_{wk}$. So, suppose the term ``foo" had a 0.003 probability under, say, topic 20 and topic 45, and negligible probability under all other topics. One might expect that upon highlighting ``foo", the topic-term circles would all disappear except for two equal-area topic-term circles representing topics 20 and 45. Instead, if, for example, topic 20 occurred twice as frequently as topic 45, then the topic-term circle for topic 20 would be twice as large as that for topic 45 upon ``foo" being highlighted. This reflects the fact that 2/3 of the occurrences of ``foo" in the training data were estimated to have come from topic 20. In other words, we reflect the underlying (and potentially variable) frequencies of the topics themselves when we compute the areas of the topic-term circles.
+\item Note that the all the visual elements represent frequencies (of various things in the training data), rather than conditional probabilities. For example, the area of topic-term circle $A^\text{topic-term}_{kw}$ could have been set to be proportional to $\phi_{kw}/\sum_k \phi_{kw}$, but instead we set it to be proportional to $P_{kw}/\sum_k P_{kw}$. So, suppose the term ``foo" had a 0.003 probability under, say, topic 20 and topic 45, and negligible probability under all other topics. One might expect that upon highlighting ``foo", the topic-term circles would all disappear except for two equal-area topic-term circles representing topics 20 and 45. Instead, if, for example, topic 20 occurred twice as frequently as topic 45, then the topic-term circle for topic 20 would be twice as large as that for topic 45 upon ``foo" being highlighted. This reflects the fact that 2/3 of the occurrences of ``foo" in the training data were estimated to have come from topic 20. In other words, we reflect the underlying (and potentially variable) frequencies of the topics themselves when we compute the areas of the topic-term circles.
 
 The same principle holds for the red bars and blue bars -- they visualize frequencies, rather than proportions, so that wider bars signify more frequent terms in the training data. We felt this was an important feature of the data to visualize, rather than building a visualization that simply displayed aspects of $\boldsymbol{\phi}$ and $\boldsymbol{\theta}$, which are normalized, and don't reflect the frequencies of the terms and topics in the data.
 
 \item By default, we set the dimensions of the left panel to be 530 x 530 pixels, and we set the sum of the areas of the default topic circles and the topic-term circles to be $530^2/4$, so that these circles cover at most 1/4 of the panel (in practice, because of overlapping circles, they cover less than 1/4 of the area of the panel). Likewise, the sum of the areas of the topic-term circles is set to be 1/4 of the area of the left panel of the display. This way the visualization looks OK for a range of numbers of topics, from roughly $10 \leq K \leq 100$.
 
 \item The centers of the default topic circles are laid out in two dimensions according to a multidimensional scaling (MDS) algorithm that is run on the inter-topic distance matrix. We use Jensen-Shannon divergence to compute distances between topics, and then we use the \texttt{cmdscale()} function in \texttt{R} to implement classical multidimensional scaling. The range of the first coordinate (along the x-axis) is not necessarily equal to that of the second coordinate (along the y-axis); thus we force the aspect ratio to be 1 to preserve the MDS distances. In practice (across the examples we've seen), the ranges of the x and y coordinates are within about 10\% of each other.
+
 \end{enumerate}
 
 
