@@ -29,7 +29,7 @@ Once installed, we recommend a visit to the main help page:
 ```s
 library(LDAvis)
 help(createJSON, package = "LDAvis")
-``` 
+```
 
 The documentation and example on the bottom of that page should provide a quick sense of how to create (and share) your own visualizations. If you want more details about the technical specifications of the visualization, see the vignette:
 
@@ -56,6 +56,9 @@ to the end of the URL, where "k", "l", and "s" are strings indicating the desire
 ### Video demos
 
 * [Visualizing & Exploring the Twenty Newsgroup Data](http://stat-graphics.org/movies/ldavis.html)
+* [Visualizing Topic Models demo with Hacker News Corpus](https://www.youtube.com/watch?v=tGxW2BzC_DU)
+  * [Notebook w/Visualization](http://nbviewer.ipython.org/github/bmabey/hacker_news_topic_modelling/blob/master/HN%20Topic%20Model%20Talk.ipynb)
+  * [Slide deck](https://speakerdeck.com/bmabey/visualizing-topic-models)
 
 ### More documentation
 
