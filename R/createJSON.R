@@ -69,9 +69,9 @@
 #' # You may want to just write the JSON and other dependency files 
 #' # to a folder named TwentyNewsgroups under the working directory
 #' serVis(json, out.dir = 'TwentyNewsgroups', open.browser = FALSE)
-#' # then you could use a server of your choice
-#' system("cd TwentyNewsgroups && python -m SimpleHTTPServer", wait = FALSE)
-#' browseURL("http://localhost:8000")
+#' # then you could use a server of your choice; for example,
+#' # open your terminal, type `cd TwentyNewsgroups && python -m SimpleHTTPServer`
+#' # then open http://localhost:8000 in your web browser
 #'
 #' # A different data set: the Jeopardy Questions+Answers data:
 #' # Install LDAvisData (the associated data package) if not already installed:
