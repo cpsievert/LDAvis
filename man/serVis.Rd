@@ -8,17 +8,20 @@ serVis(json, out.dir = tempfile(), open.browser = interactive(),
   as.gist = FALSE, ...)
 }
 \arguments{
-  \item{json}{character string output from \link{createJSON}.}
-  \item{out.dir}{directory to store html/js/json files.}
-  \item{open.browser}{Should R open a browser? If yes, this
-  function will attempt to create a local file server via
-  the servr package. This is necessary since the javascript
-  needs to access local files and most browsers will not
-  allow this.} \item{as.gist}{should the vis be uploaded as a
-  gist? Will prompt for an interactive login if the GITHUB_PAT
-  environment variable is not set. For more details, see
-  \url{https://github.com/ropensci/gistr#authentication}.}
-  \item{...}{arguments passed onto \code{gistr::gist_create}}
+\item{json}{character string output from \link{createJSON}.}
+
+\item{out.dir}{directory to store html/js/json files.}
+
+\item{open.browser}{Should R open a browser? If yes, this function will
+attempt to create a local file server via the servr package.
+This is necessary since the javascript needs to access local files and most
+browsers will not allow this.}
+
+\item{as.gist}{should the vis be uploaded as a gist? Will prompt for an
+interactive login if the GITHUB_PAT environment variable is not set. For more
+details, see \url{https://github.com/ropensci/gistr#authentication}.}
+
+\item{...}{arguments passed onto \code{gistr::gist_create}}
 }
 \value{
 An invisible object.
@@ -27,15 +30,13 @@ An invisible object.
 View and/or share LDAvis in a browser.
 }
 \details{
-This function will place the necessary html/js/css
-files (located in \code{system.file("htmljs", package =
-"LDAvis")}) in a directory specified by \code{out.dir},
-start a local file server in that directory (if necessary),
+This function will place the necessary html/js/css files (located in
+\code{system.file("htmljs", package = "LDAvis")}) in a directory specified
+by \code{out.dir}, start a local file server in that directory (if necessary),
 and (optionally) open the default browser in this directory.
-If \code{as.gist=TRUE}, it will attempt to upload these
-files as a gist (in this case, please make sure you have the
-gistr package installed as well as your 'github.username'
-and 'github.password' set in \link{options}.)
+If \code{as.gist=TRUE}, it will attempt to upload these files as a gist (in this
+case, please make sure you have the gistr package installed as well as your
+'github.username' and 'github.password' set in \link{options}.)
 }
 \examples{
 \dontrun{

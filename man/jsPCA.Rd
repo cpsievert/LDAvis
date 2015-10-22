@@ -7,13 +7,11 @@
 jsPCA(phi)
 }
 \arguments{
-  \item{phi}{matrix, with each row containing the distribution
-  over terms for a topic, with as many rows as there are
-  topics in the model, and as many columns as there are terms
-  in the vocabulary.}
+\item{phi}{matrix, with each row containing the distribution over terms
+for a topic, with as many rows as there are topics in the model, and as
+many columns as there are terms in the vocabulary.}
 }
 \description{
-Dimension reduction via Jensen-Shannon Divergence &
-Principal Components
+Dimension reduction via Jensen-Shannon Divergence & Principal Components
 }
 

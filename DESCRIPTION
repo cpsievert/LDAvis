@@ -28,7 +28,6 @@ Suggests:
     knitr,
     rmarkdown
 LazyData: true
-Roxygen: list(wrap = TRUE)
 VignetteBuilder: knitr
 URL: https://github.com/cpsievert/LDAvis
 BugReports: https://github.com/cpsievert/LDAvis/issues

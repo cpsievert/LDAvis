@@ -7,7 +7,11 @@
 renderVis(expr, env = parent.frame(), quoted = FALSE)
 }
 \arguments{
-  \item{expr}{} \item{env}{} \item{quoted}{}
+\item{expr}{}
+
+\item{env}{}
+
+\item{quoted}{}
 }
 \description{
 Shiny server output function customized for animint plots

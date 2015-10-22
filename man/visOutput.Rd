@@ -7,7 +7,7 @@
 visOutput(outputId)
 }
 \arguments{
-  \item{outputId}{output variable to read the plot from}
+\item{outputId}{output variable to read the plot from}
 }
 \description{
 Shiny ui output function

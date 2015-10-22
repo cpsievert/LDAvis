@@ -10,57 +10,65 @@ createJSON(phi = matrix(), theta = matrix(), doc.length = integer(),
   "PC1", ylab = "PC2"), ...)
 }
 \arguments{
-  \item{phi}{matrix, with each row containing the distribution
-  over terms for a topic, with as many rows as there are
-  topics in the model, and as many columns as there are
-  terms in the vocabulary.} \item{theta}{matrix, with each
-  row containing the probability distribution over topics
-  for a document, with as many rows as there are documents
-  in the corpus, and as many columns as there are topics in
-  the model.} \item{doc.length}{integer vector containing
-  the number of tokens in each document of the corpus.}
-  \item{vocab}{character vector of the terms in the vocabulary
-  (in the same order as the columns of \code{phi}). Each term
-  must have at least one character.} \item{term.frequency}
-  {integer vector containing the frequency of each term in
-  the vocabulary.} \item{R}{integer, the number of terms to
-  display in the barcharts of the interactive viz. Default
-  is 30. Recommended to be roughly between 10 and 50.}
-  \item{lambda.step}{a value between 0 and 1. Determines
-  the interstep distance in the grid of lambda values over
-  which to iterate when computing relevance. Default is 0.01.
-  Recommended to be between 0.01 and 0.1.} \item{mds.method}
-  {a function that takes \code{phi} as an input and outputs
-  a K by 2 data.frame (or matrix). The output approximates
-  the distance between topics. See \link{jsPCA} for details
-  on the default method.} \item{cluster}{a cluster object
-  created from the \link{parallel} package. If supplied,
-  computations are performed using \link{parLapply} instead
-  of \link{lapply}.} \item{plot.opts}{a named list used to
-  customize various plot elements. By default, the x and y
-  axes are labeled "PC1" and "PC2" (principal components 1
-  and 2), since \link{jsPCA} is the default scaling method.}
-  \item{...}{not currently used.}
+\item{phi}{matrix, with each row containing the distribution over terms
+for a topic, with as many rows as there are topics in the model, and as
+many columns as there are terms in the vocabulary.}
+
+\item{theta}{matrix, with each row containing the probability distribution
+over topics for a document, with as many rows as there are documents in the
+corpus, and as many columns as there are topics in the model.}
+
+\item{doc.length}{integer vector containing the number of tokens in each
+document of the corpus.}
+
+\item{vocab}{character vector of the terms in the vocabulary (in the same
+order as the columns of \code{phi}). Each term must have at least one
+character.}
+
+\item{term.frequency}{integer vector containing the frequency of each term
+in the vocabulary.}
+
+\item{R}{integer, the number of terms to display in the barcharts
+of the interactive viz. Default is 30. Recommended to be roughly
+between 10 and 50.}
+
+\item{lambda.step}{a value between 0 and 1.
+Determines the interstep distance in the grid of lambda
+values over which to iterate when computing relevance.
+Default is 0.01. Recommended to be between 0.01 and 0.1.}
+
+\item{mds.method}{a function that takes \code{phi} as an input and outputs
+a K by 2 data.frame (or matrix). The output approximates the distance
+between topics. See \link{jsPCA} for details on the default method.}
+
+\item{cluster}{a cluster object created from the \link{parallel} package.
+If supplied, computations are performed using \link{parLapply} instead
+of \link{lapply}.}
+
+\item{plot.opts}{a named list used to customize various plot elements.
+By default, the x and y axes are labeled "PC1" and "PC2"
+(principal components 1 and 2), since \link{jsPCA} is the default
+scaling method.}
+
+\item{...}{not currently used.}
 }
 \value{
-A string containing JSON content which can be written to a
-file or feed into \link{serVis} for easy viewing/sharing.
-One element of this string is the new ordering of the
-topics.
+A string containing JSON content which can be written to a file
+or feed into \link{serVis} for easy viewing/sharing. One element of this
+string is the new ordering of the topics.
 }
 \description{
-This function creates the JSON object that feeds the
-visualization template. For a more detailed overview, see
-\code{vignette("details", package = "LDAvis")}
+This function creates the JSON object that feeds the visualization template.
+For a more detailed overview,
+see \code{vignette("details", package = "LDAvis")}
 }
 \details{
-The function first computes the topic frequencies (across
-the whole corpus), and then it reorders the topics in
-decreasing order of frequency. The main computation is
-to loop through the topics and through the grid of lambda
-values (determined by \code{lambda.step}) to compute the
-\code{R} most \emph{relevant} terms for each topic and value
-of lambda.
+The function first computes the topic frequencies (across the whole
+corpus), and then it reorders the topics in decreasing order of
+frequency. The main computation is to loop through the topics and through the
+grid of lambda values (determined by \code{lambda.step})
+to compute the \code{R} most
+\emph{relevant} terms for each topic and value of lambda.
 }
 \examples{
 \dontrun{
@@ -125,11 +133,10 @@ serVis(json) # Results in a different topic layout in the left panel
 }
 }
 \references{
-Sievert, C. and Shirley, K. (2014) \emph{LDAvis: A Method
-for Visualizing and Interpreting Topics}, ACL Workshop
-on Interactive Language Learning, Visualization, and
-Interfaces. \url{http://nlp.stanford.edu/events/illvi2014/
-papers/sievert-illvi2014.pdf}
+Sievert, C. and Shirley, K. (2014) \emph{LDAvis: A Method for
+Visualizing and Interpreting Topics}, ACL Workshop on Interactive
+Language Learning, Visualization, and Interfaces.
+\url{http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf}
 }
 \seealso{
 \link{serVis}
