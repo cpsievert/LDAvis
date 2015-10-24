@@ -2,7 +2,6 @@
 *.Rproj
 .Rproj.user
 .DS_Store
-inst/doc/
 inst/examples/*/*
 !inst/examples/*/*.R
 !inst/examples/*/*.Rmd

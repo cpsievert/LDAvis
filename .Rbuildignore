@@ -4,9 +4,6 @@
 .travis.yml
 .push_gh_pages.sh
 cran-comments.md
-inst/examples/fcc
-inst/examples/twitter.Rmd
-vignettes/*.pdf
-vignettes/*.tex
-vignettes/*.log
-vignettes/*.gz
+inst/examples/*/*
+!inst/examples/*/*.R
+!inst/examples/*/*.Rmd

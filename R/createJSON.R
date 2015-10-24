@@ -297,6 +297,6 @@ jsPCA <- function(phi) {
   }
   dist.mat <- proxy::dist(x = phi, method = jensenShannon)
   # then, we reduce the K by K proximity matrix down to K by 2 using PCA
-  pca.fit <- cmdscale(dist.mat, k = 2)
+  pca.fit <- stats::cmdscale(dist.mat, k = 2)
   data.frame(x = pca.fit[,1], y = pca.fit[,2])
 }

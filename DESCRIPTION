@@ -26,7 +26,9 @@ Suggests:
     servr,
     shiny,
     knitr,
-    rmarkdown
+    rmarkdown,
+    digest,
+    htmltools
 LazyData: true
 VignetteBuilder: knitr
 URL: https://github.com/cpsievert/LDAvis

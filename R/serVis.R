@@ -54,7 +54,7 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
       gist <- gistr::gist_create(file.path(out.dir, list.files(out.dir)), ...)
       if (interactive()) gist
       url_name <- paste("http://bl.ocks.org", gist$id, sep = "/")
-      if (open.browser) browseURL(url_name)
+      if (open.browser) utils::browseURL(url_name)
     }
     return(invisible())
   }
@@ -66,7 +66,7 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
                "and re-run serVis: \n install.packages('servr') \n",
               "Alternatively, you could configure your default browser to allow\n", 
               "access to local files as some browsers block this by default") 
-      browseURL(sprintf("%s/index.html", out.dir))
+      utils::browseURL(sprintf("%s/index.html", out.dir))
     } else {
       servr::httd(dir = out.dir)
     }

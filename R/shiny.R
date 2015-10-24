@@ -8,7 +8,7 @@ visOutput <- function(outputId) {
   if (!requireNamespace("shiny")) message("Please install.packages('shiny')")
   deps <- lapply(ldavis_dependencies(), shiny::createWebDependency)
   htmltools::attachDependencies(
-    tags$div(id = outputId, class = 'shinyLDAvis'), 
+    htmltools::tags$div(id = outputId, class = 'shinyLDAvis'), 
     deps
   )
 }
@@ -18,9 +18,9 @@ visOutput <- function(outputId) {
 #' Shiny server output function customized for animint plots 
 #' (similar to \code{shiny::plotOutput} and friends).
 #' 
-#' @param expr
-#' @param env
-#' @param quoted
+#' @param expr An expression that generates a plot.
+#' @param env The environment in which to evaluate \code{expr}.
+#' @param quoted Is expr a quoted expression (with \code{quote()})? This is useful if you want to save an expression in a variable.
 #' @seealso http://shiny.rstudio.com/articles/building-outputs.html
 #' @export
 #' 
@@ -66,21 +66,21 @@ html_dependency_d3 <- function() {
 
 html_dependency_ldavis <- function() {
   htmltools::htmlDependency(name = "ldavis",
-                            version = packageVersion("LDAvis"),
+                            version = utils::packageVersion("LDAvis"),
                             src = system.file("htmljs", package = "LDAvis"),
                             script = "ldavis.js")
 }
 
 html_dependency_ldavis_css <- function() {
   htmltools::htmlDependency(name = "ldavis-css",
-                            version = packageVersion("LDAvis"),
+                            version = utils::packageVersion("LDAvis"),
                             src = system.file("htmljs", package = "LDAvis"),
                             stylesheet = "lda.css")
 }
 
 html_dependency_ldavis_shiny <- function() {
   htmltools::htmlDependency(name = "shinyLDAvis",
-                            version = packageVersion("LDAvis"),
+                            version = utils::packageVersion("LDAvis"),
                             src = system.file("shiny", package = "LDAvis"),
                             script = "shinyLDAvis.js")
 }
