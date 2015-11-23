@@ -1,0 +1,29 @@
+citHeader("To cite LDAvis in publications use:")
+
+year <- sub('.*(2[[:digit:]]{3})-.*', '\\1', meta$Date, perl = TRUE)
+vers <- paste('R package version', meta$Version)
+
+bibentry(
+  bibtype = "Article",
+  title = "LDAvis: A method for visualizing and interpreting topics.",
+  author = personList(as.person("Carson Sievert"), as.person("Kenny Shirley")),
+  journal = "Proceedings of the Workshop on Interactive Language Learning, Visualization, and Interfaces.",
+  year = "2014",
+  url = "http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf",
+
+  textVersion =
+  paste("Carson Sievert and Kenny Shirley (2014).",
+        "LDAvis: A method for visualizing and interpreting topics.",
+        "Proceedings of the Workshop on Interactive Language Learning, Visualization, and Interfaces.",
+        "URL http://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf.")
+)
+
+citEntry(
+  entry = 'manual',
+  title = paste('LDAvis:', meta$Title),
+  author = as.person(meta$Author),
+  year = year,
+  note = vers,
+  url = meta$URL,
+  textVersion = paste('Carson Sievert and Kenny Shirley (', year, '). LDAvis: ', meta$Title, '. ', vers, '.', sep = '')
+)
