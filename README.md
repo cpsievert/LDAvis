@@ -4,7 +4,7 @@
 
 R package for interactive topic model visualization.
 
-![LDAvis icon](http://www2.research.att.com/~kshirley/figures/ldavis-pic.png)
+![LDAvis icon](http://www.kennyshirley.com/figures/ldavis-pic.png)
 
 **LDAvis** is designed to help users interpret the topics in a topic model that has been fit to a corpus of text data. The package extracts information from a fitted LDA topic model to inform an interactive web-based visualization.
 
