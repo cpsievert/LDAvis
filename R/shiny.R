@@ -2,7 +2,6 @@
 #' @param outputId output variable to read the plot from
 #' @seealso http://shiny.rstudio.com/articles/building-outputs.html
 #' @export
-#' 
 visOutput <- function(outputId) {
   # Note that requireNamespace("shiny") should load digest & htmltools (both used later on)
   if (!requireNamespace("shiny")) message("Please install.packages('shiny')")
@@ -23,7 +22,6 @@ visOutput <- function(outputId) {
 #' @param quoted Is expr a quoted expression (with \code{quote()})? This is useful if you want to save an expression in a variable.
 #' @seealso http://shiny.rstudio.com/articles/building-outputs.html
 #' @export
-#' 
 renderVis <- function(expr, env = parent.frame(), quoted = FALSE) {
   # Note that requireNamespace("shiny") should load digest & htmltools (both used later on)
   if (!requireNamespace("shiny")) message("Please install.packages('shiny')")

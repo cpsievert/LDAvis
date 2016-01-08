@@ -34,6 +34,8 @@
 #' By default, the x and y axes are labeled "PC1" and "PC2" 
 #' (principal components 1 and 2), since \link{jsPCA} is the default
 #' scaling method.
+#' @param reorder.topics whether to re-order the K topics in order 
+#' of decreasing proportion.
 #' @param ... not currently used.
 #'
 #' @details The function first computes the topic frequencies (across the whole
@@ -121,6 +123,7 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
                        vocab = character(), term.frequency = integer(), R = 30, 
                        lambda.step = 0.01, mds.method = jsPCA, cluster, 
                        plot.opts = list(xlab = "PC1", ylab = "PC2"), 
+                       reorder.topics = TRUE,
                        ...) {
   # Set the values of a few summary statistics of the corpus and model:
   dp <- dim(phi)  # should be K x W
@@ -160,7 +163,11 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
   topic.proportion <- topic.frequency/sum(topic.frequency)
 
   # re-order the K topics in order of decreasing proportion:
-  o <- order(topic.proportion, decreasing = TRUE)
+  if(reorder.topics)
+    o <- order(topic.proportion, decreasing = TRUE)
+  else 
+    o <- seq_along(topic.proportion)
+  
   phi <- phi[o, ]
   theta <- theta[, o]
   topic.frequency <- topic.frequency[o]
