@@ -1,3 +1,7 @@
+  CHANGES IN LDAvis VERSION 0.3.3
+
+A new argument, reorder.topics, was added to createJSON(). For details, see #51
+
   CHANGES IN LDAvis VERSION 0.3.2
   
 BUG FIX
