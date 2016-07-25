@@ -1,0 +1,17 @@
+base, polish
+"Marginal topic distribution", "Rozkład brzegowy tematów"
+"Intertopic Distance Map (via multidimensional scaling)", "Mapa odległości między tematami (na bazie skalowania wielowymiarowego)"
+"Overall term frequency", "Całkowita częstość terminu"
+"Estimated term frequency within the selected topic", "Przewidywana częstość terminu w wybranym temacie"
+"1. saliency(term w) = frequency(w) * [sum_t p(t | w) * log(p(t | w)/p(t))] for topics t; see Chuang et. al (2012)", "1. widoczność(terminu w) = częstość(w) * [sum_t p(t | w) * log(p(t | w)/p(t))] dla tematu t; Chuang et. al (2012)",
+""2. relevance(term w | topic t) = \u03BB * p(w | t) + (1 - \u03BB) * p(w | t)/p(w); see Sievert & Shirley (2014)"", "2. związek(terminu w | temat t) = \u03BB * p(w | t) + (1 - \u03BB) * p(w | t)/p(w); Sievert & Shirley (2014)",
+" Most Salient Terms", " Najbardziej Widocznych Terminów "
+"Slide to adjust relevance metric:", "Dopasuj miarę związku terminów z tematami"
+" Most Relevant Terms for Topic ", " Najbardziej Związaych Terminy z Tematem "
+"% of tokens)", "% wyrazów)"
+"Conditional topic distribution given term = '", "Warunkowy rozkład tematów przy zadanym terminie = '"
+"Previous Topic", "Poprzedni Temat"
+"Next Topic", "Następny Temat"
+"Clear Topic", "Wyczyść"
+"Selected Topic: <span", "Wybrany Temat: <span"
+"mdswidth = 530", "mdswidth = 620"

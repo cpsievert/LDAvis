@@ -20,11 +20,13 @@
 #' interactive login if the GITHUB_PAT environment variable is not set. For more
 #' details, see \url{https://github.com/ropensci/gistr#authentication}.
 #' @param ... arguments passed onto \code{gistr::gist_create}
+#' @param language Which language to use in visualization? So far: \code{english} or \code{polish}.
 #' 
 #' @return An invisible object.
 #' @seealso \link{createJSON}
 #' @export
 #' @author Carson Sievert
+#' @importFrom utils read.csv
 #' @examples
 #' 
 #' \dontrun{
@@ -33,13 +35,32 @@
 #' }
 
 serVis <- function(json, out.dir = tempfile(), open.browser = interactive(), 
-                   as.gist = FALSE, ...) {
+                   as.gist = FALSE, language = "english", ...) {
 
+  stopifnot(is.character(language), length(language) == 1, language %in% c('english', 'polish'))
+  
   ## Copy html/js/css files to out.dir
   dir.create(out.dir)
   src.dir <- system.file("htmljs", package = "LDAvis")
   to.copy <- Sys.glob(file.path(src.dir, "*"))
   file.copy(to.copy, out.dir, overwrite = TRUE, recursive = TRUE)
+  
+  ## Substitute words to different language if required
+  if (language != 'english') {
+    ldavis.js <- readLines(file.path(out.dir, "ldavis.js")) # changes are made only in this file
+    lang.dict <- read.csv(system.file("languages/dictionary.txt",
+                                      package = "LDAvis")) # read the dictionary
+    for (i in 1:nrow(lang.dict)){ # substitute sentences row by row
+      ldavis.js <- gsub(x  = ldavis.js, pattern = lang.dict[i, 1], 
+                        replacement = lang.dict[i, language], fixed = TRUE)
+    }
+    # lambda coordinate to display its value
+    if (language == 'polish') {
+      ldavis.js[674] <- gsub(ldavis.js[674], pattern = "80", replacement ="175", fixed = TRUE)
+    }
+    # save new language version
+    write(ldavis.js, file = file.path(out.dir, "ldavis.js"))
+  }
   
   ## Write json to out.dir
   cat(json, file = file.path(out.dir, "lda.json"))
