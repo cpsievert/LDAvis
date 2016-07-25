@@ -334,7 +334,7 @@ LDAvis = function(to_select, json_file) {
             .attr('class', "circleGuideTitle")
             .style("text-anchor", "left")
             .style("fontWeight", "bold")
-            .text("Marginal topic distribtion");
+            .text("Marginal topic distribution");
         d3.select("#leftpanel").append("text")
             .attr("x", cx2 + 10)
             .attr("y", mdsheight + 2 * newSmall)
