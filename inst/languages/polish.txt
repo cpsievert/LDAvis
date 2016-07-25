@@ -1,4 +1,4 @@
-base, substitute
+base, polish
 "Marginal topic distribution", "Rozkład brzegowy tematów"
 "Intertopic Distance Map (via multidimensional scaling)", "Mapa odległości między tematami (na bazie skalowania wielowymiarowego)"
 "Overall term frequency", "Całkowita częstość terminu"
