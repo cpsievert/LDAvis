@@ -48,12 +48,11 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
   ## Substitute words to different language if required
   if (language != 'english') {
     ldavis.js <- readLines(file.path(out.dir, "ldavis.js")) # changes are made only in this file
-    lang.dict.src <- list.files(system.file("languages", package = "LDAvis"),
-                                pattern = language, full.names = TRUE) # take the dictionary for that language
-    lang.dict <- read.csv(lang.dict.src) # read the dictionary
+    lang.dict <- read.csv(system.file("languages/dictionary.txt",
+                                      package = "LDAvis")) # read the dictionary
     for (i in 1:nrow(lang.dict)){ # substitute sentences row by row
       ldavis.js <- gsub(x  = ldavis.js, pattern = lang.dict[i, 1], 
-                        replacement = lang.dict[i, 2], fixed = TRUE)
+                        replacement = lang.dict[i, language], fixed = TRUE)
     }
     # lambda coordinate to display its value
     if (language == 'polish') {
