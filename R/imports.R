@@ -4,3 +4,4 @@
 #' @importFrom proxy dist
 #' @importFrom utils packageVersion browseURL
 #' @importFrom stats cmdscale
+#' @importFrom utils read.csv
