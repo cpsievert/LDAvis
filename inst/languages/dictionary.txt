@@ -7,7 +7,7 @@ base, polish
 ""2. relevance(term w | topic t) = \u03BB * p(w | t) + (1 - \u03BB) * p(w | t)/p(w); see Sievert & Shirley (2014)"", "2. związek(terminu w | temat t) = \u03BB * p(w | t) + (1 - \u03BB) * p(w | t)/p(w); Sievert & Shirley (2014)",
 " Most Salient Terms", " Najbardziej Widocznych Terminów "
 "Slide to adjust relevance metric:", "Dopasuj miarę związku terminów z tematami"
-" Most Relevant Terms for Topic ", " Najbardziej Związaych Terminy z Tematem "
+" Most Relevant Terms for Topic ", " Najbardziej Związanych Terminów z Tematem "
 "% of tokens)", "% wyrazów)"
 "Conditional topic distribution given term = '", "Warunkowy rozkład tematów przy zadanym terminie = '"
 "Previous Topic", "Poprzedni Temat"
