@@ -35,7 +35,7 @@
 #' }
 
 serVis <- function(json, out.dir = tempfile(), open.browser = interactive(), 
-                   as.gist = FALSE, language = "english", ...) {
+                   as.gist = FALSE, language = "english", use.bytes = FALSE, ...) {
 
   stopifnot(is.character(language), length(language) == 1, language %in% c('english', 'polish'))
   
@@ -63,7 +63,13 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
   }
   
   ## Write json to out.dir
-  cat(json, file = file.path(out.dir, "lda.json"))
+  if (use.bytes) {
+    # This will make the json utf-8 if we are on windows and the inputs were utf-8 encoded
+	  writeLines(json, con = file.path(out.dir, "lda.json"), useBytes = TRUE)
+  }
+  else {
+    cat(json, file = file.path(out.dir, "lda.json"))
+  }
   
   ## Try to upload gist
   if (as.gist) {
