@@ -1,7 +1,6 @@
 knit_examples <- function() {
   old <- getwd()
   on.exit(setwd(old))
-  if (basename(old) != 'examples') stop("basename(getwd()) != 'examples'")
   dirs <- dir()
   # keep only directories
   dirs <- dirs[file_test("-d", dirs)]
