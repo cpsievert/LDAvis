@@ -23,4 +23,3 @@ of each topic in the corpus.}
 \description{
 This function is deprecated as of version 0.2
 }
-

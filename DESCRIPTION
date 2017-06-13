@@ -8,9 +8,9 @@ Description: Tools to create an interactive web-based visualization of a
     topic model that has been fit to a corpus of text data using
     Latent Dirichlet Allocation (LDA). Given the estimated parameters of
     the topic model, it computes various summary statistics as input to
-    an interactive visualization built with D3.js that is accessed via
+    an interactive visualization built with 'D3.js' that is accessed via
     a browser. The goal is to help users interpret the topics in their
-    LDA topic model.
+    'LDA' topic model.
 Depends:
     R (>= 2.10)
 Imports:
@@ -33,4 +33,4 @@ LazyData: true
 VignetteBuilder: knitr
 URL: https://github.com/cpsievert/LDAvis
 BugReports: https://github.com/cpsievert/LDAvis/issues
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

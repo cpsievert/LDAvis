@@ -20,4 +20,3 @@ Shiny server output function customized for animint plots
 \seealso{
 http://shiny.rstudio.com/articles/building-outputs.html
 }
-

@@ -16,7 +16,7 @@ R package for interactive topic model visualization.
 install.packages("LDAvis")
 ```
 
-* Development version on GitHub (with [devtools](http://cran.r-project.org/web/packages/devtools/index.html)):
+* Development version on GitHub (with [devtools](https://cran.r-project.org/package=devtools)):
 
 ```r
 devtools::install_github("cpsievert/LDAvis")
@@ -37,11 +37,11 @@ The documentation and example on the bottom of that page should provide a quick 
 vignette("details", package = "LDAvis")
 ```
 
-Note that **LDAvis** itself does not provide facilities for *fitting* the model (only *visualizing* a fitted model). If you want to perform LDA in R, there are several packages, including [mallet](http://cran.r-project.org/web/packages/mallet/index.html), [lda](http://cran.r-project.org/web/packages/lda/index.html), and [topicmodels](http://cran.r-project.org/web/packages/topicmodels/index.html).
+Note that **LDAvis** itself does not provide facilities for *fitting* the model (only *visualizing* a fitted model). If you want to perform LDA in R, there are several packages, including [mallet](https://cran.r-project.org/package=mallet), [lda](https://cran.r-project.org/package=lda), and [topicmodels](https://cran.r-project.org/package=topicmodels).
 
-If you want to perform LDA with the R package **lda** and visualize the result with **LDAvis**, our example of a [20-topic model fit to 2,000 movie reviews](http://cpsievert.github.io/LDAvis/reviews/reviews.html) may be helpful.
+If you want to perform LDA with the R package **lda** and visualize the result with **LDAvis**, our example of a [20-topic model fit to 2,000 movie reviews](https://ldavis.cpsievert.me/reviews/reviews.html) may be helpful.
 
-**LDAvis** does not limit you to topic modeling facilities in R. If you use other tools ([MALLET](http://mallet.cs.umass.edu/) and [gensim](https://radimrehurek.com/gensim/) are popular), we recommend that you visit our [Twenty Newsgroups](http://cpsievert.github.io/LDAvis/newsgroup/newsgroup.html) example to help quickly understand what components **LDAvis** will need.
+**LDAvis** does not limit you to topic modeling facilities in R. If you use other tools ([MALLET](http://mallet.cs.umass.edu/) and [gensim](https://radimrehurek.com/gensim/) are popular), we recommend that you visit our [Twenty Newsgroups](https://ldavis.cpsievert.me/newsgroup/newsgroup.html) example to help quickly understand what components **LDAvis** will need.
 
 ### Sharing a Visualization
 
@@ -49,9 +49,9 @@ To share a visualization that you created using **LDAvis**, you can encode the s
 
 "#topic=k&lambda=l&term=s"
 
-to the end of the URL, where "k", "l", and "s" are strings indicating the desired values of the selected topic, the value of lambda, and the selected term, respectively. For more details, see the last section of our [Movie Reviews example](http://cpsievert.github.io/LDAvis/reviews/reviews.html), or for a quick example, see the link here:
+to the end of the URL, where "k", "l", and "s" are strings indicating the desired values of the selected topic, the value of lambda, and the selected term, respectively. For more details, see the last section of our [Movie Reviews example](https://ldavis.cpsievert.me/reviews/reviews.html), or for a quick example, see the link here:
 
-[http://cpsievert.github.io/LDAvis/reviews/vis/#topic=3&lambda=0.6&term=cop](http://cpsievert.github.io/LDAvis/reviews/vis/#topic=3&lambda=0.6&term=cop)
+<https://ldavis.cpsievert.me/reviews/vis/#topic=3&lambda=0.6&term=cop>
 
 ### Video demos
 

@@ -22,4 +22,3 @@ TwentyNewsgroups
 Twenty Newsgroups Data
 }
 \keyword{datasets}
-

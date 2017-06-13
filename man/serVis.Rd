@@ -47,10 +47,9 @@ case, please make sure you have the gistr package installed as well as your
 help(createJSON, package = "LDAvis")
 }
 }
-\author{
-Carson Sievert
-}
 \seealso{
 \link{createJSON}
 }
-
+\author{
+Carson Sievert
+}

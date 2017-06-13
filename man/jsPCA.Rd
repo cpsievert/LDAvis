@@ -14,4 +14,3 @@ many columns as there are terms in the vocabulary.}
 \description{
 Dimension reduction via Jensen-Shannon Divergence & Principal Components
 }
-

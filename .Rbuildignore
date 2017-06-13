@@ -7,3 +7,6 @@ cran-comments.md
 inst/examples/*/*
 !inst/examples/*/*.R
 !inst/examples/*/*.Rmd
+
+docs
+Makefile
