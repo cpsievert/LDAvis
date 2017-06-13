@@ -114,9 +114,6 @@ MovieReviews <- list(phi = phi,
 Now we're ready to call the `createJSON()` function in **LDAvis**. This function will return a character string representing a JSON object used to populate the visualization. The `createJSON()` function computes topic frequencies, inter-topic distances, and projects topics onto a two-dimensional plane to represent their similarity to each other. It also loops through a grid of values of a tuning parameter, $0 \leq \lambda \leq 1$, that controls how the terms are ranked for each topic, where terms are listed in decreasing of *relevance*, where the relevance of term $w$ to topic $t$ is defined as $\lambda \times p(w \mid t) + (1 - \lambda) \times p(w \mid t)/p(w)$. Values of $\lambda$ near 1 give high relevance rankings to *frequent* terms within a given topic, whereas values of $\lambda$ near zero give high relevance rankings to *exclusive* terms within a topic. The set of all terms which are ranked among the top-`R` most relevant terms for each topic are pre-computed by the `createJSON()` function and sent to the browser to be interactively visualized using D3 as part of the JSON object.
 
 
-```
-## Error in find.package(package, lib.loc, verbose = verbose): there is no package called 'LDAvisData'
-```
 
 
 ```r
@@ -130,19 +127,11 @@ json <- createJSON(phi = MovieReviews$phi,
                    term.frequency = MovieReviews$term.frequency)
 ```
 
-```
-## Error in createJSON(phi = MovieReviews$phi, theta = MovieReviews$theta, : object 'MovieReviews' not found
-```
-
 The `serVis()` function can take `json` and serve the result in a variety of ways. Here we'll write `json` to a file within the 'vis' directory (along with other HTML and JavaScript required to render the page). You can see the result [here](http://cpsievert.github.io/LDAvis/reviews/vis).
 
 
 ```r
 serVis(json, out.dir = 'vis', open.browser = FALSE)
-```
-
-```
-## Error in cat(json, file = file.path(out.dir, "lda.json")): object 'json' not found
 ```
 
 If you discover something interesting in your data using **LDAvis**, you can share the result via a URL since the state of the visualization is stored in the URL at all times. For example, in the movie review data, you can quickly see that Topic 7 is broadly about comedies by linking directly to the state of LDAvis where the selected Topic is "7" and the value of $\lambda$ is 0.6 with the following URL:

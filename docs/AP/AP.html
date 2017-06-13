@@ -207,21 +207,11 @@ hr {
 
 <pre><code class="r">library(&quot;LDAvis&quot;)
 data(AP, package = &quot;LDAvisData&quot;)
+json &lt;- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
+serVis(json, out.dir = &#39;vis&#39;, open.browser = FALSE)
 </code></pre>
 
-<pre><code>## Error in find.package(package, lib.loc, verbose = verbose): there is no package called &#39;LDAvisData&#39;
-</code></pre>
-
-<pre><code class="r">json &lt;- with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency))
-</code></pre>
-
-<pre><code>## Error in with(AP, createJSON(phi, theta, doc.length, vocab, term.frequency)): object &#39;AP&#39; not found
-</code></pre>
-
-<pre><code class="r">serVis(json, out.dir = &#39;vis&#39;, open.browser = FALSE)
-</code></pre>
-
-<pre><code>## Error in cat(json, file = file.path(out.dir, &quot;lda.json&quot;)): object &#39;json&#39; not found
+<pre><code>## Loading required namespace: servr
 </code></pre>
 
 </body>

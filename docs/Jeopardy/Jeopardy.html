@@ -207,21 +207,8 @@ hr {
 
 <pre><code class="r">library(&quot;LDAvis&quot;)
 data(Jeopardy, package = &quot;LDAvisData&quot;)
-</code></pre>
-
-<pre><code>## Error in find.package(package, lib.loc, verbose = verbose): there is no package called &#39;LDAvisData&#39;
-</code></pre>
-
-<pre><code class="r">json &lt;- with(Jeopardy, createJSON(phi, theta, doc.length, vocab, term.frequency))
-</code></pre>
-
-<pre><code>## Error in with(Jeopardy, createJSON(phi, theta, doc.length, vocab, term.frequency)): object &#39;Jeopardy&#39; not found
-</code></pre>
-
-<pre><code class="r">serVis(json, out.dir = &#39;vis&#39;, open.browser = FALSE)
-</code></pre>
-
-<pre><code>## Error in cat(json, file = file.path(out.dir, &quot;lda.json&quot;)): object &#39;json&#39; not found
+json &lt;- with(Jeopardy, createJSON(phi, theta, doc.length, vocab, term.frequency))
+serVis(json, out.dir = &#39;vis&#39;, open.browser = FALSE)
 </code></pre>
 
 </body>

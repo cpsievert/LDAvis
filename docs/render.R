@@ -7,7 +7,7 @@ knit_examples <- function() {
   # navigate intp each example and knit individually
   for (i in dirs) {
     setwd(i)
-    e <- try(knitr::knit2html(input = paste0(i, ".Rmd"), envir = new.env()))
+    knitr::knit2html(input = paste0(i, ".Rmd"), envir = new.env())
     setwd(old)
   }
 }
