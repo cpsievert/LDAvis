@@ -21,7 +21,7 @@
 #' details, see \url{https://github.com/ropensci/gistr#authentication}.
 #' @param ... arguments passed onto \code{gistr::gist_create}
 #' @param language Which language to use in visualization? So far: \code{english} or \code{polish}.
-#' @param utf8 Should the output be forced to be UTF-8 encoded?
+#' @param encoding Sets the encoding to be used when writing the JSON file.
 #'
 #' @return An invisible object.
 #' @seealso \link{createJSON}
@@ -36,7 +36,7 @@
 #' }
 
 serVis <- function(json, out.dir = tempfile(), open.browser = interactive(), 
-                   as.gist = FALSE, language = "english", utf8 = FALSE, ...) {
+                   as.gist = FALSE, language = "english", encoding = getOption("encoding"), ...) {
 
   stopifnot(is.character(language), length(language) == 1, language %in% c('english', 'polish'))
   
@@ -64,13 +64,7 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
   }
   
   ## Write json to out.dir
-  if (utf8) {
-    # This will make the json utf-8 if we are on windows and the inputs were utf-8 encoded
-	con <- file(file.path(out.dir, "lda.json"), encoding = "UTF-8")	  
-  }
-  else {
-	con <- file(file.path(out.dir, "lda.json"))
-  }
+  con <- file(file.path(out.dir, "lda.json"), encoding = encoding)	  
   on.exit(close.connection(con))
   cat(json, file = con)
 

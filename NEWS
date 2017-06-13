@@ -1,6 +1,6 @@
   CHANGES IN LDAvis VERSION 0.3.4
 
-A new argument, utf8, was added to serVis(). This fixes an issue where, when running on windows, the JSON output would be encoded in ANSI despite the R data beeing encoded in UTF-8. This should also fix #50.
+A new argument, encoding, was added to serVis(). This sets the encoding which will be used to write the JSON file. This may be set to `UTF-8` to  fix an issue where, when running on windows, the JSON output would be encoded in ANSI despite the R data beeing encoded in UTF-8. This should also fix #50.
 
   CHANGES IN LDAvis VERSION 0.3.3
 
