@@ -2,11 +2,17 @@
 
 language: r
 cache: packages
+sudo: true
 dist: trusty
+
 r:
   - oldrel
   - release
   - devel
+
+# system requirements for rJava and topicmodels packages
+# http://stackoverflow.com/questions/16438073/unable-to-install-rjava-in-r-3-0-in-ubuntu-13-04?rq=1
+# http://stackoverflow.com/questions/25759007/error-installing-topicmodels-package-non-zero-exit-status-ubuntu
+install:
+  - sudo apt-get install libgsl0-dev openjdk-7-*
   
-r_binary_packages:
-  - topicmodels
