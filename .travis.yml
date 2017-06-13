@@ -10,6 +10,9 @@ r:
   - release
   - devel
 
+r_build_args:
+  --no-build-vignettes
+
 # system requirements for rJava and topicmodels packages
 # http://stackoverflow.com/questions/16438073/unable-to-install-rjava-in-r-3-0-in-ubuntu-13-04?rq=1
 # http://stackoverflow.com/questions/25759007/error-installing-topicmodels-package-non-zero-exit-status-ubuntu
