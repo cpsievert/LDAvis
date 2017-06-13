@@ -2,6 +2,7 @@
 
 language: r
 cache: packages
+dist: trusty
 r:
   - oldrel
   - release
