@@ -5,7 +5,8 @@
 \title{View and/or share LDAvis in a browser}
 \usage{
 serVis(json, out.dir = tempfile(), open.browser = interactive(),
-  as.gist = FALSE, language = "english", ...)
+  as.gist = FALSE, language = "english", encoding = getOption("encoding"),
+  ...)
 }
 \arguments{
 \item{json}{character string output from \link{createJSON}.}
@@ -22,6 +23,8 @@ interactive login if the GITHUB_PAT environment variable is not set. For more
 details, see \url{https://github.com/ropensci/gistr#authentication}.}
 
 \item{language}{Which language to use in visualization? So far: \code{english} or \code{polish}.}
+
+\item{encoding}{Sets the encoding to be used when writing the JSON file.}
 
 \item{...}{arguments passed onto \code{gistr::gist_create}}
 }
