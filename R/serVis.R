@@ -21,7 +21,8 @@
 #' details, see \url{https://github.com/ropensci/gistr#authentication}.
 #' @param ... arguments passed onto \code{gistr::gist_create}
 #' @param language Which language to use in visualization? So far: \code{english} or \code{polish}.
-#' 
+#' @param encoding Sets the encoding to be used when writing the JSON file.
+#'
 #' @return An invisible object.
 #' @seealso \link{createJSON}
 #' @export
@@ -35,7 +36,7 @@
 #' }
 
 serVis <- function(json, out.dir = tempfile(), open.browser = interactive(), 
-                   as.gist = FALSE, language = "english", ...) {
+                   as.gist = FALSE, language = "english", encoding = getOption("encoding"), ...) {
 
   stopifnot(is.character(language), length(language) == 1, language %in% c('english', 'polish'))
   
@@ -63,8 +64,10 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
   }
   
   ## Write json to out.dir
-  cat(json, file = file.path(out.dir, "lda.json"))
-  
+  con <- file(file.path(out.dir, "lda.json"), encoding = encoding)	  
+  on.exit(close.connection(con))
+  cat(json, file = con)
+
   ## Try to upload gist
   if (as.gist) {
     gistd <- requireNamespace('gistr')
