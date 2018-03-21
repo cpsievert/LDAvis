@@ -300,7 +300,8 @@ jsPCA <- function(phi) {
   # http://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence
   jensenShannon <- function(x, y) {
     m <- 0.5*(x + y)
-    0.5*sum(x*log(x/m)) + 0.5*sum(y*log(y/m))
+    0.5*sum(ifelse(x == 0, 0, x*log(x/m))) + 
+        0.5*sum(ifelse(y == 0, 0, y*log(y/m)))
   }
   dist.mat <- proxy::dist(x = phi, method = jensenShannon)
   # then, we reduce the K by K proximity matrix down to K by 2 using PCA
