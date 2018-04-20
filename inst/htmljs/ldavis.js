@@ -1352,6 +1352,9 @@ LDAvis = function(to_select, json_file) {
             vis_state.term = "";
             document.getElementById(topicID).value = vis_state.topic = 0;
             state_save(true);
+            d3.selectAll(".terms").attr("id", function(d) {
+              return (termID + d.Term)
+            });
         }
 
     });
