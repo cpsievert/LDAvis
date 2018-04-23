@@ -172,9 +172,11 @@ LDAvis = function(to_select, json_file) {
                 // increment the value in the input box
                 document.getElementById(topicID).value = value_new;
                 topic_off(document.getElementById(topicID + value_old));
-                topic_on(document.getElementById(topicID + value_new));
+                var oldtopic = document.getElementById(topicID + value_new);
+                topic_on(oldtopic);
                 vis_state.topic = value_new;
                 state_save(true);
+                topic_click(oldtopic, value_new);
             })
 
         d3.select("#" + topicDown)
@@ -188,9 +190,11 @@ LDAvis = function(to_select, json_file) {
                 // increment the value in the input box
                 document.getElementById(topicID).value = value_new;
                 topic_off(document.getElementById(topicID + value_old));
-                topic_on(document.getElementById(topicID + value_new));
+                var oldtopic = document.getElementById(topicID + value_new);
+                topic_on(oldtopic);
                 vis_state.topic = value_new;
                 state_save(true);
+                topic_click(oldtopic, value_new);
             })
 
         d3.select("#" + topicID)
@@ -203,10 +207,12 @@ LDAvis = function(to_select, json_file) {
                 var value_new = document.getElementById(topicID).value;
                 if (!isNaN(value_new) && value_new > 0) {
                     value_new = Math.min(K, Math.max(1, value_new))
-                    topic_on(document.getElementById(topicID + value_new));
+                    var oldtopic = document.getElementById(topicID + value_new);
+                    topic_on(oldtopic);
                     vis_state.topic = value_new;
                     state_save(true);
                     document.getElementById(topicID).value = vis_state.topic;
+                    topic_click(oldtopic, value_new);
                 }
             })
 
