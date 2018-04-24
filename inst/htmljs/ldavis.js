@@ -1412,6 +1412,9 @@ LDAvis = function(to_select, json_file) {
         }
         
         function topic_click(newtopic, newtopic_num) {
+            if (!inShinyMode) {
+              return null;
+            }
             // set style of clicked topic to have thicker border
             newtopic.style.strokeWidth = 2;
             
@@ -1424,18 +1427,18 @@ LDAvis = function(to_select, json_file) {
             // save state of topic clicked
             vis_state.topic_clicked = newtopic_num;
             
-            if (inShinyMode) {
-                // update shiny input$ldavis_topic_clicked object to be new topic clicked 
-                Shiny.onInputChange('ldavis_topic_clicked', newtopic_num);
-            
-                // since topic changed, we want to reset the input$ldavis_term_clicked
-                // object back to null
-                Shiny.onInputChange('ldavis_term_clicked', null);
-            }
+            // update shiny input$ldavis_topic_clicked object to be new topic clicked 
+            Shiny.onInputChange('ldavis_topic_clicked', newtopic_num);
+        
+            // since topic changed, we want to reset the input$ldavis_term_clicked
+            // object back to null
+            Shiny.onInputChange('ldavis_term_clicked', null);
         }
         
         function term_click(newterm, newterm_term) {
-            
+            if (!inShinyMode) {
+              return null;
+            }
             // make sure term ids are up to date    
             d3.selectAll(".terms").attr("id", function(d) {
               return (termID + d.Term)
@@ -1456,10 +1459,9 @@ LDAvis = function(to_select, json_file) {
             // save state of term clicked
             vis_state.term_clicked = newterm_term;
             
-            if (inShinyMode) {
-                // update input$ldavis_term_clicked to know about new term clicked
-                Shiny.onInputChange('ldavis_term_clicked', newterm_term);
-            }
+            // update input$ldavis_term_clicked to know about new term clicked
+            Shiny.onInputChange('ldavis_term_clicked', newterm_term);
+            
         }
 
     });
