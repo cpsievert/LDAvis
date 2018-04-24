@@ -95,6 +95,12 @@ LDAvis = function(to_select, json_file) {
     // see if vis is being run as part of a shiny app
     // (code adapted from https://github.com/ramnathv/htmlwidgets/blob/master/inst/www/htmlwidgets.js#L15)
     var inShinyMode = typeof(window.Shiny) !== "undefined" && !!window.Shiny.outputBindings;
+    
+    if (inShinyMode) {
+      var outputId = to_select.substring(1, to_select.length);
+      var shinyClickedTopic = outputId + "_topic_click";
+      var shinyClickedTerm = outputId + "_term_click";
+    }
 
     // The actual read-in of the data and main code:
     d3.json(json_file, function(error, data) {
@@ -1402,8 +1408,8 @@ LDAvis = function(to_select, json_file) {
             
             // update shiny inputs to be null
             if (inShinyMode) {
-                Shiny.onInputChange('ldavis_topic_clicked', null);
-                Shiny.onInputChange('ldavis_term_clicked', null);
+                Shiny.onInputChange(shinyClickedTopic, null);
+                Shiny.onInputChange(shinyClickedTerm, null);
             }
             
             // set state of topic_clicked to 0, so we can click on topic x, reset
@@ -1427,12 +1433,11 @@ LDAvis = function(to_select, json_file) {
             // save state of topic clicked
             vis_state.topic_clicked = newtopic_num;
             
-            // update shiny input$ldavis_topic_clicked object to be new topic clicked 
-            Shiny.onInputChange('ldavis_topic_clicked', newtopic_num);
+            // update shiny topic input object to be new topic clicked 
+            Shiny.onInputChange(shinyClickedTopic, newtopic_num);
         
-            // since topic changed, we want to reset the input$ldavis_term_clicked
-            // object back to null
-            Shiny.onInputChange('ldavis_term_clicked', null);
+            // since topic changed, we want to reset the input term object back to null
+            Shiny.onInputChange(shinyClickedTerm, null);
         }
         
         function term_click(newterm, newterm_term) {
@@ -1459,9 +1464,8 @@ LDAvis = function(to_select, json_file) {
             // save state of term clicked
             vis_state.term_clicked = newterm_term;
             
-            // update input$ldavis_term_clicked to know about new term clicked
-            Shiny.onInputChange('ldavis_term_clicked', newterm_term);
-            
+            // update shiny term input object to know about new term clicked
+            Shiny.onInputChange(shinyClickedTerm, newterm_term);
         }
 
     });

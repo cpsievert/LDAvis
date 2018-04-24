@@ -7,12 +7,12 @@ shinyServer(function(input, output, session) {
                     R = input$nTerms))})
 
   output$termClicked <- renderPrint({
-    if (is.null(input$ldavis_term_clicked)) return()
-    paste("You clicked on term:", input$ldavis_term_clicked)    
+    if (is.null(input$myChart_term_click)) return()
+    paste("You clicked on term:", input$myChart_term_click)    
   })
   output$topicClicked <- renderPrint({
-    if (is.null(input$ldavis_topic_clicked)) return()
-    paste("You clicked on topic:", input$ldavis_topic_clicked)    
+    if (is.null(input$myChart_topic_click)) return()
+    paste("You clicked on topic:", input$myChart_topic_click)    
   })
-
+  
 })
