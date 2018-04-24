@@ -1,9 +1,11 @@
 Package: LDAvis
 Title: Interactive Visualization of Topic Models
 Version: 0.3.5
-Authors@R: c(person("Carson", "Sievert", role = c("aut", "cre"), email =
-    "cpsievert1@gmail.com", comment = c(ORCID = "0000-0002-4958-2844")), person("Kenny", "Shirley", role = "aut",
-    email = "kshirley@research.att.com"), person("Christopher", "Baker", role = "ctb", email = "chriscrewbaker@gmail.com"))
+Authors@R: c(
+   person("Carson", "Sievert", role = c("aut", "cre"), email = "cpsievert1@gmail.com", comment = c(ORCID = "0000-0002-4958-2844")), 
+   person("Kenny", "Shirley", role = "aut", email = "kshirley@research.att.com"), 
+   person("Christopher", "Baker", role = "ctb", email = "chriscrewbaker@gmail.com")
+   )
 Description: Tools to create an interactive web-based visualization of a
     topic model that has been fit to a corpus of text data using
     Latent Dirichlet Allocation (LDA). Given the estimated parameters of
