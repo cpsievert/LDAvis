@@ -6,7 +6,7 @@ Click events (on topics and terms) are now made available to the Shiny input obj
 
 BUG FIXES
 
-The jensen-shannon divergence calculated in `jsPCA()` (i.e., the default for the `mds.method` argument in `createJSON`) now does division in log space which is more precies and reduces the probability of underflow (see #80, thanks @dpmccable).
+The jensen-shannon divergence calculated in `jsPCA()` (i.e., the default for the `mds.method` argument in `createJSON`) now does division in log space which is more precies and reduces the probability of underflow (see #80, thanks @dpmccable). It also now checks for 0 values and returns 0 in that case (instead of producing a NaN result, see #56).
 
   CHANGES IN LDAvis VERSION 0.3.4
 
