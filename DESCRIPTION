@@ -14,7 +14,7 @@ Description: Tools to create an interactive web-based visualization of a
     a browser. The goal is to help users interpret the topics in their
     'LDA' topic model.
 Depends:
-    R (>= 3.3.2)
+    R (>= 3.4.0)
 Imports:
     proxy,
     RJSONIO,
