@@ -8,6 +8,8 @@ BUG FIXES
 
 The jensen-shannon divergence calculated in `jsPCA()` (i.e., the default for the `mds.method` argument in `createJSON`) now does division in log space which is more precies and reduces the probability of underflow (see #80, thanks @dpmccable). It also now checks for 0 values and returns 0 in that case (instead of producing a NaN result, see #56).
 
+If rows of theta/phi don't all sum to 1, a warning is now thrown instead of an error (see #68).
+
   CHANGES IN LDAvis VERSION 0.3.4
 
 A new argument, encoding, was added to serVis(). This sets the encoding which will be used to write the JSON file. This may be set to `UTF-8` to  fix an issue where, when running on windows, the JSON output would be encoded in ANSI despite the R data beeing encoded in UTF-8. This should also fix #50.
