@@ -14,4 +14,5 @@ r:
 # http://stackoverflow.com/questions/25759007/error-installing-topicmodels-package-non-zero-exit-status-ubuntu
 before_install:
   - sudo apt-get install libgsl0-dev openjdk-7-*
-  
+
+r_packages: devtools  
