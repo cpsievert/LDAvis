@@ -397,7 +397,7 @@ LDAvis = function(to_select, json_file) {
         // draw circles
         points.append("circle")
             .attr("class", "dot")
-            .style("opacity", 0.2)
+            .style("opacity", base_opacity)
             .style("fill", color1)
             .attr("r", function(d) {
                 //return (rScaleMargin(+d.Freq));
