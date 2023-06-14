@@ -294,6 +294,7 @@ createJSON <- function(phi = matrix(), theta = matrix(), doc.length = integer(),
 #' many columns as there are terms in the vocabulary.
 #' 
 #' @export
+
 jsPCA <- function(phi) {
   # first, we compute a pairwise distance between topic distributions
   # using a symmetric version of KL-divergence
@@ -309,4 +310,6 @@ jsPCA <- function(phi) {
   # then, we reduce the K by K proximity matrix down to K by 2 using PCA
   pca.fit <- stats::cmdscale(dist.mat, k = 2)
   data.frame(x = pca.fit[,1], y = pca.fit[,2])
+}
+
 
