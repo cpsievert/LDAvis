@@ -4,9 +4,16 @@
 \alias{serVis}
 \title{View and/or share LDAvis in a browser}
 \usage{
-serVis(json, out.dir = tempfile(), open.browser = interactive(),
-  as.gist = FALSE, language = "english", encoding = getOption("encoding"),
-  ...)
+serVis(
+  json,
+  out.dir = tempfile(),
+  open.browser = interactive(),
+  stand.alone = FALSE,
+  as.gist = FALSE,
+  language = "english",
+  encoding = getOption("encoding"),
+  ...
+)
 }
 \arguments{
 \item{json}{character string output from \link{createJSON}.}
@@ -17,6 +24,8 @@ serVis(json, out.dir = tempfile(), open.browser = interactive(),
 attempt to create a local file server via the servr package.
 This is necessary since the javascript needs to access local files and most 
 browsers will not allow this.}
+
+\item{stand.alone}{should the output be contained in a single html file?}
 
 \item{as.gist}{should the vis be uploaded as a gist? Will prompt for an 
 interactive login if the GITHUB_PAT environment variable is not set. For more

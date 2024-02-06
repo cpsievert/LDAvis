@@ -4,10 +4,20 @@
 \alias{createJSON}
 \title{Create the JSON object to read into the javascript visualization}
 \usage{
-createJSON(phi = matrix(), theta = matrix(), doc.length = integer(),
-  vocab = character(), term.frequency = integer(), R = 30,
-  lambda.step = 0.01, mds.method = jsPCA, cluster, plot.opts = list(xlab =
-  "PC1", ylab = "PC2"), reorder.topics = TRUE, ...)
+createJSON(
+  phi = matrix(),
+  theta = matrix(),
+  doc.length = integer(),
+  vocab = character(),
+  term.frequency = integer(),
+  R = 30,
+  lambda.step = 0.01,
+  mds.method = jsPCA,
+  cluster,
+  plot.opts = list(xlab = "PC1", ylab = "PC2"),
+  reorder.topics = TRUE,
+  ...
+)
 }
 \arguments{
 \item{phi}{matrix, with each row containing the distribution over terms 
