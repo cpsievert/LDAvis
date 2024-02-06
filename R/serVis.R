@@ -16,6 +16,7 @@
 #' attempt to create a local file server via the servr package.
 #' This is necessary since the javascript needs to access local files and most 
 #' browsers will not allow this.
+#' @param stand.alone should the output be contained in a single html file?
 #' @param as.gist should the vis be uploaded as a gist? Will prompt for an 
 #' interactive login if the GITHUB_PAT environment variable is not set. For more
 #' details, see \url{https://github.com/ropensci/gistr#authentication}.
@@ -35,7 +36,7 @@
 #' help(createJSON, package = "LDAvis")
 #' }
 
-serVis <- function(json, out.dir = tempfile(), open.browser = interactive(), 
+serVis <- function(json, out.dir = tempfile(), open.browser = interactive(), stand.alone = FALSE,
                    as.gist = FALSE, language = "english", encoding = getOption("encoding"), ...) {
 
   stopifnot(is.character(language), length(language) == 1, language %in% c('english', 'polish'))
@@ -81,6 +82,55 @@ serVis <- function(json, out.dir = tempfile(), open.browser = interactive(),
       if (open.browser) utils::browseURL(url_name)
     }
     return(invisible())
+  }
+  
+  if (stand.alone) {
+    # wrap a vector x with an opening and closing html tag
+    wrap_html <- function(x, tag) {
+      tag <- paste0("<", tag, ">")
+      x <- c(tag, x)
+      x <- append(x, sub("<", "</", tag))
+      x
+    }
+    
+    index_file <- file.path(out.dir, "index.html")
+    index_html <- readLines(index_file)
+    
+    # insert d3 script inline into html
+    d3_file <- list.files(out.dir, "^d3.+js$", full.names = TRUE)
+    d3_js <- readLines(d3_file)
+    d3_js <- wrap_html(d3_js, "script")
+    d3_js_include_line <- which(grepl(sprintf("<script src=\"%s\"></script>", basename(d3_file)), index_html))
+    index_html[d3_js_include_line] <- ""
+    index_html <- append(index_html, d3_js, d3_js_include_line)
+    
+    # insert formatted lda.json into ldavis.js
+    ldavis_file <- file.path(out.dir, "ldavis.js")
+    ldavis_js <- readLines(ldavis_file)
+    d3.json_call_start_line <- which(grepl("d3.json\\(json_file, function\\(error, data\\) \\{", ldavis_js))
+    ldavis_js[d3.json_call_start_line] <- sprintf('    data = %s;', json)
+    d3.json_call_end_line <- tail(which(grepl("\\}\\)", ldavis_js)), 1)
+    ldavis_js[d3.json_call_end_line] <- ""
+    
+    # insert ldvis.js script (with inlined lda.json) inline into html
+    ldavis_js <- wrap_html(ldavis_js, "script")
+    ldavis_js_include_line <- which(grepl("<script src=\"ldavis.js\"></script>", index_html))
+    index_html[ldavis_js_include_line] <- ""
+    index_html <- append(index_html, ldavis_js, ldavis_js_include_line)
+    
+    # insert lda.css inline into html
+    lda_file <- file.path(out.dir, "lda.css")
+    lda_css <- readLines(lda_file, warn = FALSE)
+    lda_css <- wrap_html(lda_css, "style")
+    lda_css_include_line <- which(grepl("<link rel=\"stylesheet\" type=\"text/css\" href=\"lda.css\">", index_html))
+    index_html[lda_css_include_line] <- ""
+    index_html <- append(index_html, lda_css, lda_css_include_line)
+    
+    # clean up
+    unlink(file.path(out.dir, "*"))
+    
+    # write out stand alone html
+    writeLines(index_html, index_file)
   }
 
   servd <- requireNamespace('servr')

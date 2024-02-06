@@ -35,4 +35,4 @@ LazyData: true
 VignetteBuilder: knitr
 URL: https://github.com/cpsievert/LDAvis
 BugReports: https://github.com/cpsievert/LDAvis/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 7.3.0
